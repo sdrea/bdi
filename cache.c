@@ -525,8 +525,15 @@ cache_reg_bdi_stats(struct cache_t *cp,	/* cache instance */
 		    struct stat_sdb_t *sdb)	/* stats database */
 {
 
-stat_reg_counter(sdb, "count_encode_0000", "Cache blocks compressed as zeros.", &count_encode_0000, 0, NULL);
-
+stat_reg_counter(sdb, "count_encode_0000", "Cache blocks compressed as ZERO", &count_encode_0000, 0, NULL);
+stat_reg_counter(sdb, "count_encode_0001", "Cache blocks compressed as REPEAT", &count_encode_0001, 0, NULL);
+stat_reg_counter(sdb, "count_encode_0010", "Cache blocks compressed as BASE 8 DELTA 1", &count_encode_0010, 0, NULL);
+stat_reg_counter(sdb, "count_encode_0011", "Cache blocks compressed as BASE 8 DELTA 2", &count_encode_0011, 0, NULL);
+stat_reg_counter(sdb, "count_encode_0100", "Cache blocks compressed as BASE 8 DELTA 4", &count_encode_0100, 0, NULL);
+stat_reg_counter(sdb, "count_encode_0101", "Cache blocks compressed as BASE 4 DELTA 1", &count_encode_0101, 0, NULL);
+stat_reg_counter(sdb, "count_encode_0110", "Cache blocks compressed as BASE 4 DELTA 2", &count_encode_0110, 0, NULL);
+stat_reg_counter(sdb, "count_encode_0111", "Cache blocks compressed as BASE 2 DELTA 1", &count_encode_0111, 0, NULL);
+stat_reg_counter(sdb, "count_encode_0111", "Cache blocks not compressed", &count_encode_1111, 0, NULL);
 }
 
 //sdrea-end
@@ -638,7 +645,7 @@ cache_access(struct cache_t *cp,	/* cache to access */
 //sdrea-begin
 //-----------
 
-  if (bdi_encode != NULL) 
+  if (bdi_encode != NULL && *(cp->name) == 117 ) 
     {  
   
       int bdi_size;
