@@ -681,7 +681,7 @@ cache_access(struct cache_t *cp,	/* cache to access */
     int bdi_blk_size=0;
     for (bdi_blk=cp->sets[set].way_head; bdi_blk; bdi_blk=bdi_blk->way_next)
       {
-	switch (blk->bdi_encode) 
+	switch (bdi_blk->bdi_encode) 
           {
             case 0b0000:
               //zeros
