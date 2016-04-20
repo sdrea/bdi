@@ -378,9 +378,17 @@ cache_create(char *name,		/* name of the cache */
   cp->last_blk = NULL;
 
   /* allocate data blocks */
+
+//sdrea-begin
+//-----------
+
   cp->data = (byte_t *)calloc(nsets * assoc,
-			      sizeof(struct cache_blk_t) +
+			      sizeof(struct cache_blk_t) * 2 +
 			      (cp->balloc ? (bsize*sizeof(byte_t)) : 0));
+
+//---------
+//sdrea-end
+
   if (!cp->data)
     fatal("out of virtual memory");
 
@@ -405,7 +413,15 @@ cache_create(char *name,		/* name of the cache */
       
       /* link the data blocks into ordered way chain and hash table bucket
          chains, if hash table exists */
-      for (j=0; j<assoc; j++)
+
+//sdrea-begin
+//-----------
+
+      for (j=0; j<assoc*2; j++)
+
+//---------
+//sdrea-end
+
 	{
 	  /* locate next cache block */
 	  blk = CACHE_BINDEX(cp, cp->data, bindex);
@@ -746,6 +762,20 @@ cache_access(struct cache_t *cp,	/* cache to access */
             break;
           }
       }
+
+  if (bdi_size + bdi_blk_size <= 128) 
+    {
+
+      //new bdi block fits in the set
+
+    }
+  else
+    {
+
+      //bdi block will not fit, bump last used way that isnt empty
+
+    }
+
   }
 
   //repl = cp->sets[set].way_tail; 
