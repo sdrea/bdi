@@ -382,9 +382,21 @@ cache_create(char *name,		/* name of the cache */
 //sdrea-begin
 //-----------
 
-  cp->data = (byte_t *)calloc(nsets * assoc,
-			      sizeof(struct cache_blk_t) * 2 +
-			      (cp->balloc ? (bsize*sizeof(byte_t)) : 0));
+  if (~strcmp(name, "ul2")) 
+    {
+
+      cp->data = (byte_t *)calloc(nsets * assoc,
+			          sizeof(struct cache_blk_t) * 2 +
+			          (cp->balloc ? (bsize*sizeof(byte_t)) : 0));
+    }
+  else
+    {
+
+      cp->data = (byte_t *)calloc(nsets * assoc,
+			          sizeof(struct cache_blk_t) +
+			          (cp->balloc ? (bsize*sizeof(byte_t)) : 0));
+
+    }
 
 //---------
 //sdrea-end
@@ -417,7 +429,22 @@ cache_create(char *name,		/* name of the cache */
 //sdrea-begin
 //-----------
 
-      for (j=0; j<assoc*2; j++)
+      int bdix;
+
+      if (~strcmp(name, "ul2"))  
+        {
+
+          bdix = 2;
+
+        }
+      else
+        {
+
+          bdix = 1;
+
+        }
+
+      for (j=0; j<assoc*bdix; j++)
 
 //---------
 //sdrea-end
@@ -772,7 +799,7 @@ cache_access(struct cache_t *cp,	/* cache to access */
           bdi_blk1->tag = 0;
           bdi_blk1->ready = 0;
 	  bdi_blk1->bdi_encode = (byte_t) -1;
-	  bdi_blk1->bdi_mask = (sword_t) -1;
+	  bdi_blk1->bdi_mask = (sword_t) -1; 
 
           bdi_blk_size=0;
 
