@@ -714,72 +714,120 @@ cache_access(struct cache_t *cp,	/* cache to access */
           break;
         }
 
-    struct cache_blk_t *bdi_blk;
-    int bdi_blk_size=0;
-    for (bdi_blk=cp->sets[set].way_head; bdi_blk; bdi_blk=bdi_blk->way_next)
-      {
-	switch (bdi_blk->bdi_encode) 
-          {
-            case 0b0000:
-              //zeros
-              bdi_blk_size += 8; // 1 segment, 8 bytes
-            break;
-            case 0b0001:
-              //repeats
-              bdi_blk_size += 8; // 1 segment, 8 bytes
-            break;
-            case 0b0010:
-              //base 8 delta 1
-              bdi_blk_size += 16; // 2 segments, 16 bytes
-            break;
-            case 0b0011:
-              //base 8 delta 2
-              bdi_blk_size += 24; // 3 segments, 24 bytes
-            break;
-            case 0b0100:
-              //base 8 delta 4
-              bdi_blk_size += 40; // 5 segments, 40 bytes
-            break;
-            case 0b0101:
-              //base 4 delta 1
-              bdi_blk_size += 24; // 3 segments, 24 bytes
-            break;
-            case 0b0110:
-              //base 4 delta 2
-              bdi_blk_size += 40; // 5 segments, 40 bytes
-            break;
-            case 0b0111:
-              //base 2 delta 1
-              bdi_blk_size += 40; // 5 segments, 40 bytes
-            break;
-            case 0b1111:
-              //decompressed
-              bdi_blk_size += 64; // 8 segments, 64 bytes
-            break;
-            default:
-              //no data in the "way"
-              bdi_blk_size += 0; // unused way
-            break;
-          }
-      }
+      struct cache_blk_t *bdi_blk1, *bdi_blk2;
 
-  if (bdi_size + bdi_blk_size <= 128) 
-    {
+      int bdi_blk_size;
 
-      //new bdi block fits in the set
+      bdi_blk_size=0;
 
+      for (bdi_blk2=cp->sets[set].way_head; bdi_blk2; bdi_blk2=bdi_blk2->way_next)
+        {
+          switch (bdi_blk2->bdi_encode) 
+            {
+              case 0b0000:
+                //zeros
+                bdi_blk_size += 8; // 1 segment, 8 bytes
+              break;
+              case 0b0001:
+                //repeats
+                bdi_blk_size += 8; // 1 segment, 8 bytes
+              break;
+              case 0b0010:
+                //base 8 delta 1
+                bdi_blk_size += 16; // 2 segments, 16 bytes
+              break;
+              case 0b0011:
+                //base 8 delta 2
+                bdi_blk_size += 24; // 3 segments, 24 bytes
+              break;
+              case 0b0100:
+                //base 8 delta 4
+                bdi_blk_size += 40; // 5 segments, 40 bytes
+              break;
+              case 0b0101:
+                //base 4 delta 1
+                bdi_blk_size += 24; // 3 segments, 24 bytes
+              break;
+              case 0b0110:
+                //base 4 delta 2
+                bdi_blk_size += 40; // 5 segments, 40 bytes
+              break;
+              case 0b0111:
+                //base 2 delta 1
+                bdi_blk_size += 40; // 5 segments, 40 bytes
+              break;
+              case 0b1111:
+                //decompressed
+                bdi_blk_size += 64; // 8 segments, 64 bytes
+              break;
+              default:
+                //no data in the "way"
+                bdi_blk_size += 0; // unused way
+              break;
+            }
+        }
+
+      for (bdi_blk1=cp->sets[set].way_tail; bdi_blk1 && (bdi_size + bdi_blk_size > cp->bsize * cp->assoc); bdi_blk1=bdi_blk1->way_prev)
+        {
+
+          //invalidate from tail up until there is room
+
+	  bdi_blk1->status = 0;
+          bdi_blk1->tag = 0;
+          bdi_blk1->ready = 0;
+	  bdi_blk1->bdi_encode = (byte_t) -1;
+	  bdi_blk1->bdi_mask = (sword_t) -1;
+
+          bdi_blk_size=0;
+
+          for (bdi_blk2=cp->sets[set].way_head; bdi_blk2; bdi_blk2=bdi_blk2->way_next)
+            {
+              switch (bdi_blk2->bdi_encode) 
+                {
+                  case 0b0000:
+                    //zeros
+                    bdi_blk_size += 8; // 1 segment, 8 bytes
+                  break;
+                  case 0b0001:
+                    //repeats
+                    bdi_blk_size += 8; // 1 segment, 8 bytes
+                  break;
+                  case 0b0010:
+                    //base 8 delta 1
+                    bdi_blk_size += 16; // 2 segments, 16 bytes
+                  break;
+                  case 0b0011:
+                    //base 8 delta 2
+                    bdi_blk_size += 24; // 3 segments, 24 bytes
+                  break;
+                  case 0b0100:
+                    //base 8 delta 4
+                    bdi_blk_size += 40; // 5 segments, 40 bytes
+                  break;
+                  case 0b0101:
+                    //base 4 delta 1
+                    bdi_blk_size += 24; // 3 segments, 24 bytes
+                  break;
+                  case 0b0110:
+                    //base 4 delta 2
+                    bdi_blk_size += 40; // 5 segments, 40 bytes
+                  break;
+                  case 0b0111:
+                    //base 2 delta 1
+                    bdi_blk_size += 40; // 5 segments, 40 bytes
+                  break;
+                  case 0b1111:
+                    //decompressed
+                    bdi_blk_size += 64; // 8 segments, 64 bytes
+                  break;
+                  default:
+                    //no data in the "way"
+                    bdi_blk_size += 0; // unused way
+                  break;
+                }
+            }
+        }
     }
-  else
-    {
-
-      //bdi block will not fit, bump last used way that isnt empty
-
-    }
-
-  }
-
-  //repl = cp->sets[set].way_tail; 
-  //update_way_list(&cp->sets[set], repl, Head);
 
 //---------
 //sdrea-end
