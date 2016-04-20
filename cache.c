@@ -760,10 +760,6 @@ cache_access(struct cache_t *cp,	/* cache to access */
                 //decompressed
                 bdi_blk_size += 64; // 8 segments, 64 bytes
               break;
-              default:
-                //no data in the "way"
-                bdi_blk_size += 0; // unused way
-              break;
             }
         }
 
@@ -888,6 +884,20 @@ cache_access(struct cache_t *cp,	/* cache to access */
   /* update block tags */
   repl->tag = tag;
   repl->status = CACHE_BLK_VALID;	/* dirty bit set on update */
+
+//sdrea-begin
+//-----------
+
+  if (bdi_encode != NULL && *(cp->name) == 117 ) 
+    {  
+
+      repl->bdi_encode = *bdi_encode;
+      repl->bdi_mask = *bdi_mask;
+
+    }
+
+//---------
+//sdrea-end
 
   /* read data block */
   lat += cp->blk_access_fn(Read, CACHE_BADDR(cp, addr), cp->bsize,
