@@ -77,32 +77,6 @@
 #include "stats.h"
 #include "memory.h"
 
-//sdrea-begin
-//-----------
-
-static counter_t BDiModel_cache_misses = 0;
-static counter_t BDiModel_zero_blocks = 0;
-static counter_t BDiModel_repeat_blocks = 0;
-static counter_t BDiModel_b8d1_blocks = 0;
-static counter_t BDiModel_b8d2_blocks = 0;
-static counter_t BDiModel_b8d4_blocks = 0;
-static counter_t BDiModel_b4d1_blocks = 0;
-static counter_t BDiModel_b4d2_blocks = 0;
-static counter_t BDiModel_b2d1_blocks = 0;
-static counter_t BDiModel_incomp_blocks = 0;
-
-static counter_t BDiModel_zero_able = 0;
-static counter_t BDiModel_repeat_able = 0;
-static counter_t BDiModel_b8d1_able = 0;
-static counter_t BDiModel_b8d2_able = 0;
-static counter_t BDiModel_b8d4_able = 0;
-static counter_t BDiModel_b4d1_able = 0;
-static counter_t BDiModel_b4d2_able = 0;
-static counter_t BDiModel_b2d1_able = 0;
-
-//---------
-//sdrea-end
-
 /* create a flat memory space */
 struct mem_t *
 mem_create(char *name)			/* name of the memory space */

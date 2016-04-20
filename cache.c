@@ -79,15 +79,15 @@
 //sdrea-begin
 //-----------
 
-static counter_t bdi_0000 = 0;
-static counter_t bdi_0001 = 0;
-static counter_t bdi_0010 = 0;
-static counter_t bdi_0011 = 0;
-static counter_t bdi_0100 = 0;
-static counter_t bdi_0101 = 0;
-static counter_t bdi_0110 = 0;
-static counter_t bdi_0111 = 0;
-static counter_t bdi_1111 = 0;
+static counter_t count_encode_0000 = 0;
+static counter_t count_encode_0001 = 0;
+static counter_t count_encode_0010 = 0;
+static counter_t count_encode_0011 = 0;
+static counter_t count_encode_0100 = 0;
+static counter_t count_encode_0101 = 0;
+static counter_t count_encode_0110 = 0;
+static counter_t count_encode_0111 = 0;
+static counter_t count_encode_1111 = 0;
 
 //---------
 //sdrea-end
@@ -627,53 +627,53 @@ cache_access(struct cache_t *cp,	/* cache to access */
   if (bdi_encode != NULL) 
     {  
   
-      int bdi_size=0;
+      int bdi_size;
       switch (*bdi_encode) 
         {
           case 0b0000:
             //zeros
-            bdi_0000++;
-            bdi_size += 8; // 1 segment, 8 bytes
+            count_encode_0000++;
+            bdi_size = 8; // 1 segment, 8 bytes
           break;
           case 0b0001:
             //repeats
-            bdi_0001++;
-            bdi_size += 8; // 1 segment, 8 bytes
+            count_encode_0001++;
+            bdi_size = 8; // 1 segment, 8 bytes
           break;
           case 0b0010:
             //base 8 delta 1
-            bdi_0010++;
-            bdi_size += 16; // 2 segments, 16 bytes
+            count_encode_0010++;
+            bdi_size = 16; // 2 segments, 16 bytes
           break;
           case 0b0011:
             //base 8 delta 2
-            bdi_0011++;
-            bdi_size += 24; // 3 segments, 24 bytes
+            count_encode_0011++;
+            bdi_size = 24; // 3 segments, 24 bytes
           break;
           case 0b0100:
             //base 8 delta 4
-            bdi_0100++;
-            bdi_size += 40; // 5 segments, 40 bytes
+            count_encode_0100++;
+            bdi_size = 40; // 5 segments, 40 bytes
           break;
           case 0b0101:
             //base 4 delta 1
-            bdi_0101++;
-            bdi_size += 24; // 3 segments, 24 bytes
+            count_encode_0101++;
+            bdi_size = 24; // 3 segments, 24 bytes
           break;
           case 0b0110:
             //base 4 delta 2
-            bdi_0110++;
-            bdi_size += 40; // 5 segments, 40 bytes
+            count_encode_0110++;
+            bdi_size = 40; // 5 segments, 40 bytes
           break;
           case 0b0111:
             //base 2 delta 1
-            bdi_0111++;
-            bdi_size += 40; // 5 segments, 40 bytes
+            count_encode_0111++;
+            bdi_size = 40; // 5 segments, 40 bytes
           break;
           case 0b1111:
             //decompressed
-            bdi_1111++;
-            bdi_size += 64; // 8 segments, 64 bytes
+            count_encode_1111++;
+            bdi_size = 64; // 8 segments, 64 bytes
           break;
         }
 
