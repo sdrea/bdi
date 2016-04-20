@@ -1,3 +1,21 @@
+//
+// cache.c
+//   from sim-wattch-1.02e - http://www.eecs.harvard.edu/~dbrooks/wattch-form.html
+//
+// updated for modeling Base-Delta-Immediate compression [Pekhimenko, Seshadri, Mutlu, Mowry, Gibbons, and Kozuch]
+//   changes wrapped in //sdrea-begin ... //sdrea-end
+//
+// Sean Rea, P. Eng.
+// Graduate Student
+// Electrical and Computer Engineering
+// Lakehead University
+// Thunder Bay, Ontario, Canada
+// 2016
+//
+// sdrea@lakeheadu.ca
+// rea@ieee.org
+//
+
 /* cache.c - cache module routines */
 
 /* SimpleScalar(TM) Tool Suite
@@ -57,6 +75,22 @@
 #include "misc.h"
 #include "machine.h"
 #include "cache.h"
+
+//sdrea-begin
+//-----------
+
+static counter_t bdi_0000 = 0;
+static counter_t bdi_0001 = 0;
+static counter_t bdi_0010 = 0;
+static counter_t bdi_0011 = 0;
+static counter_t bdi_0100 = 0;
+static counter_t bdi_0101 = 0;
+static counter_t bdi_0110 = 0;
+static counter_t bdi_0111 = 0;
+static counter_t bdi_1111 = 0;
+
+//---------
+//sdrea-end
 
 /* cache access macros */
 #define CACHE_TAG(cp, addr)	((addr) >> (cp)->tag_shift)
@@ -381,6 +415,16 @@ cache_create(char *name,		/* name of the cache */
 	  blk->status = 0;
 	  blk->tag = 0;
 	  blk->ready = 0;
+
+//sdrea-begin
+//-----------
+
+	  blk->bdi_encode = (byte_t) -1;
+	  blk->bdi_mask = (sword_t) -1;
+
+//---------
+//sdrea-end
+
 	  blk->user_data = (usize != 0
 			    ? (byte_t *)calloc(usize, sizeof(byte_t)) : NULL);
 
@@ -504,7 +548,17 @@ cache_access(struct cache_t *cp,	/* cache to access */
 	     int nbytes,		/* number of bytes to access */
 	     tick_t now,		/* time of access */
 	     byte_t **udata,		/* for return of user data ptr */
-	     md_addr_t *repl_addr)	/* for address of replaced block */
+
+//sdrea-begin
+//-----------
+
+	     md_addr_t *repl_addr,	/* for address of replaced block */
+	     byte_t *bdi_encode,
+	     qword_t *bdi_mask)
+
+//---------
+//sdrea-end
+
 {
   byte_t *p = vp;
   md_addr_t tag = CACHE_TAG(cp, addr);
@@ -566,6 +620,118 @@ cache_access(struct cache_t *cp,	/* cache to access */
 
   /* **MISS** */
   cp->misses++;
+
+//sdrea-begin
+//-----------
+
+  if (bdi_encode != NULL) 
+    {  
+  
+      int bdi_size=0;
+      switch (*bdi_encode) 
+        {
+          case 0b0000:
+            //zeros
+            bdi_0000++;
+            bdi_size += 8; // 1 segment, 8 bytes
+          break;
+          case 0b0001:
+            //repeats
+            bdi_0001++;
+            bdi_size += 8; // 1 segment, 8 bytes
+          break;
+          case 0b0010:
+            //base 8 delta 1
+            bdi_0010++;
+            bdi_size += 16; // 2 segments, 16 bytes
+          break;
+          case 0b0011:
+            //base 8 delta 2
+            bdi_0011++;
+            bdi_size += 24; // 3 segments, 24 bytes
+          break;
+          case 0b0100:
+            //base 8 delta 4
+            bdi_0100++;
+            bdi_size += 40; // 5 segments, 40 bytes
+          break;
+          case 0b0101:
+            //base 4 delta 1
+            bdi_0101++;
+            bdi_size += 24; // 3 segments, 24 bytes
+          break;
+          case 0b0110:
+            //base 4 delta 2
+            bdi_0110++;
+            bdi_size += 40; // 5 segments, 40 bytes
+          break;
+          case 0b0111:
+            //base 2 delta 1
+            bdi_0111++;
+            bdi_size += 40; // 5 segments, 40 bytes
+          break;
+          case 0b1111:
+            //decompressed
+            bdi_1111++;
+            bdi_size += 64; // 8 segments, 64 bytes
+          break;
+        }
+
+    struct cache_blk_t *bdi_blk;
+    int bdi_blk_size=0;
+    for (bdi_blk=cp->sets[set].way_head; bdi_blk; bdi_blk=bdi_blk->way_next)
+      {
+	switch (blk->bdi_encode) 
+          {
+            case 0b0000:
+              //zeros
+              bdi_blk_size += 8; // 1 segment, 8 bytes
+            break;
+            case 0b0001:
+              //repeats
+              bdi_blk_size += 8; // 1 segment, 8 bytes
+            break;
+            case 0b0010:
+              //base 8 delta 1
+              bdi_blk_size += 16; // 2 segments, 16 bytes
+            break;
+            case 0b0011:
+              //base 8 delta 2
+              bdi_blk_size += 24; // 3 segments, 24 bytes
+            break;
+            case 0b0100:
+              //base 8 delta 4
+              bdi_blk_size += 40; // 5 segments, 40 bytes
+            break;
+            case 0b0101:
+              //base 4 delta 1
+              bdi_blk_size += 24; // 3 segments, 24 bytes
+            break;
+            case 0b0110:
+              //base 4 delta 2
+              bdi_blk_size += 40; // 5 segments, 40 bytes
+            break;
+            case 0b0111:
+              //base 2 delta 1
+              bdi_blk_size += 40; // 5 segments, 40 bytes
+            break;
+            case 0b1111:
+              //decompressed
+              bdi_blk_size += 64; // 8 segments, 64 bytes
+            break;
+            default:
+              //no data in the "way"
+              bdi_blk_size += 0; // unused way
+            break;
+          }
+      }
+  }
+
+  //repl = cp->sets[set].way_tail; 
+  //update_way_list(&cp->sets[set], repl, Head);
+
+//---------
+//sdrea-end
 
   /* select the appropriate block to replace, and re-link this entry to
      the appropriate place in the way list */

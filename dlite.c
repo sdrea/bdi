@@ -1,3 +1,21 @@
+//
+// dlite.c
+//   from sim-wattch-1.02e - http://www.eecs.harvard.edu/~dbrooks/wattch-form.html
+//
+// updated for modeling Base-Delta-Immediate compression [Pekhimenko, Seshadri, Mutlu, Mowry, Gibbons, and Kozuch]
+//   changes wrapped in //sdrea-begin ... //sdrea-end
+//
+// Sean Rea, P. Eng.
+// Graduate Student
+// Electrical and Computer Engineering
+// Lakehead University
+// Thunder Bay, Ontario, Canada
+// 2016
+//
+// sdrea@lakeheadu.ca
+// rea@ieee.org
+//
+
 /* dlite.c - DLite, the lite debugger, routines */
 
 /* SimpleScalar(TM) Tool Suite
@@ -876,7 +894,14 @@ dlite_mem_obj(struct mem_t *mem,		/* memory space to access */
 #endif
 
   /* else, no error, access memory */
-  mem_access(mem, cmd, addr, p, nbytes);
+
+//sdrea-begin
+//-----------
+
+  mem_access(mem, cmd, addr, p, nbytes, NULL, NULL);
+
+//---------
+//sdrea-end
 
   /* no error */
   return NULL;

@@ -1,3 +1,21 @@
+//
+// sim-outorder.c
+//   from sim-wattch-1.02e - http://www.eecs.harvard.edu/~dbrooks/wattch-form.html
+//
+// updated for modeling Base-Delta-Immediate compression [Pekhimenko, Seshadri, Mutlu, Mowry, Gibbons, and Kozuch]
+//   changes wrapped in //sdrea-begin ... //sdrea-end
+//
+// Sean Rea, P. Eng.
+// Graduate Student
+// Electrical and Computer Engineering
+// Lakehead University
+// Thunder Bay, Ontario, Canada
+// 2016
+//
+// sdrea@lakeheadu.ca
+// rea@ieee.org
+//
+
 /* sim-outorder.c - sample out-of-order issue perf simulator implementation */
 
 /* SimpleScalar(TM) Tool Suite
@@ -477,8 +495,23 @@ dl1_access_fn(enum mem_cmd cmd,		/* access cmd, Read or Write */
   if (cache_dl2)
     {
       /* access next level of data cache hierarchy */
+
+//sdrea-begin
+//-----------
+
+      byte_t *p;
+      p = (byte_t *) malloc (64);
+
+      byte_t bdi_encode = 15;
+      qword_t bdi_mask = -1;
+
+      mem_access(mem, bdi, baddr, p, 1, &bdi_encode, &bdi_mask);
+
       lat = cache_access(cache_dl2, cmd, baddr, NULL, bsize,
-			 /* now */now, /* pudata */NULL, /* repl addr */NULL);
+			 /* now */now, /* pudata */NULL, /* repl addr */NULL, &bdi_encode, &bdi_mask);
+
+//---------
+//sdrea-end
 
       /* Wattch -- Dcache2 access */
       dcache2_access++;
@@ -538,8 +571,23 @@ il1_access_fn(enum mem_cmd cmd,		/* access cmd, Read or Write */
 if (cache_il2)
     {
       /* access next level of inst cache hierarchy */
+
+//sdrea-begin
+//-----------
+
+      byte_t *p;
+      p = (byte_t *) malloc (64);
+
+      byte_t bdi_encode = 15;
+      qword_t bdi_mask = -1;
+
+      mem_access(mem, bdi, baddr, p, 1, &bdi_encode, &bdi_mask);
+
       lat = cache_access(cache_il2, cmd, baddr, NULL, bsize,
-			 /* now */now, /* pudata */NULL, /* repl addr */NULL);
+			 /* now */now, /* pudata */NULL, /* repl addr */NULL, &bdi_encode, &bdi_mask);
+
+//---------
+//sdrea-end
 
       /* Wattch -- Dcache2 access */
       dcache2_access++;
@@ -2255,9 +2303,25 @@ ruu_commit(void)
 		      dcache_access++;
 
               /* commit store value to D-cache */
+
+//sdrea-begin
+//-----------
+
+                      byte_t *p;
+                      p = (byte_t *) malloc (64);
+
+                      byte_t bdi_encode = 15;
+                      qword_t bdi_mask = -1;
+
+                      mem_access(mem, bdi, (LSQ[LSQ_head].addr&~3), p, 1, &bdi_encode, &bdi_mask);
+
 		      lat =
 			cache_access(cache_dl1, Write, (LSQ[LSQ_head].addr&~3),
-				     NULL, 4, sim_cycle, NULL, NULL);
+				     NULL, 4, sim_cycle, NULL, NULL, &bdi_encode, &bdi_mask);
+
+//---------
+//sdrea-end
+
 		      if (lat > cache_dl1_lat)
 			events |= PEV_CACHEMISS;
 		    }
@@ -2266,9 +2330,17 @@ ruu_commit(void)
 		  if (dtlb)
 		    {
 		      /* access the D-TLB */
+
+//sdrea-begin
+//-----------
+
 		      lat =
 			cache_access(dtlb, Read, (LSQ[LSQ_head].addr & ~3),
-				     NULL, 4, sim_cycle, NULL, NULL);
+				     NULL, 4, sim_cycle, NULL, NULL, NULL, NULL);
+
+//---------
+//sdrea-end
+
 		      if (lat > 1)
 			events |= PEV_TLBMISS;
 		    }
@@ -2856,10 +2928,26 @@ ruu_issue(void)
 				  /* Wattch -- D-cache access */
 				  dcache_access++;
 				  /* access the cache if non-faulting */
+
+//sdrea-begin
+//-----------
+
+                                  byte_t *p;
+                                  p = (byte_t *) malloc (64);
+
+                                  byte_t bdi_encode = 15;
+                                  qword_t bdi_mask = -1;
+
+                                  mem_access(mem, bdi, (rs->addr & ~3), p, 1, &bdi_encode, &bdi_mask);
+
 				  load_lat =
 				    cache_access(cache_dl1, Read,
 						 (rs->addr & ~3), NULL, 4,
-						 sim_cycle, NULL, NULL);
+						 sim_cycle, NULL, NULL, &bdi_encode, &bdi_mask);
+
+//---------
+//sdrea-end
+
 				  if (load_lat > cache_dl1_lat)
 				    events |= PEV_CACHEMISS;
 				}
@@ -2875,9 +2963,17 @@ ruu_issue(void)
 			    {
 			      /* access the D-DLB, NOTE: this code will
 				 initiate speculative TLB misses */
+
+//sdrea-begin
+//-----------
+
 			      tlb_lat =
 				cache_access(dtlb, Read, (rs->addr & ~3),
-					     NULL, 4, sim_cycle, NULL, NULL);
+					     NULL, 4, sim_cycle, NULL, NULL, NULL, NULL);
+
+//---------
+//sdrea-end
+
 			      if (tlb_lat > 1)
 				events |= PEV_TLBMISS;
 
@@ -3424,7 +3520,14 @@ simoo_mem_obj(struct mem_t *mem,		/* memory space to access */
   if (spec_mode)
     spec_mem_access(mem, cmd, addr, p, nbytes);
   else
-    mem_access(mem, cmd, addr, p, nbytes);
+
+//sdrea-begin
+//-----------
+
+    mem_access(mem, cmd, addr, p, nbytes, NULL, NULL);
+
+//---------
+//sdrea-end
 
   /* no error */
   return NULL;
@@ -3699,12 +3802,19 @@ ruu_install_odep(struct RUU_station *rs,	/* creating RUU station */
 /* precise architected memory state accessor macros, NOTE: speculative copy on
    write storage provided for fast recovery during wrong path execute (see
    tracer_recover() for details on this process */
+
+//sdrea-begin
+//-----------
+
 #define __READ_SPECMEM(SRC, SRC_V, FAULT)				\
   (addr = (SRC),							\
    (spec_mode								\
     ? ((FAULT) = spec_mem_access(mem, Read, addr, &SRC_V, sizeof(SRC_V)))\
-    : ((FAULT) = mem_access(mem, Read, addr, &SRC_V, sizeof(SRC_V)))),	\
+    : ((FAULT) = mem_access(mem, Read, addr, &SRC_V, sizeof(SRC_V), NULL, NULL))),	\
    SRC_V)
+
+//---------
+//sdrea-end
 
 #define READ_BYTE(SRC, FAULT)						\
   __READ_SPECMEM((SRC), temp_byte, (FAULT))
@@ -3717,12 +3827,17 @@ ruu_install_odep(struct RUU_station *rs,	/* creating RUU station */
   MD_SWAPQ(__READ_SPECMEM((SRC), temp_qword, (FAULT)))
 #endif /* HOST_HAS_QWORD */
 
+//sdrea-begin
+//-----------
 
 #define __WRITE_SPECMEM(SRC, DST, DST_V, FAULT)				\
   (DST_V = (SRC), addr = (DST),						\
    (spec_mode								\
     ? ((FAULT) = spec_mem_access(mem, Write, addr, &DST_V, sizeof(DST_V)))\
-    : ((FAULT) = mem_access(mem, Write, addr, &DST_V, sizeof(DST_V)))))
+    : ((FAULT) = mem_access(mem, Write, addr, &DST_V, sizeof(DST_V), NULL, NULL))))
+
+//---------
+//sdrea-end
 
 #define WRITE_BYTE(SRC, DST, FAULT)					\
   __WRITE_SPECMEM((SRC), (DST), temp_byte, (FAULT))
@@ -4503,10 +4618,26 @@ ruu_fetch(void)
 	  if (cache_il1)
 	    {
 	      /* access the I-cache */
+
+//sdrea-begin
+//-----------
+
+              byte_t *p;
+              p = (byte_t *) malloc (64);
+
+              byte_t bdi_encode = 15;
+              qword_t bdi_mask = -1;
+
+              mem_access(mem, bdi, IACOMPRESS(fetch_regs_PC), p, 1, &bdi_encode, &bdi_mask);
+
 	      lat =
 		cache_access(cache_il1, Read, IACOMPRESS(fetch_regs_PC),
 			     NULL, ISCOMPRESS(sizeof(md_inst_t)), sim_cycle,
-			     NULL, NULL);
+			     NULL, NULL, &bdi_encode, &bdi_mask);
+
+//---------
+//sdrea-end
+
 	      if (lat > cache_il1_lat)
 		last_inst_missed = TRUE;
 	    }
@@ -4515,10 +4646,18 @@ ruu_fetch(void)
 	    {
 	      /* access the I-TLB, NOTE: this code will initiate
 		 speculative TLB misses */
+
+//sdrea-begin
+//-----------
+
 	      tlb_lat =
 		cache_access(itlb, Read, IACOMPRESS(fetch_regs_PC),
 			     NULL, ISCOMPRESS(sizeof(md_inst_t)), sim_cycle,
-			     NULL, NULL);
+			     NULL, NULL, NULL, NULL);
+
+//---------
+//sdrea-end
+
 	      if (tlb_lat > 1)
 		last_inst_tmissed = TRUE;
 

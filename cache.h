@@ -1,3 +1,21 @@
+//
+// cache.h
+//   from sim-wattch-1.02e - http://www.eecs.harvard.edu/~dbrooks/wattch-form.html
+//
+// updated for modeling Base-Delta-Immediate compression [Pekhimenko, Seshadri, Mutlu, Mowry, Gibbons, and Kozuch]
+//   changes wrapped in //sdrea-begin ... //sdrea-end
+//
+// Sean Rea, P. Eng.
+// Graduate Student
+// Electrical and Computer Engineering
+// Lakehead University
+// Thunder Bay, Ontario, Canada
+// 2016
+//
+// sdrea@lakeheadu.ca
+// rea@ieee.org
+//
+
 /* cache.h - cache module interfaces */
 
 /* SimpleScalar(TM) Tool Suite
@@ -120,6 +138,16 @@ struct cache_blk_t
   /* since hash table lists are typically small, there is no previous
      pointer, deletion requires a trip through the hash table bucket list */
   md_addr_t tag;		/* data block tag value */
+
+//sdrea-begin
+//-----------
+
+  byte_t bdi_encode;
+  qword_t bdi_mask;
+
+//---------
+//sdrea-end
+
   unsigned int status;		/* block status, see CACHE_BLK_* defs above */
   tick_t ready;		/* time when block will be accessible, field
 				   is set when a miss fetch is initiated */
@@ -262,7 +290,16 @@ cache_access(struct cache_t *cp,	/* cache to access */
 	     int nbytes,		/* number of bytes to access */
 	     tick_t now,		/* time of access */
 	     byte_t **udata,		/* for return of user data ptr */
-	     md_addr_t *repl_addr);	/* for address of replaced block */
+
+//sdrea-begin
+//-----------
+
+	     md_addr_t *repl_addr,	/* for address of replaced block */
+	     byte_t *bdi_encode,
+  	     qword_t *bdi_mask);
+
+//---------
+//sdrea-end
 
 /* cache access functions, these are safe, they check alignment and
    permissions */
