@@ -1,3 +1,21 @@
+//
+// sim.h
+//   from sim-wattch-1.02e - http://www.eecs.harvard.edu/~dbrooks/wattch-form.html
+//
+// updated for modeling Base-Delta-Immediate compression [Pekhimenko, Seshadri, Mutlu, Mowry, Gibbons, and Kozuch]
+//   changes wrapped in //sdrea-begin ... //sdrea-end
+//
+// Sean Rea, P. Eng.
+// Graduate Student
+// Electrical and Computer Engineering
+// Lakehead University
+// Thunder Bay, Ontario, Canada
+// 2016
+//
+// sdrea@lakeheadu.ca
+// rea@ieee.org
+//
+
 /* sim.h - simulator main line interfaces */
 
 /* SimpleScalar(TM) Tool Suite
@@ -111,6 +129,14 @@ void sim_check_options(struct opt_odb_t *odb, int argc, char **argv);
 
 /* register simulator-specific statistics */
 void sim_reg_stats(struct stat_sdb_t *sdb);
+
+//sdrea-begin
+//-----------
+
+void sim_reg_bdi_stats(struct stat_sdb_t *sdb);
+
+//---------
+//sdrea-end
 
 /* initialize the simulator */
 void sim_init(void);

@@ -515,7 +515,21 @@ cache_reg_stats(struct cache_t *cp,	/* cache instance */
   sprintf(buf, "%s.inv_rate", name);
   sprintf(buf1, "%s.invalidations / %s.accesses", name, name);
   stat_reg_formula(sdb, buf, "invalidation rate (i.e., invs/ref)", buf1, NULL);
+
 }
+
+//sdrea-begin
+
+void
+cache_reg_bdi_stats(struct cache_t *cp,	/* cache instance */
+		    struct stat_sdb_t *sdb)	/* stats database */
+{
+
+stat_reg_counter(sdb, "count_encode_0000", "Cache blocks compressed as zeros.", &count_encode_0000, 0, NULL);
+
+}
+
+//sdrea-end
 
 /* print cache stats */
 void

@@ -1,3 +1,21 @@
+//
+// main.c
+//   from sim-wattch-1.02e - http://www.eecs.harvard.edu/~dbrooks/wattch-form.html
+//
+// updated for modeling Base-Delta-Immediate compression [Pekhimenko, Seshadri, Mutlu, Mowry, Gibbons, and Kozuch]
+//   changes wrapped in //sdrea-begin ... //sdrea-end
+//
+// Sean Rea, P. Eng.
+// Graduate Student
+// Electrical and Computer Engineering
+// Lakehead University
+// Thunder Bay, Ontario, Canada
+// 2016
+//
+// sdrea@lakeheadu.ca
+// rea@ieee.org
+//
+
 /* main.c - main line routines */
 
 /* SimpleScalar(TM) Tool Suite
@@ -121,6 +139,14 @@ struct opt_odb_t *sim_odb;
 /* stats database */
 struct stat_sdb_t *sim_sdb;
 
+//sdrea-begin
+//-----------
+
+struct stat_sdb_t *bdi_sdb;
+
+//---------
+//sdrea-end
+
 /* EIO interfaces */
 char *sim_eio_fname = NULL;
 char *sim_chkpt_fname = NULL;
@@ -209,6 +235,18 @@ sim_print_stats(FILE *fd)		/* output stream */
   stat_print_stats(sim_sdb, fd);
   sim_aux_stats(fd);
   fprintf(fd, "\n");
+
+//sdrea-begin
+//-----------
+
+  fprintf(fd, "\n");
+  fprintf(fd, "** bdi statistics **\n");
+  stat_print_stats(bdi_sdb, fd);
+  fprintf(fd, "\n");
+
+//---------
+//sdrea-end
+
 }
 
 /* print stats, uninitialize simulator components, and exit w/ exitcode */
@@ -383,6 +421,16 @@ main(int argc, char **argv, char **envp)
   /* register all simulator stats */
   sim_sdb = stat_new();
   sim_reg_stats(sim_sdb);
+
+//sdrea-begin
+//-----------
+
+  bdi_sdb = stat_new();
+  sim_reg_bdi_stats(bdi_sdb);
+
+//---------
+//sdrea-end
+
 #if 0 /* not portable... :-( */
   stat_reg_uint(sim_sdb, "sim_mem_usage",
 		"total simulator (data) memory usage",

@@ -269,6 +269,16 @@ void
 cache_reg_stats(struct cache_t *cp,	/* cache instance */
 		struct stat_sdb_t *sdb);/* stats database */
 
+//sdrea-begin
+//-----------
+
+void
+cache_reg_bdi_stats(struct cache_t *cp,	/* cache instance */
+		    struct stat_sdb_t *sdb);/* stats database */
+
+//---------
+//sdrea-end
+
 /* print cache stats */
 void
 cache_stats(struct cache_t *cp,		/* cache instance */

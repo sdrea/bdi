@@ -1456,6 +1456,20 @@ sim_reg_stats(struct stat_sdb_t *sdb)   /* stats database */
   mem_reg_stats(mem, sdb);
 }
 
+//sdrea-begin
+//-----------
+
+void
+sim_reg_bdi_stats(struct stat_sdb_t *sdb)   /* stats database */
+{
+
+    cache_reg_bdi_stats(NULL, sdb);
+
+}
+
+//---------
+//sdrea-end
+
 /* forward declarations */
 static void ruu_init(void);
 static void lsq_init(void);
