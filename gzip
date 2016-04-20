@@ -1,0 +1,12 @@
+SIM_PATH=./sim-outorder
+CFG_PATH=./config/default.cfg
+MAX_INST=5000000
+FAST_FWD=5000000
+
+$SIM_PATH \
+-config $CFG_PATH \
+-fastfwd $FAST_FWD \
+-max:inst $MAX_INST \
+../sp2k/164.gzip/gzip \
+../sp2k/164.gzip/input.graphic \
+2 > gzip.r
