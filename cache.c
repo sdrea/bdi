@@ -20,20 +20,20 @@
 
 /* SimpleScalar(TM) Tool Suite
  * Copyright (C) 1994-2003 by Todd M. Austin, Ph.D. and SimpleScalar, LLC.
- * All Rights Reserved. 
- * 
+ * All Rights Reserved.
+ *
  * THIS IS A LEGAL DOCUMENT, BY USING SIMPLESCALAR,
  * YOU ARE AGREEING TO THESE TERMS AND CONDITIONS.
- * 
+ *
  * No portion of this work may be used by any commercial entity, or for any
  * commercial purpose, without the prior, written permission of SimpleScalar,
  * LLC (info@simplescalar.com). Nonprofit and noncommercial use is permitted
  * as described below.
- * 
+ *
  * 1. SimpleScalar is provided AS IS, with no warranty of any kind, express
  * or implied. The user of the program accepts full responsibility for the
  * application of the program and the use of any results.
- * 
+ *
  * 2. Nonprofit and noncommercial use is encouraged. SimpleScalar may be
  * downloaded, compiled, executed, copied, and modified solely for nonprofit,
  * educational, noncommercial research, and noncommercial scholarship
@@ -42,13 +42,13 @@
  * solely for nonprofit, educational, noncommercial research, and
  * noncommercial scholarship purposes provided that this notice in its
  * entirety accompanies all copies.
- * 
+ *
  * 3. ALL COMMERCIAL USE, AND ALL USE BY FOR PROFIT ENTITIES, IS EXPRESSLY
  * PROHIBITED WITHOUT A LICENSE FROM SIMPLESCALAR, LLC (info@simplescalar.com).
- * 
+ *
  * 4. No nonprofit user may place any restrictions on the use of this software,
  * including as modified by the user, by any other authorized user.
- * 
+ *
  * 5. Noncommercial and nonprofit users may distribute copies of SimpleScalar
  * in compiled or executable form as set forth in Section 2, provided that
  * either: (A) it is accompanied by the corresponding machine-readable source
@@ -58,11 +58,11 @@
  * must permit verbatim duplication by anyone, or (C) it is distributed by
  * someone who received only the executable form, and is accompanied by a
  * copy of the written offer of source code.
- * 
+ *
  * 6. SimpleScalar was developed by Todd M. Austin, Ph.D. The tool suite is
  * currently maintained by SimpleScalar LLC (info@simplescalar.com). US Mail:
  * 2395 Timbercrest Court, Ann Arbor, MI 48105.
- * 
+ *
  * Copyright (C) 1994-2003 by Todd M. Austin, Ph.D. and SimpleScalar, LLC.
  */
 
@@ -79,15 +79,16 @@
 //sdrea-begin
 //-----------
 
-static counter_t count_encode_0000 = 0;
-static counter_t count_encode_0001 = 0;
-static counter_t count_encode_0010 = 0;
-static counter_t count_encode_0011 = 0;
-static counter_t count_encode_0100 = 0;
-static counter_t count_encode_0101 = 0;
-static counter_t count_encode_0110 = 0;
-static counter_t count_encode_0111 = 0;
-static counter_t count_encode_1111 = 0;
+static counter_t count_bdi_misses = 0;
+static counter_t count_encode_0000_zeros = 0;
+static counter_t count_encode_0001_repeats = 0;
+static counter_t count_encode_0010_b8d1 = 0;
+static counter_t count_encode_0011_b8d2 = 0;
+static counter_t count_encode_0100_b8d4 = 0;
+static counter_t count_encode_0101_b4d1 = 0;
+static counter_t count_encode_0110_b4d2 = 0;
+static counter_t count_encode_0111_b2d1 = 0;
+static counter_t count_encode_1111_uncompressed = 0;
 
 //---------
 //sdrea-end
@@ -568,15 +569,16 @@ cache_reg_bdi_stats(struct cache_t *cp,	/* cache instance */
 		    struct stat_sdb_t *sdb)	/* stats database */
 {
 
-stat_reg_counter(sdb, "count_encode_0000", "Cache blocks compressed as ZERO", &count_encode_0000, 0, NULL);
-stat_reg_counter(sdb, "count_encode_0001", "Cache blocks compressed as REPEAT", &count_encode_0001, 0, NULL);
-stat_reg_counter(sdb, "count_encode_0010", "Cache blocks compressed as BASE 8 DELTA 1", &count_encode_0010, 0, NULL);
-stat_reg_counter(sdb, "count_encode_0011", "Cache blocks compressed as BASE 8 DELTA 2", &count_encode_0011, 0, NULL);
-stat_reg_counter(sdb, "count_encode_0100", "Cache blocks compressed as BASE 8 DELTA 4", &count_encode_0100, 0, NULL);
-stat_reg_counter(sdb, "count_encode_0101", "Cache blocks compressed as BASE 4 DELTA 1", &count_encode_0101, 0, NULL);
-stat_reg_counter(sdb, "count_encode_0110", "Cache blocks compressed as BASE 4 DELTA 2", &count_encode_0110, 0, NULL);
-stat_reg_counter(sdb, "count_encode_0111", "Cache blocks compressed as BASE 2 DELTA 1", &count_encode_0111, 0, NULL);
-stat_reg_counter(sdb, "count_encode_0111", "Cache blocks not compressed", &count_encode_1111, 0, NULL);
+stat_reg_counter(sdb, "count_bdi_misses", "Cache lines checked for compression", &count_bdi_misses, 0, "%21d");
+stat_reg_counter(sdb, "count_encode_0000_zeros", "Cache blocks compressed as zeros", &count_encode_0000_zeros, 0, "%20d");
+stat_reg_counter(sdb, "count_encode_0001_repeats", "Cache blocks compressed as repeating values", &count_encode_0001_repeats, 0, "%18d");
+stat_reg_counter(sdb, "count_encode_0010_b8d1", "Cache blocks compressed as base 8 delta 1", &count_encode_0010_b8d1, 0, "%21d");
+stat_reg_counter(sdb, "count_encode_0011_b8d2", "Cache blocks compressed as base 8 delta 2", &count_encode_0011_b8d2, 0,"%21d");
+stat_reg_counter(sdb, "count_encode_0100_b8d4", "Cache blocks compressed as base 8 delta 4", &count_encode_0100_b8d4, 0, "%21d");
+stat_reg_counter(sdb, "count_encode_0101_b4d1", "Cache blocks compressed as base 4 delta 1", &count_encode_0101_b4d1, 0, "%21d");
+stat_reg_counter(sdb, "count_encode_0110_b4d2", "Cache blocks compressed as base 4 delta 2", &count_encode_0110_b4d2, 0, "%21d");
+stat_reg_counter(sdb, "count_encode_0111_b2d1", "Cache blocks compressed as base 2 delta 1", &count_encode_0111_b2d1, 0, "%21d");
+stat_reg_counter(sdb, "count_encode_1111_uncompressed", "Uncompressed cache lines", &count_encode_1111_uncompressed, 0, "%13d");
 }
 
 //sdrea-end
@@ -688,55 +690,57 @@ cache_access(struct cache_t *cp,	/* cache to access */
 //sdrea-begin
 //-----------
 
-  if (bdi_encode != NULL && *(cp->name) == 117 ) 
-    {  
-  
+  if (bdi_encode != NULL && *(cp->name) == 117 )
+    {
+
+      count_bdi_misses++;
+
       int bdi_size;
-      switch (*bdi_encode) 
+      switch (*bdi_encode)
         {
-          case 0b0000:
+          case 0b00000000:
             //zeros
-            count_encode_0000++;
+            count_encode_0000_zeros++;
             bdi_size = 8; // 1 segment, 8 bytes
           break;
-          case 0b0001:
+          case 0b00000001:
             //repeats
-            count_encode_0001++;
+            count_encode_0001_repeats++;
             bdi_size = 8; // 1 segment, 8 bytes
           break;
-          case 0b0010:
+          case 0b00000010:
             //base 8 delta 1
-            count_encode_0010++;
+            count_encode_0010_b8d1++;
             bdi_size = 16; // 2 segments, 16 bytes
           break;
-          case 0b0011:
+          case 0b00000011:
             //base 8 delta 2
-            count_encode_0011++;
+            count_encode_0011_b8d2++;
             bdi_size = 24; // 3 segments, 24 bytes
           break;
-          case 0b0100:
+          case 0b00000100:
             //base 8 delta 4
-            count_encode_0100++;
+            count_encode_0100_b8d4++;
             bdi_size = 40; // 5 segments, 40 bytes
           break;
-          case 0b0101:
+          case 0b00000101:
             //base 4 delta 1
-            count_encode_0101++;
+            count_encode_0101_b4d1++;
             bdi_size = 24; // 3 segments, 24 bytes
           break;
-          case 0b0110:
+          case 0b00000110:
             //base 4 delta 2
-            count_encode_0110++;
+            count_encode_0110_b4d2++;
             bdi_size = 40; // 5 segments, 40 bytes
           break;
-          case 0b0111:
+          case 0b00000111:
             //base 2 delta 1
-            count_encode_0111++;
+            count_encode_0111_b2d1++;
             bdi_size = 40; // 5 segments, 40 bytes
           break;
-          case 0b1111:
+          case 0b00001111:
             //decompressed
-            count_encode_1111++;
+            count_encode_1111_uncompressed++;
             bdi_size = 64; // 8 segments, 64 bytes
           break;
         }

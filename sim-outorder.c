@@ -1,4 +1,4 @@
-//
+	//
 // sim-outorder.c
 //   from sim-wattch-1.02e - http://www.eecs.harvard.edu/~dbrooks/wattch-form.html
 //
@@ -507,8 +507,15 @@ dl1_access_fn(enum mem_cmd cmd,		/* access cmd, Read or Write */
 
       mem_access(mem, bdi, baddr, p, 1, &bdi_encode, &bdi_mask);
 
+      counter_t checkmisses_dl2 = cache_dl2->misses;
+
       lat = cache_access(cache_dl2, cmd, baddr, NULL, bsize,
 			 /* now */now, /* pudata */NULL, /* repl addr */NULL, &bdi_encode, &bdi_mask);
+
+      if (checkmisses_dl2 != cache_dl2->misses)
+        {
+	  mem_access(mem, bdiModel, baddr, p, 1, &bdi_encode, &bdi_mask);
+        }
 
 //---------
 //sdrea-end
@@ -583,8 +590,15 @@ if (cache_il2)
 
       mem_access(mem, bdi, baddr, p, 1, &bdi_encode, &bdi_mask);
 
+      counter_t checkmisses_il2 = cache_il2->misses;
+
       lat = cache_access(cache_il2, cmd, baddr, NULL, bsize,
 			 /* now */now, /* pudata */NULL, /* repl addr */NULL, &bdi_encode, &bdi_mask);
+
+      if (checkmisses_il2 != cache_il2->misses)
+        {
+          mem_access(mem, bdiModel, baddr, p, 1, &bdi_encode, &bdi_mask);
+        }
 
 //---------
 //sdrea-end
@@ -1464,6 +1478,7 @@ sim_reg_bdi_stats(struct stat_sdb_t *sdb)   /* stats database */
 {
 
     cache_reg_bdi_stats(NULL, sdb);
+    mem_reg_bdi_stats(NULL, sdb);
 
 }
 

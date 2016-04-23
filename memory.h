@@ -109,7 +109,8 @@ enum mem_cmd {
 //-----------
 
   Write,			/* write memory from host (simulator) to target */
-  bdi
+  bdi,
+  bdiModel
 
 //---------
 //sdrea-end
@@ -268,6 +269,16 @@ mem_access(struct mem_t *mem,		/* memory space to access */
 void
 mem_reg_stats(struct mem_t *mem,	/* memory space to declare */
 	      struct stat_sdb_t *sdb);	/* stats data base */
+
+//sdrea-begin
+//-----------
+
+void
+mem_reg_bdi_stats(struct mem_t *mem,	/* memory space to declare */
+	      struct stat_sdb_t *sdb);	/* stats data base */
+
+//---------
+//sdrea-end
 
 /* initialize memory system, call before loader.c */
 void

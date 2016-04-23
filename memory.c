@@ -20,20 +20,20 @@
 
 /* SimpleScalar(TM) Tool Suite
  * Copyright (C) 1994-2003 by Todd M. Austin, Ph.D. and SimpleScalar, LLC.
- * All Rights Reserved. 
- * 
+ * All Rights Reserved.
+ *
  * THIS IS A LEGAL DOCUMENT, BY USING SIMPLESCALAR,
  * YOU ARE AGREEING TO THESE TERMS AND CONDITIONS.
- * 
+ *
  * No portion of this work may be used by any commercial entity, or for any
  * commercial purpose, without the prior, written permission of SimpleScalar,
  * LLC (info@simplescalar.com). Nonprofit and noncommercial use is permitted
  * as described below.
- * 
+ *
  * 1. SimpleScalar is provided AS IS, with no warranty of any kind, express
  * or implied. The user of the program accepts full responsibility for the
  * application of the program and the use of any results.
- * 
+ *
  * 2. Nonprofit and noncommercial use is encouraged. SimpleScalar may be
  * downloaded, compiled, executed, copied, and modified solely for nonprofit,
  * educational, noncommercial research, and noncommercial scholarship
@@ -42,13 +42,13 @@
  * solely for nonprofit, educational, noncommercial research, and
  * noncommercial scholarship purposes provided that this notice in its
  * entirety accompanies all copies.
- * 
+ *
  * 3. ALL COMMERCIAL USE, AND ALL USE BY FOR PROFIT ENTITIES, IS EXPRESSLY
  * PROHIBITED WITHOUT A LICENSE FROM SIMPLESCALAR, LLC (info@simplescalar.com).
- * 
+ *
  * 4. No nonprofit user may place any restrictions on the use of this software,
  * including as modified by the user, by any other authorized user.
- * 
+ *
  * 5. Noncommercial and nonprofit users may distribute copies of SimpleScalar
  * in compiled or executable form as set forth in Section 2, provided that
  * either: (A) it is accompanied by the corresponding machine-readable source
@@ -58,11 +58,11 @@
  * must permit verbatim duplication by anyone, or (C) it is distributed by
  * someone who received only the executable form, and is accompanied by a
  * copy of the written offer of source code.
- * 
+ *
  * 6. SimpleScalar was developed by Todd M. Austin, Ph.D. The tool suite is
  * currently maintained by SimpleScalar LLC (info@simplescalar.com). US Mail:
  * 2395 Timbercrest Court, Ann Arbor, MI 48105.
- * 
+ *
  * Copyright (C) 1994-2003 by Todd M. Austin, Ph.D. and SimpleScalar, LLC.
  */
 
@@ -76,6 +76,21 @@
 #include "options.h"
 #include "stats.h"
 #include "memory.h"
+
+//sdrea-begin
+//-----------
+
+static counter_t count_compressible_0000_zeros = 0;
+static counter_t count_compressible_0001_repeats = 0;
+static counter_t count_compressible_0010_b8d1 = 0;
+static counter_t count_compressible_0011_b8d2 = 0;
+static counter_t count_compressible_0100_b8d4 = 0;
+static counter_t count_compressible_0101_b4d1 = 0;
+static counter_t count_compressible_0110_b4d2 = 0;
+static counter_t count_compressible_0111_b2d1 = 0;
+
+//---------
+//sdrea-end
 
 /* create a flat memory space */
 struct mem_t *
@@ -211,7 +226,7 @@ mem_access(struct mem_t *mem,		/* memory space to access */
 //sdrea-begin
 //-----------
 
-    else if (cmd == bdi)
+    else if (cmd == bdi || cmd == bdiModel )
       {
 
         // for ul2:1024:64:4:l
@@ -221,7 +236,7 @@ mem_access(struct mem_t *mem,		/* memory space to access */
         SRset = addr & 65472;
 
         // for ul2:1024:32:4:l
-        // SRtag = addr & 0b1...1000000000000000;					
+        // SRtag = addr & 0b1...1000000000000000;
         // SRset = addr & 0b0...0111111111100000;
         // SRtag = addr & -32768;
         // SRset = addr & 32736;
@@ -294,6 +309,19 @@ mem_access(struct mem_t *mem,		/* memory space to access */
 	else if (delta84 == 1) 	{ *bdi_encode = 0b00000100; *bdi_mask = delta84mask;}
 	else 			{ *bdi_encode = 0b00001111; *bdi_mask = -1;}
 
+        if (cmd == bdiModel)
+          {
+
+            if (zeros == 1)    { count_compressible_0000_zeros++; }
+            if (repeats == 1)  { count_compressible_0001_repeats++; }
+            if (delta81 == 1)  { count_compressible_0010_b8d1++; }
+            if (delta82 == 1)  { count_compressible_0011_b8d2++; }
+            if (delta84 == 1)  { count_compressible_0100_b8d4++; }
+            if (delta41 == 1)  { count_compressible_0101_b4d1++; }
+            if (delta42 == 1)  { count_compressible_0110_b4d2++; }
+            if (delta21 == 1)  { count_compressible_0111_b2d1++; }
+
+          }
       }
 
 //---------
@@ -380,6 +408,26 @@ mem_reg_stats(struct mem_t *mem,	/* memory space to declare */
   sprintf(buf1, "%s.ptab_misses / %s.ptab_accesses", mem->name, mem->name);
   stat_reg_formula(sdb, buf, "first level page table miss rate", buf1, NULL);
 }
+
+//sdrea-begin
+//-----------
+
+void
+mem_reg_bdi_stats(struct mem_t *mem,	/* memory space to declare */
+	      struct stat_sdb_t *sdb)	/* stats data base */
+{
+  stat_reg_counter(sdb, "count_compressible_0000_zeros", "Count of cache lines compressible as zeros", &count_compressible_0000_zeros, 0, "%14d");
+  stat_reg_counter(sdb, "count_compressible_0001_repeats", "Count of cache lines compressible as repeating values", &count_compressible_0001_repeats, 0, "%12d");
+  stat_reg_counter(sdb, "count_compressible_0010_b8d1", "Count of cache lines compressible as b8d1", &count_compressible_0010_b8d1, 0, "%15d");
+  stat_reg_counter(sdb, "count_compressible_0011_b8d2", "Count of cache lines compressible as b8d2", &count_compressible_0011_b8d2, 0, "%15d");
+  stat_reg_counter(sdb, "count_compressible_0100_b8d4", "Count of cache lines compressible as b8d4", &count_compressible_0100_b8d4, 0, "%15d");
+  stat_reg_counter(sdb, "count_compressible_0101_b4d1", "Count of cache lines compressible as b4d1", &count_compressible_0101_b4d1, 0, "%15d");
+  stat_reg_counter(sdb, "count_compressible_0110_b4d2", "Count of cache lines compressible as b4d2", &count_compressible_0110_b4d2, 0, "%15d");
+  stat_reg_counter(sdb, "count_compressible_0111_b2d1", "Count of cache lines compressible as b2d1", &count_compressible_0111_b2d1, 0, "%15d");
+}
+
+//---------
+//sdrea-end
 
 /* initialize memory system, call before loader.c */
 void
