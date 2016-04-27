@@ -1,4 +1,4 @@
-	//
+//
 // sim-outorder.c
 //   from sim-wattch-1.02e - http://www.eecs.harvard.edu/~dbrooks/wattch-form.html
 //
@@ -186,7 +186,7 @@ static int cache_dl1_lat;
 
 /* l2 data cache config, i.e., {<config>|none} */
 static char *cache_dl2_opt;
-
+//sdrea-note
 /* l2 data cache hit latency (in cycles) */
 static int cache_dl2_lat;
 
@@ -464,6 +464,16 @@ static struct stat_stat_t *pcstat_sdists[MAX_PCSTAT_VARS];
 	 ? *((STAT)->variant.for_counter.var)				\
 	 : (panic("bad stat class"), 0))))
 
+//sdrea-begin
+//-----------
+
+static int il1compress;
+static int dl1compress;
+static int il2compress;
+static int dl2compress;
+
+//---------
+//sdrea-end
 
 /* memory access latency, assumed to not cross a page boundary */
 static unsigned int			/* total latency of access */
@@ -987,6 +997,29 @@ sim_reg_options(struct opt_odb_t *odb)
   opt_reg_flag(odb, "-bugcompat",
 	       "operate in backward-compatible bugs mode (for testing only)",
 	       &bugcompat_mode, /* default */FALSE, /* print */TRUE, NULL);
+
+//sdrea-begin
+//-----------
+
+  opt_reg_flag(odb, "-il1compress",
+	       "il1 bdi compression",
+	       &dl2compress, /* default */FALSE, /* print */TRUE, NULL);
+
+  opt_reg_flag(odb, "-dl1compress",
+	       "dl1 bdi compression",
+	       &dl2compress, /* default */FALSE, /* print */TRUE, NULL);
+
+  opt_reg_flag(odb, "-il2compress",
+	       "il2 bdi compression",
+	       &dl2compress, /* default */FALSE, /* print */TRUE, NULL);
+
+  opt_reg_flag(odb, "-dl2compress",
+	       "dl2 bdi compression",
+	       &dl2compress, /* default */FALSE, /* print */TRUE, NULL);
+
+//---------
+//sdrea-end
+
 }
 
 /* check simulator-specific option values */
@@ -1137,7 +1170,7 @@ sim_check_options(struct opt_odb_t *odb,        /* options database */
       if (!mystricmp(cache_dl2_opt, "none"))
 	cache_dl2 = NULL;
       else
-	{
+	{ //sdrea-note
 	  if (sscanf(cache_dl2_opt, "%[^:]:%d:%d:%d:%c",
 		     name, &nsets, &bsize, &assoc, &c) != 5)
 	    fatal("bad l2 D-cache parms: "
@@ -4650,6 +4683,8 @@ ruu_fetch(void)
 
 //sdrea-begin
 //-----------
+
+// if (il1compress){}
 
               byte_t *p;
               p = (byte_t *) malloc (64);
