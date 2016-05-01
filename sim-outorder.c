@@ -1001,19 +1001,19 @@ sim_reg_options(struct opt_odb_t *odb)
 //sdrea-begin
 //-----------
 
-  opt_reg_flag(odb, "-il1compress",
+  opt_reg_flag(odb, "-cache:compression:il1",
 	       "il1 bdi compression",
 	       &dl2compress, /* default */FALSE, /* print */TRUE, NULL);
 
-  opt_reg_flag(odb, "-dl1compress",
+  opt_reg_flag(odb, "-cache:compression:dl1",
 	       "dl1 bdi compression",
 	       &dl2compress, /* default */FALSE, /* print */TRUE, NULL);
 
-  opt_reg_flag(odb, "-il2compress",
+  opt_reg_flag(odb, "-cache:compression:il2",
 	       "il2 bdi compression",
 	       &dl2compress, /* default */FALSE, /* print */TRUE, NULL);
 
-  opt_reg_flag(odb, "-dl2compress",
+  opt_reg_flag(odb, "-cache:compression:dl2",
 	       "dl2 bdi compression",
 	       &dl2compress, /* default */FALSE, /* print */TRUE, NULL);
 
