@@ -392,7 +392,7 @@ cache_create(char *name,		/* name of the cache */
 //sdrea-begin
 //-----------
 
-  if (~strcmp(name, "ul2")) 
+  if (compression) 
     {
 
       cp->data = (byte_t *)calloc(nsets * assoc,
@@ -441,7 +441,7 @@ cache_create(char *name,		/* name of the cache */
 
       int bdix;
 
-      if (~strcmp(name, "ul2"))  
+      if (compression)  
         {
 
           bdix = 2;
