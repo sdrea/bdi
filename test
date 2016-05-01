@@ -1,2 +1,16 @@
+#!/bin/bash
+
+if [ -z "$1" ]; then
 ./sim-outorder -config config/0_uncompressed.cfg -fastfwd 1000000 -max:inst 1000000 reabmk
+
+elif [ $1 = "0" ]; then
+./sim-outorder -config config/0_uncompressed.cfg -fastfwd 1000000 -max:inst 1000000 reabmk
+
+elif [ $1 = "1" ]; then
 ./sim-outorder -config config/1_l2bdi.cfg -fastfwd 1000000 -max:inst 1000000 reabmk
+
+else
+
+echo Arg $1 not defined.
+
+fi

@@ -305,16 +305,7 @@ cache_create(char *name,		/* name of the cache */
 					   md_addr_t baddr, int bsize,
 					   struct cache_blk_t *blk,
 					   tick_t now),
-
-//sdrea-begin
-//-----------
-
-	     unsigned int hit_latency,	/* latency in cycles for a hit */
-	     int compression)
-
-//---------
-//sdrea-end
-
+	     unsigned int hit_latency)	/* latency in cycles for a hit */
 {
   struct cache_t *cp;
   struct cache_blk_t *blk;
@@ -389,27 +380,9 @@ cache_create(char *name,		/* name of the cache */
 
   /* allocate data blocks */
 
-//sdrea-begin
-//-----------
-
-  if (compression) 
-    {
-
-      cp->data = (byte_t *)calloc(nsets * assoc,
-			          sizeof(struct cache_blk_t) * 2 +
-			          (cp->balloc ? (bsize*sizeof(byte_t)) : 0));
-    }
-  else
-    {
-
       cp->data = (byte_t *)calloc(nsets * assoc,
 			          sizeof(struct cache_blk_t) +
 			          (cp->balloc ? (bsize*sizeof(byte_t)) : 0));
-
-    }
-
-//---------
-//sdrea-end
 
   if (!cp->data)
     fatal("out of virtual memory");
@@ -436,29 +409,7 @@ cache_create(char *name,		/* name of the cache */
       /* link the data blocks into ordered way chain and hash table bucket
          chains, if hash table exists */
 
-//sdrea-begin
-//-----------
-
-      int bdix;
-
-      if (compression)  
-        {
-
-          bdix = 2;
-
-        }
-      else
-        {
-
-          bdix = 1;
-
-        }
-
-      for (j=0; j<assoc*bdix; j++)
-
-//---------
-//sdrea-end
-
+      for (j=0; j<assoc; j++)
 	{
 	  /* locate next cache block */
 	  blk = CACHE_BINDEX(cp, cp->data, bindex);
@@ -699,8 +650,7 @@ cache_access(struct cache_t *cp,	/* cache to access */
 //sdrea-begin
 //-----------
 
-  if (bdi_encode != NULL && *(cp->name) == 117 )
-    {
+/*
 
       count_bdi_misses++;
 
@@ -863,7 +813,8 @@ cache_access(struct cache_t *cp,	/* cache to access */
                 }
             }
         }
-    }
+
+*/
 
 //---------
 //sdrea-end
