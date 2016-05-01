@@ -755,7 +755,7 @@ cache_access(struct cache_t *cp,	/* cache to access */
             }
         }
 
-      for (bdi_blk1=cp->sets[set].way_tail; bdi_blk1 && (bdi_size + bdi_blk_size > cp->bsize * cp->assoc); bdi_blk1=bdi_blk1->way_prev)
+      for (bdi_blk1=cp->sets[set].way_tail; bdi_blk1 && (bdi_size + bdi_blk_size > cp->bsize * cp->assoc / 2); bdi_blk1=bdi_blk1->way_prev)
         {
 
           //invalidate from tail up until there is room
