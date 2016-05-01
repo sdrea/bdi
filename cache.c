@@ -79,7 +79,7 @@
 //sdrea-begin
 //-----------
 
-static counter_t count_bdi_misses = 0;
+static counter_t count_encode_lines = 0;
 static counter_t count_encode_0000_zeros = 0;
 static counter_t count_encode_0001_repeats = 0;
 static counter_t count_encode_0010_b8d1 = 0;
@@ -529,7 +529,7 @@ cache_reg_bdi_stats(struct cache_t *cp,	/* cache instance */
 		    struct stat_sdb_t *sdb)	/* stats database */
 {
 
-stat_reg_counter(sdb, "count_bdi_misses", "Cache lines checked for compression", &count_bdi_misses, 0, "%21d");
+stat_reg_counter(sdb, "count_encode_lines", "Cache lines checked for compression", &count_encode_lines, 0, "%21d");
 stat_reg_counter(sdb, "count_encode_0000_zeros", "Cache blocks compressed as zeros", &count_encode_0000_zeros, 0, "%20d");
 stat_reg_counter(sdb, "count_encode_0001_repeats", "Cache blocks compressed as repeating values", &count_encode_0001_repeats, 0, "%18d");
 stat_reg_counter(sdb, "count_encode_0010_b8d1", "Cache blocks compressed as base 8 delta 1", &count_encode_0010_b8d1, 0, "%21d");
@@ -580,7 +580,8 @@ cache_access(struct cache_t *cp,	/* cache to access */
 
 	     md_addr_t *repl_addr,	/* for address of replaced block */
 	     byte_t *bdi_encode,
-	     qword_t *bdi_mask)
+	     qword_t *bdi_mask,
+             struct mem_t *mem)
 
 //---------
 //sdrea-end
@@ -654,7 +655,7 @@ cache_access(struct cache_t *cp,	/* cache to access */
   if (bdi_encode != NULL && *bdi_encode != (byte_t) -1) 
     {
 
-      count_bdi_misses++;
+      count_encode_lines++;
 
       int bdi_size;
       switch (*bdi_encode)

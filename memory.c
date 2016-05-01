@@ -200,6 +200,9 @@ mem_access(struct mem_t *mem,		/* memory space to access */
   int i;
   int bs = 64;
 
+//  md_addr_t tag = CACHE_TAG(cp, addr);
+//  md_addr_t set = CACHE_SET(cp, addr);
+
 //---------
 //sdrea-end
 

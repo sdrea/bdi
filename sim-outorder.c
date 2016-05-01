@@ -515,16 +515,16 @@ dl1_access_fn(enum mem_cmd cmd,		/* access cmd, Read or Write */
       byte_t bdi_encode = -1;
       qword_t bdi_mask = -1;
 
-      if (dl2compress) mem_access(mem, bdi, baddr, p, 1, &bdi_encode, &bdi_mask);
+     // if (dl2compress) mem_access(mem, bdi, baddr, p, 1, &bdi_encode, &bdi_mask);
 
       counter_t checkmisses_dl2 = cache_dl2->misses;
 
       lat = cache_access(cache_dl2, cmd, baddr, NULL, bsize,
-			 /* now */now, /* pudata */NULL, /* repl addr */NULL, &bdi_encode, &bdi_mask);
+			 /* now */now, /* pudata */NULL, /* repl addr */NULL, &bdi_encode, &bdi_mask, mem);
 
       if (checkmisses_dl2 != cache_dl2->misses)
         {
-	  mem_access(mem, bdiModel, baddr, p, 1, &bdi_encode, &bdi_mask);
+	//  mem_access(mem, bdiModel, baddr, p, 1, &bdi_encode, &bdi_mask);
         }
 
 //---------
@@ -598,16 +598,16 @@ if (cache_il2)
       byte_t bdi_encode = -1;
       qword_t bdi_mask = -1;
 
-      if (il2compress) mem_access(mem, bdi, baddr, p, 1, &bdi_encode, &bdi_mask);
+   //   if (il2compress) mem_access(mem, bdi, baddr, p, 1, &bdi_encode, &bdi_mask);
 
       counter_t checkmisses_il2 = cache_il2->misses;
 
       lat = cache_access(cache_il2, cmd, baddr, NULL, bsize,
-			 /* now */now, /* pudata */NULL, /* repl addr */NULL, &bdi_encode, &bdi_mask);
+			 /* now */now, /* pudata */NULL, /* repl addr */NULL, &bdi_encode, &bdi_mask, mem);
 
       if (checkmisses_il2 != cache_il2->misses)
         {
-          mem_access(mem, bdiModel, baddr, p, 1, &bdi_encode, &bdi_mask);
+   //       mem_access(mem, bdiModel, baddr, p, 1, &bdi_encode, &bdi_mask);
         }
 
 //---------
@@ -2381,11 +2381,11 @@ ruu_commit(void)
                       byte_t bdi_encode = -1;
                       qword_t bdi_mask = -1;
 
-                      if (dl1compress) mem_access(mem, bdi, (LSQ[LSQ_head].addr&~3), p, 1, &bdi_encode, &bdi_mask);
+                      //if (dl1compress) mem_access(mem, bdi, (LSQ[LSQ_head].addr&~3), p, 1, &bdi_encode, &bdi_mask);
 
 		      lat =
 			cache_access(cache_dl1, Write, (LSQ[LSQ_head].addr&~3),
-				     NULL, 4, sim_cycle, NULL, NULL, &bdi_encode, &bdi_mask);
+				     NULL, 4, sim_cycle, NULL, NULL, &bdi_encode, &bdi_mask, mem);
 
 //---------
 //sdrea-end
@@ -2404,7 +2404,7 @@ ruu_commit(void)
 
 		      lat =
 			cache_access(dtlb, Read, (LSQ[LSQ_head].addr & ~3),
-				     NULL, 4, sim_cycle, NULL, NULL, NULL, NULL);
+				     NULL, 4, sim_cycle, NULL, NULL, NULL, NULL, NULL);
 
 //---------
 //sdrea-end
@@ -3006,12 +3006,12 @@ ruu_issue(void)
                                   byte_t bdi_encode = -1;
                                   qword_t bdi_mask = -1;
 
-                                  if (dl1compress) mem_access(mem, bdi, (rs->addr & ~3), p, 1, &bdi_encode, &bdi_mask);
+                                 // if (dl1compress) mem_access(mem, bdi, (rs->addr & ~3), p, 1, &bdi_encode, &bdi_mask);
 
 				  load_lat =
 				    cache_access(cache_dl1, Read,
 						 (rs->addr & ~3), NULL, 4,
-						 sim_cycle, NULL, NULL, &bdi_encode, &bdi_mask);
+						 sim_cycle, NULL, NULL, &bdi_encode, &bdi_mask, mem);
 
 //---------
 //sdrea-end
@@ -3037,7 +3037,7 @@ ruu_issue(void)
 
 			      tlb_lat =
 				cache_access(dtlb, Read, (rs->addr & ~3),
-					     NULL, 4, sim_cycle, NULL, NULL, NULL, NULL);
+					     NULL, 4, sim_cycle, NULL, NULL, NULL, NULL, NULL);
 
 //---------
 //sdrea-end
@@ -4696,12 +4696,12 @@ ruu_fetch(void)
               byte_t bdi_encode = -1;
               qword_t bdi_mask = -1;
 
-              if (il1compress) mem_access(mem, bdi, IACOMPRESS(fetch_regs_PC), p, 1, &bdi_encode, &bdi_mask);
+            //  if (il1compress) mem_access(mem, bdi, IACOMPRESS(fetch_regs_PC), p, 1, &bdi_encode, &bdi_mask);
 
 	      lat =
 		cache_access(cache_il1, Read, IACOMPRESS(fetch_regs_PC),
 			     NULL, ISCOMPRESS(sizeof(md_inst_t)), sim_cycle,
-			     NULL, NULL, &bdi_encode, &bdi_mask);
+			     NULL, NULL, &bdi_encode, &bdi_mask, mem);
 
 //---------
 //sdrea-end
@@ -4721,7 +4721,7 @@ ruu_fetch(void)
 	      tlb_lat =
 		cache_access(itlb, Read, IACOMPRESS(fetch_regs_PC),
 			     NULL, ISCOMPRESS(sizeof(md_inst_t)), sim_cycle,
-			     NULL, NULL, NULL, NULL);
+			     NULL, NULL, NULL, NULL, NULL);
 
 //---------
 //sdrea-end

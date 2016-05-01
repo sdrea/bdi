@@ -306,7 +306,8 @@ cache_access(struct cache_t *cp,	/* cache to access */
 
 	     md_addr_t *repl_addr,	/* for address of replaced block */
 	     byte_t *bdi_encode,
-  	     qword_t *bdi_mask);
+  	     qword_t *bdi_mask,
+             struct mem_t *mem);
 
 //---------
 //sdrea-end
