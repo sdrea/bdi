@@ -650,7 +650,9 @@ cache_access(struct cache_t *cp,	/* cache to access */
 //sdrea-begin
 //-----------
 
-/*
+
+  if (bdi_encode != NULL && *bdi_encode != (byte_t) -1) 
+    {
 
       count_bdi_misses++;
 
@@ -813,8 +815,7 @@ cache_access(struct cache_t *cp,	/* cache to access */
                 }
             }
         }
-
-*/
+    }
 
 //---------
 //sdrea-end

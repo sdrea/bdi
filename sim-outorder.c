@@ -512,7 +512,7 @@ dl1_access_fn(enum mem_cmd cmd,		/* access cmd, Read or Write */
       byte_t *p;
       p = (byte_t *) malloc (64);
 
-      byte_t bdi_encode = 15;
+      byte_t bdi_encode = -1;
       qword_t bdi_mask = -1;
 
       if (dl2compress) mem_access(mem, bdi, baddr, p, 1, &bdi_encode, &bdi_mask);
@@ -595,7 +595,7 @@ if (cache_il2)
       byte_t *p;
       p = (byte_t *) malloc (64);
 
-      byte_t bdi_encode = 15;
+      byte_t bdi_encode = -1;
       qword_t bdi_mask = -1;
 
       if (il2compress) mem_access(mem, bdi, baddr, p, 1, &bdi_encode, &bdi_mask);
@@ -2378,7 +2378,7 @@ ruu_commit(void)
                       byte_t *p;
                       p = (byte_t *) malloc (64);
 
-                      byte_t bdi_encode = 15;
+                      byte_t bdi_encode = -1;
                       qword_t bdi_mask = -1;
 
                       if (dl1compress) mem_access(mem, bdi, (LSQ[LSQ_head].addr&~3), p, 1, &bdi_encode, &bdi_mask);
@@ -3003,7 +3003,7 @@ ruu_issue(void)
                                   byte_t *p;
                                   p = (byte_t *) malloc (64);
 
-                                  byte_t bdi_encode = 15;
+                                  byte_t bdi_encode = -1;
                                   qword_t bdi_mask = -1;
 
                                   if (dl1compress) mem_access(mem, bdi, (rs->addr & ~3), p, 1, &bdi_encode, &bdi_mask);
@@ -4693,7 +4693,7 @@ ruu_fetch(void)
               byte_t *p;
               p = (byte_t *) malloc (64);
 
-              byte_t bdi_encode = 15;
+              byte_t bdi_encode = -1;
               qword_t bdi_mask = -1;
 
               if (il1compress) mem_access(mem, bdi, IACOMPRESS(fetch_regs_PC), p, 1, &bdi_encode, &bdi_mask);
