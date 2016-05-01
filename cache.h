@@ -253,7 +253,15 @@ cache_create(char *name,		/* name of the cache */
 					   md_addr_t baddr, int bsize,
 					   struct cache_blk_t *blk,
 					   tick_t now),
-	     unsigned int hit_latency);/* latency in cycles for a hit */
+
+//sdrea-begin
+//-----------
+
+	     unsigned int hit_latency,  /* latency in cycles for a hit */
+	     int compression);
+
+//---------
+//sdrea-end
 
 /* parse policy */
 enum cache_policy			/* replacement policy enum */

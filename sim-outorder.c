@@ -1162,9 +1162,28 @@ sim_check_options(struct opt_odb_t *odb,        /* options database */
       if (sscanf(cache_dl1_opt, "%[^:]:%d:%d:%d:%c",
 		 name, &nsets, &bsize, &assoc, &c) != 5)
 	fatal("bad l1 D-cache parms: <name>:<nsets>:<bsize>:<assoc>:<repl>");
-      cache_dl1 = cache_create(name, nsets, bsize, /* balloc */FALSE,
-			       /* usize */0, assoc, cache_char2policy(c),
-			       dl1_access_fn, /* hit lat */cache_dl1_lat);
+
+//sdrea-begin
+//-----------
+
+      if (dl1compress) 
+        {
+  
+          cache_dl1 = cache_create(name, nsets, bsize, /* balloc */FALSE,
+			           /* usize */0, assoc, cache_char2policy(c),
+			           dl1_access_fn, /* hit lat */cache_dl1_lat, TRUE);
+        }
+
+      else
+        {
+
+          cache_dl1 = cache_create(name, nsets, bsize, /* balloc */FALSE,
+			           /* usize */0, assoc, cache_char2policy(c),
+			           dl1_access_fn, /* hit lat */cache_dl1_lat, FALSE);
+        }
+
+//---------
+//sdrea-end
 
       /* is the level 2 D-cache defined? */
       if (!mystricmp(cache_dl2_opt, "none"))
@@ -1175,9 +1194,32 @@ sim_check_options(struct opt_odb_t *odb,        /* options database */
 		     name, &nsets, &bsize, &assoc, &c) != 5)
 	    fatal("bad l2 D-cache parms: "
 		  "<name>:<nsets>:<bsize>:<assoc>:<repl>");
-	  cache_dl2 = cache_create(name, nsets, bsize, /* balloc */FALSE,
-				   /* usize */0, assoc, cache_char2policy(c),
-				   dl2_access_fn, /* hit lat */cache_dl2_lat);
+
+//sdrea-begin
+//-----------
+
+          if (dl2compress) 
+            {
+
+	      cache_dl2 = cache_create(name, nsets, bsize, /* balloc */FALSE,
+				       /* usize */0, assoc, cache_char2policy(c),
+   				       dl2_access_fn, /* hit lat */cache_dl2_lat, TRUE);
+
+            }
+
+          else
+            {
+
+	      cache_dl2 = cache_create(name, nsets, bsize, /* balloc */FALSE,
+				       /* usize */0, assoc, cache_char2policy(c),
+   				       dl2_access_fn, /* hit lat */cache_dl2_lat, FALSE);
+
+            }
+
+//---------
+//sdrea-end
+ 
+
 	}
     }
 
@@ -1218,9 +1260,30 @@ sim_check_options(struct opt_odb_t *odb,        /* options database */
       if (sscanf(cache_il1_opt, "%[^:]:%d:%d:%d:%c",
 		 name, &nsets, &bsize, &assoc, &c) != 5)
 	fatal("bad l1 I-cache parms: <name>:<nsets>:<bsize>:<assoc>:<repl>");
-      cache_il1 = cache_create(name, nsets, bsize, /* balloc */FALSE,
-			       /* usize */0, assoc, cache_char2policy(c),
-			       il1_access_fn, /* hit lat */cache_il1_lat);
+
+//sdrea-begin
+//-----------
+
+      if (il1compress) 
+        {
+
+          cache_il1 = cache_create(name, nsets, bsize, /* balloc */FALSE,
+			           /* usize */0, assoc, cache_char2policy(c),
+  			           il1_access_fn, /* hit lat */cache_il1_lat, TRUE);
+
+        }
+
+      else
+        {
+
+          cache_il1 = cache_create(name, nsets, bsize, /* balloc */FALSE,
+			           /* usize */0, assoc, cache_char2policy(c),
+  			           il1_access_fn, /* hit lat */cache_il1_lat, FALSE);
+
+        }
+
+//---------
+//sdrea-end
 
       /* is the level 2 D-cache defined? */
       if (!mystricmp(cache_il2_opt, "none"))
@@ -1237,9 +1300,31 @@ sim_check_options(struct opt_odb_t *odb,        /* options database */
 		     name, &nsets, &bsize, &assoc, &c) != 5)
 	    fatal("bad l2 I-cache parms: "
 		  "<name>:<nsets>:<bsize>:<assoc>:<repl>");
+
+//sdrea-begin
+//-----------
+
+      if (il2compress) 
+        {
+
 	  cache_il2 = cache_create(name, nsets, bsize, /* balloc */FALSE,
 				   /* usize */0, assoc, cache_char2policy(c),
-				   il2_access_fn, /* hit lat */cache_il2_lat);
+				   il2_access_fn, /* hit lat */cache_il2_lat, TRUE);
+
+        }
+
+      else
+        {
+
+	  cache_il2 = cache_create(name, nsets, bsize, /* balloc */FALSE,
+				   /* usize */0, assoc, cache_char2policy(c),
+				   il2_access_fn, /* hit lat */cache_il2_lat, FALSE);
+
+        }
+
+//---------
+//sdrea-end
+
 	}
     }
 
@@ -1251,10 +1336,18 @@ sim_check_options(struct opt_odb_t *odb,        /* options database */
       if (sscanf(itlb_opt, "%[^:]:%d:%d:%d:%c",
 		 name, &nsets, &bsize, &assoc, &c) != 5)
 	fatal("bad TLB parms: <name>:<nsets>:<page_size>:<assoc>:<repl>");
+
+//sdrea-begin
+//-----------
+
       itlb = cache_create(name, nsets, bsize, /* balloc */FALSE,
 			  /* usize */sizeof(md_addr_t), assoc,
 			  cache_char2policy(c), itlb_access_fn,
-			  /* hit latency */1);
+			  /* hit latency */1, FALSE);
+
+//---------
+//sdrea-end
+
     }
 
   /* use a D-TLB? */
@@ -1265,10 +1358,18 @@ sim_check_options(struct opt_odb_t *odb,        /* options database */
       if (sscanf(dtlb_opt, "%[^:]:%d:%d:%d:%c",
 		 name, &nsets, &bsize, &assoc, &c) != 5)
 	fatal("bad TLB parms: <name>:<nsets>:<page_size>:<assoc>:<repl>");
+
+//sdrea-begin
+//-----------
+
       dtlb = cache_create(name, nsets, bsize, /* balloc */FALSE,
 			  /* usize */sizeof(md_addr_t), assoc,
 			  cache_char2policy(c), dtlb_access_fn,
-			  /* hit latency */1);
+			  /* hit latency */1, FALSE);
+
+//---------
+//sdrea-end
+
     }
 
   if (cache_dl1_lat < 1)
@@ -4683,8 +4784,6 @@ ruu_fetch(void)
 
 //sdrea-begin
 //-----------
-
-// if (il1compress){}
 
               byte_t *p;
               p = (byte_t *) malloc (64);
