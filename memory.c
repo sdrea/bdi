@@ -80,14 +80,14 @@
 //sdrea-begin
 //-----------
 
-static counter_t count_compressible_0000_zeros = 0;
-static counter_t count_compressible_0001_repeats = 0;
-static counter_t count_compressible_0010_b8d1 = 0;
-static counter_t count_compressible_0011_b8d2 = 0;
-static counter_t count_compressible_0100_b8d4 = 0;
-static counter_t count_compressible_0101_b4d1 = 0;
-static counter_t count_compressible_0110_b4d2 = 0;
-static counter_t count_compressible_0111_b2d1 = 0;
+//static counter_t count_compressible_0000_zeros = 0;
+//static counter_t count_compressible_0001_repeats = 0;
+//static counter_t count_compressible_0010_b8d1 = 0;
+//static counter_t count_compressible_0011_b8d2 = 0;
+//static counter_t count_compressible_0100_b8d4 = 0;
+//static counter_t count_compressible_0101_b4d1 = 0;
+//static counter_t count_compressible_0110_b4d2 = 0;
+//static counter_t count_compressible_0111_b2d1 = 0;
 
 //---------
 //sdrea-end
@@ -228,7 +228,7 @@ mem_access(struct mem_t *mem,		/* memory space to access */
 
 //sdrea-begin
 //-----------
-
+/*
     else if (cmd == bdi || cmd == bdiModel )
       {
 
@@ -326,7 +326,7 @@ mem_access(struct mem_t *mem,		/* memory space to access */
 
           }
       }
-
+*/
 //---------
 //sdrea-end
 
@@ -419,14 +419,14 @@ void
 mem_reg_bdi_stats(struct mem_t *mem,	/* memory space to declare */
 	      struct stat_sdb_t *sdb)	/* stats data base */
 {
-  stat_reg_counter(sdb, "count_compressible_0000_zeros", "Count of cache lines compressible as zeros", &count_compressible_0000_zeros, 0, "%14d");
-  stat_reg_counter(sdb, "count_compressible_0001_repeats", "Count of cache lines compressible as repeating values", &count_compressible_0001_repeats, 0, "%12d");
-  stat_reg_counter(sdb, "count_compressible_0010_b8d1", "Count of cache lines compressible as b8d1", &count_compressible_0010_b8d1, 0, "%15d");
-  stat_reg_counter(sdb, "count_compressible_0011_b8d2", "Count of cache lines compressible as b8d2", &count_compressible_0011_b8d2, 0, "%15d");
-  stat_reg_counter(sdb, "count_compressible_0100_b8d4", "Count of cache lines compressible as b8d4", &count_compressible_0100_b8d4, 0, "%15d");
-  stat_reg_counter(sdb, "count_compressible_0101_b4d1", "Count of cache lines compressible as b4d1", &count_compressible_0101_b4d1, 0, "%15d");
-  stat_reg_counter(sdb, "count_compressible_0110_b4d2", "Count of cache lines compressible as b4d2", &count_compressible_0110_b4d2, 0, "%15d");
-  stat_reg_counter(sdb, "count_compressible_0111_b2d1", "Count of cache lines compressible as b2d1", &count_compressible_0111_b2d1, 0, "%15d");
+//  stat_reg_counter(sdb, "count_compressible_0000_zeros", "Count of cache lines compressible as zeros", &count_compressible_0000_zeros, 0, "%14d");
+  //stat_reg_counter(sdb, "count_compressible_0001_repeats", "Count of cache lines compressible as repeating values", &count_compressible_0001_repeats, 0, "%12d");
+  //stat_reg_counter(sdb, "count_compressible_0010_b8d1", "Count of cache lines compressible as b8d1", &count_compressible_0010_b8d1, 0, "%15d");
+  //stat_reg_counter(sdb, "count_compressible_0011_b8d2", "Count of cache lines compressible as b8d2", &count_compressible_0011_b8d2, 0, "%15d");
+  //stat_reg_counter(sdb, "count_compressible_0100_b8d4", "Count of cache lines compressible as b8d4", &count_compressible_0100_b8d4, 0, "%15d");
+  //stat_reg_counter(sdb, "count_compressible_0101_b4d1", "Count of cache lines compressible as b4d1", &count_compressible_0101_b4d1, 0, "%15d");
+  //stat_reg_counter(sdb, "count_compressible_0110_b4d2", "Count of cache lines compressible as b4d2", &count_compressible_0110_b4d2, 0, "%15d");
+  //stat_reg_counter(sdb, "count_compressible_0111_b2d1", "Count of cache lines compressible as b2d1", &count_compressible_0111_b2d1, 0, "%15d");
 }
 
 //---------

@@ -80,6 +80,7 @@
 //-----------
 
 static counter_t count_encode_lines = 0;
+
 static counter_t count_encode_0000_zeros = 0;
 static counter_t count_encode_0001_repeats = 0;
 static counter_t count_encode_0010_b8d1 = 0;
@@ -89,6 +90,15 @@ static counter_t count_encode_0101_b4d1 = 0;
 static counter_t count_encode_0110_b4d2 = 0;
 static counter_t count_encode_0111_b2d1 = 0;
 static counter_t count_encode_1111_uncompressed = 0;
+
+static counter_t count_compressible_0000_zeros = 0;
+static counter_t count_compressible_0001_repeats = 0;
+static counter_t count_compressible_0010_b8d1 = 0;
+static counter_t count_compressible_0011_b8d2 = 0;
+static counter_t count_compressible_0100_b8d4 = 0;
+static counter_t count_compressible_0101_b4d1 = 0;
+static counter_t count_compressible_0110_b4d2 = 0;
+static counter_t count_compressible_0111_b2d1 = 0;
 
 //---------
 //sdrea-end
@@ -405,7 +415,7 @@ cache_create(char *name,		/* name of the cache */
 	 otherwise, block accesses through SET->BLKS will fail (used
 	 during random replacement selection) */
       cp->sets[i].blks = CACHE_BINDEX(cp, cp->data, bindex);
-      
+
       /* link the data blocks into ordered way chain and hash table bucket
          chains, if hash table exists */
 
@@ -539,6 +549,16 @@ stat_reg_counter(sdb, "count_encode_0101_b4d1", "Cache blocks compressed as base
 stat_reg_counter(sdb, "count_encode_0110_b4d2", "Cache blocks compressed as base 4 delta 2", &count_encode_0110_b4d2, 0, "%21d");
 stat_reg_counter(sdb, "count_encode_0111_b2d1", "Cache blocks compressed as base 2 delta 1", &count_encode_0111_b2d1, 0, "%21d");
 stat_reg_counter(sdb, "count_encode_1111_uncompressed", "Uncompressed cache lines", &count_encode_1111_uncompressed, 0, "%13d");
+
+  stat_reg_counter(sdb, "count_compressible_0000_zeros", "Count of cache lines compressible as zeros", &count_compressible_0000_zeros, 0, "%14d");
+  stat_reg_counter(sdb, "count_compressible_0001_repeats", "Count of cache lines compressible as repeating values", &count_compressible_0001_repeats, 0, "%12d");
+  stat_reg_counter(sdb, "count_compressible_0010_b8d1", "Count of cache lines compressible as b8d1", &count_compressible_0010_b8d1, 0, "%15d");
+  stat_reg_counter(sdb, "count_compressible_0011_b8d2", "Count of cache lines compressible as b8d2", &count_compressible_0011_b8d2, 0, "%15d");
+  stat_reg_counter(sdb, "count_compressible_0100_b8d4", "Count of cache lines compressible as b8d4", &count_compressible_0100_b8d4, 0, "%15d");
+  stat_reg_counter(sdb, "count_compressible_0101_b4d1", "Count of cache lines compressible as b4d1", &count_compressible_0101_b4d1, 0, "%15d");
+  stat_reg_counter(sdb, "count_compressible_0110_b4d2", "Count of cache lines compressible as b4d2", &count_compressible_0110_b4d2, 0, "%15d");
+  stat_reg_counter(sdb, "count_compressible_0111_b2d1", "Count of cache lines compressible as b2d1", &count_compressible_0111_b2d1, 0, "%15d");
+
 }
 
 //sdrea-end
@@ -579,8 +599,6 @@ cache_access(struct cache_t *cp,	/* cache to access */
 //-----------
 
 	     md_addr_t *repl_addr,	/* for address of replaced block */
-	     byte_t *bdi_encode,
-	     qword_t *bdi_mask,
              struct mem_t *mem)
 
 //---------
@@ -593,6 +611,22 @@ cache_access(struct cache_t *cp,	/* cache to access */
   md_addr_t bofs = CACHE_BLK(cp, addr);
   struct cache_blk_t *blk, *repl;
   int lat = 0;
+
+//sdrea-begin
+//-----------
+
+  bool_t zeros = 1, repeats = 1, delta81 = 1, delta82 = 1, delta84 = 1, delta41 = 1, delta42 = 1, delta21 = 1;
+  qword_t delta81mask = -1, delta82mask = -1, delta84mask = -1, delta41mask = -1, delta42mask = -1, delta21mask = -1;
+  signed long long db[64], db8[64];
+  signed long db4[64];
+  signed short db2[64];
+  int i;
+
+  byte_t bdi_encode = -1;
+  qword_t bdi_mask = -1;
+
+//---------
+//sdrea-end
 
   /* default replacement address */
   if (repl_addr)
@@ -617,7 +651,7 @@ cache_access(struct cache_t *cp,	/* cache to access */
       blk = cp->last_blk;
       goto cache_fast_hit;
     }
-    
+
   if (cp->hsize)
     {
       /* higly-associativity cache, access through the per-set hash tables */
@@ -652,7 +686,96 @@ cache_access(struct cache_t *cp,	/* cache to access */
 //-----------
 
 
-  if (bdi_encode != NULL && *bdi_encode != (byte_t) -1) 
+  if (mem != NULL)
+    {
+
+        for (i = 0; i < 64; i++)
+          {
+            db[i] = 0;
+            db8[i] = 0;
+            db4[i] = 0;
+            db2[i] = 0;
+          }
+
+        for (i = 0; i < cp->bsize; i++)
+          {
+            db[i]  = MEM_READ_BYTE(mem, addr - bofs + i);
+            db8[i] = MEM_READ_BYTE(mem, addr - bofs + i);
+            db4[i] = MEM_READ_BYTE(mem, addr - bofs + i);
+            db2[i] = MEM_READ_BYTE(mem, addr - bofs + i);
+            if (db[i] != 0) zeros = 0;
+            if (db[i] != db[0]) repeats = 0;
+          }
+
+        for (i = 0; i < cp->bsize; i+=8)
+          {
+            db8[i] += db8[i+1] <<  8;
+            db8[i] += db8[i+2] << 16;
+            db8[i] += db8[i+3] << 24;
+            db8[i] += db8[i+4] << 32;
+            db8[i] += db8[i+5] << 40;
+            db8[i] += db8[i+6] << 48;
+            db8[i] += db8[i+7] << 56;
+
+            if ( ( ( db8[i] - db8[0] < (signed char)        -128 ) || ( db8[i] - db8[0] > (signed char)        127 ) ) && ( ( db8[i] < (signed char)        -128 ) || ( db8[i] > (signed char)        127 ) ) ) delta81 = 0;
+            if ( ( ( db8[i] - db8[0] < (signed short)     -32768 ) || ( db8[i] - db8[0] > (signed short)     32767 ) ) && ( ( db8[i] < (signed short)     -32768 ) || ( db8[i] > (signed short)     32767 ) ) ) delta82 = 0;
+            if ( ( ( db8[i] - db8[0] < (signed long) -2147483648 ) || ( db8[i] - db8[0] > (signed long) 2147483647 ) ) && ( ( db8[i] < (signed long) -2147483648 ) || ( db8[i] > (signed long) 2147483647 ) ) ) delta84 = 0;
+            if ( ( ( db8[i] - db8[0] < (signed char)        -128 ) || ( db8[i] - db8[0] > (signed char)        127 ) ) && delta81 == 1 ) delta81mask = delta81mask & ~((qword_t)0b11111111 << i); // immediate value was used
+            if ( ( ( db8[i] - db8[0] < (signed short)     -32768 ) || ( db8[i] - db8[0] > (signed short)     32767 ) ) && delta82 == 1 ) delta82mask = delta82mask & ~((qword_t)0b11111111 << i); // immediate value was used
+            if ( ( ( db8[i] - db8[0] < (signed long) -2147483648 ) || ( db8[i] - db8[0] > (signed long) 2147483647 ) ) && delta84 == 1 ) delta84mask = delta84mask & ~((qword_t)0b11111111 << i); // immediate value was used
+
+          }
+
+        for (i = 0; i < cp->bsize; i+=4)
+          {
+            db4[i] += db4[i+1] <<  8;
+            db4[i] += db4[i+2] << 16;
+            db4[i] += db4[i+3] << 24;
+
+            if ( ( ( db4[i] - db4[0] < (signed char)    -128 ) || ( db4[i] - db4[0] > (signed char)    127 ) ) && ( ( db4[i] < (signed char)    -128 ) || ( db4[i] > (signed char)    127 ) ) ) delta41 = 0;
+            if ( ( ( db4[i] - db4[0] < (signed short) -32768 ) || ( db4[i] - db4[0] > (signed short) 32767 ) ) && ( ( db4[i] < (signed short) -32768 ) || ( db4[i] > (signed short) 32767 ) ) ) delta42 = 0;
+            if ( ( ( db4[i] - db4[0] < (signed char)    -128 ) || ( db4[i] - db4[0] > (signed char)    127 ) ) && delta41 == 1 ) delta41mask = delta41mask & ~((qword_t)0b1111 << i); // immediate value was used
+            if ( ( ( db4[i] - db4[0] < (signed short) -32768 ) || ( db4[i] - db4[0] > (signed short) 32767 ) ) && delta42 == 1 ) delta42mask = delta42mask & ~((qword_t)0b1111 << i); // immediate value was used
+
+          }
+
+        for (i = 0; i < cp->bsize; i+=2)
+          {
+            db2[i] += db2[i+1] <<  8;
+
+            if ( ( ( db2[i] - db2[0] < (signed char) -128 ) || ( db2[i] - db2[0] > (signed char) 127 ) ) && ( ( db2[i] < (signed char) -128 ) || ( db2[i] > (signed char) 127 ) ) ) delta21 = 0;
+            if ( ( ( db2[i] - db2[0] < (signed char) -128 ) || ( db2[i] - db2[0] > (signed char) 127 ) ) && delta21 == 1 ) delta21mask = delta21mask & ~((qword_t)0b11 << i); // immediate value was used
+
+          }
+
+        if (zeros == 1)         { bdi_encode = 0b00000000; bdi_mask = -1;}
+        else if (repeats == 1)  { bdi_encode = 0b00000001; bdi_mask = -1;}
+        else if (delta81 == 1)  { bdi_encode = 0b00000010; bdi_mask = delta81mask;}
+        else if (delta41 == 1)  { bdi_encode = 0b00000101; bdi_mask = delta41mask;}
+        else if (delta82 == 1)  { bdi_encode = 0b00000011; bdi_mask = delta82mask;}
+        else if (delta21 == 1)  { bdi_encode = 0b00000111; bdi_mask = delta21mask;}
+        else if (delta42 == 1)  { bdi_encode = 0b00000110; bdi_mask = delta42mask;}
+        else if (delta84 == 1)  { bdi_encode = 0b00000100; bdi_mask = delta84mask;}
+        else                    { bdi_encode = 0b00001111; bdi_mask = -1;}
+
+            if (zeros == 1)    { count_compressible_0000_zeros++; }
+            if (repeats == 1)  { count_compressible_0001_repeats++; }
+            if (delta81 == 1)  { count_compressible_0010_b8d1++; }
+            if (delta82 == 1)  { count_compressible_0011_b8d2++; }
+            if (delta84 == 1)  { count_compressible_0100_b8d4++; }
+            if (delta41 == 1)  { count_compressible_0101_b4d1++; }
+            if (delta42 == 1)  { count_compressible_0110_b4d2++; }
+            if (delta21 == 1)  { count_compressible_0111_b2d1++; }
+
+}
+else
+{
+
+// mem is null in cache_access call
+
+}
+/*
+  if (bdi_encode != NULL && *bdi_encode != (byte_t) -1)
     {
 
       count_encode_lines++;
@@ -817,7 +940,7 @@ cache_access(struct cache_t *cp,	/* cache to access */
             }
         }
     }
-
+*/
 //---------
 //sdrea-end
 
@@ -884,8 +1007,8 @@ cache_access(struct cache_t *cp,	/* cache to access */
   if (bdi_encode != NULL && *(cp->name) == 117 ) 
     {  
 
-      repl->bdi_encode = *bdi_encode;
-      repl->bdi_mask = *bdi_mask;
+      repl->bdi_encode = bdi_encode;
+      repl->bdi_mask = bdi_mask;
 
     }
 

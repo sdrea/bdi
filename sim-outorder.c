@@ -509,23 +509,23 @@ dl1_access_fn(enum mem_cmd cmd,		/* access cmd, Read or Write */
 //sdrea-begin
 //-----------
 
-      byte_t *p;
-      p = (byte_t *) malloc (64);
+      //byte_t *p;
+      //p = (byte_t *) malloc (64);
 
-      byte_t bdi_encode = -1;
-      qword_t bdi_mask = -1;
+  //    byte_t bdi_encode = -1;
+    //  qword_t bdi_mask = -1;
 
      // if (dl2compress) mem_access(mem, bdi, baddr, p, 1, &bdi_encode, &bdi_mask);
 
-      counter_t checkmisses_dl2 = cache_dl2->misses;
+//      counter_t checkmisses_dl2 = cache_dl2->misses;
 
       lat = cache_access(cache_dl2, cmd, baddr, NULL, bsize,
-			 /* now */now, /* pudata */NULL, /* repl addr */NULL, &bdi_encode, &bdi_mask, mem);
+			 /* now */now, /* pudata */NULL, /* repl addr */NULL, mem);
 
-      if (checkmisses_dl2 != cache_dl2->misses)
-        {
+      //if (checkmisses_dl2 != cache_dl2->misses)
+        //{
 	//  mem_access(mem, bdiModel, baddr, p, 1, &bdi_encode, &bdi_mask);
-        }
+        //}
 
 //---------
 //sdrea-end
@@ -592,23 +592,23 @@ if (cache_il2)
 //sdrea-begin
 //-----------
 
-      byte_t *p;
-      p = (byte_t *) malloc (64);
+    //  byte_t *p;
+  //    p = (byte_t *) malloc (64);
 
-      byte_t bdi_encode = -1;
-      qword_t bdi_mask = -1;
+//      byte_t bdi_encode = -1;
+//      qword_t bdi_mask = -1;
 
    //   if (il2compress) mem_access(mem, bdi, baddr, p, 1, &bdi_encode, &bdi_mask);
 
-      counter_t checkmisses_il2 = cache_il2->misses;
+      //counter_t checkmisses_il2 = cache_il2->misses;
 
       lat = cache_access(cache_il2, cmd, baddr, NULL, bsize,
-			 /* now */now, /* pudata */NULL, /* repl addr */NULL, &bdi_encode, &bdi_mask, mem);
+			 /* now */now, /* pudata */NULL, /* repl addr */NULL, mem);
 
-      if (checkmisses_il2 != cache_il2->misses)
-        {
+//      if (checkmisses_il2 != cache_il2->misses)
+  //      {
    //       mem_access(mem, bdiModel, baddr, p, 1, &bdi_encode, &bdi_mask);
-        }
+    //    }
 
 //---------
 //sdrea-end
@@ -2375,17 +2375,17 @@ ruu_commit(void)
 //sdrea-begin
 //-----------
 
-                      byte_t *p;
-                      p = (byte_t *) malloc (64);
+      //                byte_t *p;
+    //                  p = (byte_t *) malloc (64);
 
-                      byte_t bdi_encode = -1;
-                      qword_t bdi_mask = -1;
+  //                    byte_t bdi_encode = -1;
+//                      qword_t bdi_mask = -1;
 
                       //if (dl1compress) mem_access(mem, bdi, (LSQ[LSQ_head].addr&~3), p, 1, &bdi_encode, &bdi_mask);
 
 		      lat =
 			cache_access(cache_dl1, Write, (LSQ[LSQ_head].addr&~3),
-				     NULL, 4, sim_cycle, NULL, NULL, &bdi_encode, &bdi_mask, mem);
+				     NULL, 4, sim_cycle, NULL, NULL, mem);
 
 //---------
 //sdrea-end
@@ -2404,7 +2404,7 @@ ruu_commit(void)
 
 		      lat =
 			cache_access(dtlb, Read, (LSQ[LSQ_head].addr & ~3),
-				     NULL, 4, sim_cycle, NULL, NULL, NULL, NULL, NULL);
+				     NULL, 4, sim_cycle, NULL, NULL, NULL);
 
 //---------
 //sdrea-end
@@ -3000,18 +3000,18 @@ ruu_issue(void)
 //sdrea-begin
 //-----------
 
-                                  byte_t *p;
-                                  p = (byte_t *) malloc (64);
+//                                  byte_t *p;
+  //                                p = (byte_t *) malloc (64);
 
-                                  byte_t bdi_encode = -1;
-                                  qword_t bdi_mask = -1;
+    //                              byte_t bdi_encode = -1;
+      //                            qword_t bdi_mask = -1;
 
                                  // if (dl1compress) mem_access(mem, bdi, (rs->addr & ~3), p, 1, &bdi_encode, &bdi_mask);
 
 				  load_lat =
 				    cache_access(cache_dl1, Read,
 						 (rs->addr & ~3), NULL, 4,
-						 sim_cycle, NULL, NULL, &bdi_encode, &bdi_mask, mem);
+						 sim_cycle, NULL, NULL, mem);
 
 //---------
 //sdrea-end
@@ -3037,7 +3037,7 @@ ruu_issue(void)
 
 			      tlb_lat =
 				cache_access(dtlb, Read, (rs->addr & ~3),
-					     NULL, 4, sim_cycle, NULL, NULL, NULL, NULL, NULL);
+					     NULL, 4, sim_cycle, NULL, NULL, NULL);
 
 //---------
 //sdrea-end
@@ -4690,18 +4690,18 @@ ruu_fetch(void)
 //sdrea-begin
 //-----------
 
-              byte_t *p;
-              p = (byte_t *) malloc (64);
+           //   byte_t *p;
+             // p = (byte_t *) malloc (64);
 
-              byte_t bdi_encode = -1;
-              qword_t bdi_mask = -1;
+//              byte_t bdi_encode = -1;
+  //            qword_t bdi_mask = -1;
 
             //  if (il1compress) mem_access(mem, bdi, IACOMPRESS(fetch_regs_PC), p, 1, &bdi_encode, &bdi_mask);
 
 	      lat =
 		cache_access(cache_il1, Read, IACOMPRESS(fetch_regs_PC),
 			     NULL, ISCOMPRESS(sizeof(md_inst_t)), sim_cycle,
-			     NULL, NULL, &bdi_encode, &bdi_mask, mem);
+			     NULL, NULL, mem);
 
 //---------
 //sdrea-end
@@ -4721,7 +4721,7 @@ ruu_fetch(void)
 	      tlb_lat =
 		cache_access(itlb, Read, IACOMPRESS(fetch_regs_PC),
 			     NULL, ISCOMPRESS(sizeof(md_inst_t)), sim_cycle,
-			     NULL, NULL, NULL, NULL, NULL);
+			     NULL, NULL, NULL);
 
 //---------
 //sdrea-end
