@@ -227,6 +227,14 @@ struct cache_t
   counter_t writebacks;		/* total number of writebacks at misses */
   counter_t invalidations;	/* total number of external invalidations */
 
+//sdrea-begin
+//-----------
+
+  int compression;
+
+//---------
+//sdrea-end
+
   /* last block to hit, used to optimize cache hit processing */
   md_addr_t last_tagset;	/* tag of last line accessed */
   struct cache_blk_t *last_blk;	/* cache block last accessed */

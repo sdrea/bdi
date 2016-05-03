@@ -1,21 +1,3 @@
-//
-// memory.h
-//   from sim-wattch-1.02e - http://www.eecs.harvard.edu/~dbrooks/wattch-form.html
-//
-// updated for modeling Base-Delta-Immediate compression [Pekhimenko, Seshadri, Mutlu, Mowry, Gibbons, and Kozuch]
-//   changes wrapped in //sdrea-begin ... //sdrea-end
-//
-// Sean Rea, P. Eng.
-// Graduate Student
-// Electrical and Computer Engineering
-// Lakehead University
-// Thunder Bay, Ontario, Canada
-// 2016
-//
-// sdrea@lakeheadu.ca
-// rea@ieee.org
-//
-
 /* memory.h - flat memory space interfaces */
 
 /* SimpleScalar(TM) Tool Suite
@@ -104,17 +86,7 @@ struct mem_t {
 /* memory access command */
 enum mem_cmd {
   Read,			/* read memory from target (simulated prog) to host */
-
-//sdrea-begin
-//-----------
-
-  Write,			/* write memory from host (simulator) to target */
-  bdi,
-  bdiModel
-
-//---------
-//sdrea-end
-
+  Write			/* write memory from host (simulator) to target */
 };
 
 /* memory access function type, this is a generic function exported for the
@@ -254,31 +226,12 @@ mem_access(struct mem_t *mem,		/* memory space to access */
 	   enum mem_cmd cmd,		/* Read (from sim mem) or Write */
 	   md_addr_t addr,		/* target address to access */
 	   void *vp,			/* host memory address to access */
-
-//sdrea-begin
-//-----------
-
-	   int nbytes,			/* number of bytes to access */
-	   byte_t* bdi_encode,
-	   qword_t* bdi_mask);
-
-//---------
-//sdrea-end
+	   int nbytes);			/* number of bytes to access */
 
 /* register memory system-specific statistics */
 void
 mem_reg_stats(struct mem_t *mem,	/* memory space to declare */
 	      struct stat_sdb_t *sdb);	/* stats data base */
-
-//sdrea-begin
-//-----------
-
-void
-mem_reg_bdi_stats(struct mem_t *mem,	/* memory space to declare */
-	      struct stat_sdb_t *sdb);	/* stats data base */
-
-//---------
-//sdrea-end
 
 /* initialize memory system, call before loader.c */
 void

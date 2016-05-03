@@ -509,23 +509,9 @@ dl1_access_fn(enum mem_cmd cmd,		/* access cmd, Read or Write */
 //sdrea-begin
 //-----------
 
-      //byte_t *p;
-      //p = (byte_t *) malloc (64);
-
-  //    byte_t bdi_encode = -1;
-    //  qword_t bdi_mask = -1;
-
-     // if (dl2compress) mem_access(mem, bdi, baddr, p, 1, &bdi_encode, &bdi_mask);
-
-//      counter_t checkmisses_dl2 = cache_dl2->misses;
-
-      lat = cache_access(cache_dl2, cmd, baddr, NULL, bsize,
-			 /* now */now, /* pudata */NULL, /* repl addr */NULL, mem);
-
-      //if (checkmisses_dl2 != cache_dl2->misses)
-        //{
-	//  mem_access(mem, bdiModel, baddr, p, 1, &bdi_encode, &bdi_mask);
-        //}
+      cache_dl2->compression = dl2compress;
+      if (dl2compress) { lat = cache_access(cache_dl2, cmd, baddr, NULL, bsize, /* now */now, /* pudata */NULL, /* repl addr */NULL, mem); }
+      else { lat = cache_access(cache_dl2, cmd, baddr, NULL, bsize, /* now */now, /* pudata */NULL, /* repl addr */NULL, NULL); }
 
 //---------
 //sdrea-end
@@ -592,23 +578,9 @@ if (cache_il2)
 //sdrea-begin
 //-----------
 
-    //  byte_t *p;
-  //    p = (byte_t *) malloc (64);
-
-//      byte_t bdi_encode = -1;
-//      qword_t bdi_mask = -1;
-
-   //   if (il2compress) mem_access(mem, bdi, baddr, p, 1, &bdi_encode, &bdi_mask);
-
-      //counter_t checkmisses_il2 = cache_il2->misses;
-
-      lat = cache_access(cache_il2, cmd, baddr, NULL, bsize,
-			 /* now */now, /* pudata */NULL, /* repl addr */NULL, mem);
-
-//      if (checkmisses_il2 != cache_il2->misses)
-  //      {
-   //       mem_access(mem, bdiModel, baddr, p, 1, &bdi_encode, &bdi_mask);
-    //    }
+      cache_il2->compression = il2compress;
+      if (il2compress) { lat = cache_access(cache_il2, cmd, baddr, NULL, bsize, /* now */now, /* pudata */NULL, /* repl addr */NULL, mem); }
+      else { lat = cache_access(cache_il2, cmd, baddr, NULL, bsize, /* now */now, /* pudata */NULL, /* repl addr */NULL, NULL); }
 
 //---------
 //sdrea-end
@@ -1003,15 +975,15 @@ sim_reg_options(struct opt_odb_t *odb)
 
   opt_reg_flag(odb, "-cache:compression:il1",
 	       "il1 bdi compression",
-	       &dl2compress, /* default */FALSE, /* print */TRUE, NULL);
+	       &il1compress, /* default */FALSE, /* print */TRUE, NULL);
 
   opt_reg_flag(odb, "-cache:compression:dl1",
 	       "dl1 bdi compression",
-	       &dl2compress, /* default */FALSE, /* print */TRUE, NULL);
+	       &dl1compress, /* default */FALSE, /* print */TRUE, NULL);
 
   opt_reg_flag(odb, "-cache:compression:il2",
 	       "il2 bdi compression",
-	       &dl2compress, /* default */FALSE, /* print */TRUE, NULL);
+	       &il2compress, /* default */FALSE, /* print */TRUE, NULL);
 
   opt_reg_flag(odb, "-cache:compression:dl2",
 	       "dl2 bdi compression",
@@ -1517,7 +1489,7 @@ sim_reg_bdi_stats(struct stat_sdb_t *sdb)   /* stats database */
 {
 
     cache_reg_bdi_stats(NULL, sdb);
-    mem_reg_bdi_stats(NULL, sdb);
+    // TODO: Reg stats by cache type instead of all at once
 
 }
 
@@ -2375,17 +2347,9 @@ ruu_commit(void)
 //sdrea-begin
 //-----------
 
-      //                byte_t *p;
-    //                  p = (byte_t *) malloc (64);
-
-  //                    byte_t bdi_encode = -1;
-//                      qword_t bdi_mask = -1;
-
-                      //if (dl1compress) mem_access(mem, bdi, (LSQ[LSQ_head].addr&~3), p, 1, &bdi_encode, &bdi_mask);
-
-		      lat =
-			cache_access(cache_dl1, Write, (LSQ[LSQ_head].addr&~3),
-				     NULL, 4, sim_cycle, NULL, NULL, mem);
+		      cache_dl1->compression = dl1compress;
+		      if (dl1compress) { lat = cache_access(cache_dl1, Write, (LSQ[LSQ_head].addr&~3), NULL, 4, sim_cycle, NULL, NULL, mem); }
+		      else { lat = cache_access(cache_dl1, Write, (LSQ[LSQ_head].addr&~3), NULL, 4, sim_cycle, NULL, NULL, NULL); }
 
 //---------
 //sdrea-end
@@ -3000,18 +2964,9 @@ ruu_issue(void)
 //sdrea-begin
 //-----------
 
-//                                  byte_t *p;
-  //                                p = (byte_t *) malloc (64);
-
-    //                              byte_t bdi_encode = -1;
-      //                            qword_t bdi_mask = -1;
-
-                                 // if (dl1compress) mem_access(mem, bdi, (rs->addr & ~3), p, 1, &bdi_encode, &bdi_mask);
-
-				  load_lat =
-				    cache_access(cache_dl1, Read,
-						 (rs->addr & ~3), NULL, 4,
-						 sim_cycle, NULL, NULL, mem);
+				  cache_dl1->compression = dl1compress;
+				  if (dl1compress) { load_lat = cache_access(cache_dl1, Read, (rs->addr & ~3), NULL, 4, sim_cycle, NULL, NULL, mem); }
+				  else { load_lat = cache_access(cache_dl1, Read, (rs->addr & ~3), NULL, 4, sim_cycle, NULL, NULL, NULL); }
 
 //---------
 //sdrea-end
@@ -3589,13 +3544,7 @@ simoo_mem_obj(struct mem_t *mem,		/* memory space to access */
     spec_mem_access(mem, cmd, addr, p, nbytes);
   else
 
-//sdrea-begin
-//-----------
-
-    mem_access(mem, cmd, addr, p, nbytes, NULL, NULL);
-
-//---------
-//sdrea-end
+    mem_access(mem, cmd, addr, p, nbytes);
 
   /* no error */
   return NULL;
@@ -3871,18 +3820,12 @@ ruu_install_odep(struct RUU_station *rs,	/* creating RUU station */
    write storage provided for fast recovery during wrong path execute (see
    tracer_recover() for details on this process */
 
-//sdrea-begin
-//-----------
-
 #define __READ_SPECMEM(SRC, SRC_V, FAULT)				\
   (addr = (SRC),							\
    (spec_mode								\
     ? ((FAULT) = spec_mem_access(mem, Read, addr, &SRC_V, sizeof(SRC_V)))\
-    : ((FAULT) = mem_access(mem, Read, addr, &SRC_V, sizeof(SRC_V), NULL, NULL))),	\
+    : ((FAULT) = mem_access(mem, Read, addr, &SRC_V, sizeof(SRC_V)))),	\
    SRC_V)
-
-//---------
-//sdrea-end
 
 #define READ_BYTE(SRC, FAULT)						\
   __READ_SPECMEM((SRC), temp_byte, (FAULT))
@@ -3895,17 +3838,11 @@ ruu_install_odep(struct RUU_station *rs,	/* creating RUU station */
   MD_SWAPQ(__READ_SPECMEM((SRC), temp_qword, (FAULT)))
 #endif /* HOST_HAS_QWORD */
 
-//sdrea-begin
-//-----------
-
 #define __WRITE_SPECMEM(SRC, DST, DST_V, FAULT)				\
   (DST_V = (SRC), addr = (DST),						\
    (spec_mode								\
     ? ((FAULT) = spec_mem_access(mem, Write, addr, &DST_V, sizeof(DST_V)))\
-    : ((FAULT) = mem_access(mem, Write, addr, &DST_V, sizeof(DST_V), NULL, NULL))))
-
-//---------
-//sdrea-end
+    : ((FAULT) = mem_access(mem, Write, addr, &DST_V, sizeof(DST_V)))))
 
 #define WRITE_BYTE(SRC, DST, FAULT)					\
   __WRITE_SPECMEM((SRC), (DST), temp_byte, (FAULT))
@@ -4690,18 +4627,9 @@ ruu_fetch(void)
 //sdrea-begin
 //-----------
 
-           //   byte_t *p;
-             // p = (byte_t *) malloc (64);
-
-//              byte_t bdi_encode = -1;
-  //            qword_t bdi_mask = -1;
-
-            //  if (il1compress) mem_access(mem, bdi, IACOMPRESS(fetch_regs_PC), p, 1, &bdi_encode, &bdi_mask);
-
-	      lat =
-		cache_access(cache_il1, Read, IACOMPRESS(fetch_regs_PC),
-			     NULL, ISCOMPRESS(sizeof(md_inst_t)), sim_cycle,
-			     NULL, NULL, mem);
+	      cache_il1->compression = il1compress;
+	      if (il1compress) { lat = cache_access(cache_il1, Read, IACOMPRESS(fetch_regs_PC), NULL, ISCOMPRESS(sizeof(md_inst_t)), sim_cycle, NULL, NULL, mem); }
+	      else { lat = cache_access(cache_il1, Read, IACOMPRESS(fetch_regs_PC), NULL, ISCOMPRESS(sizeof(md_inst_t)), sim_cycle, NULL, NULL, NULL); }
 
 //---------
 //sdrea-end

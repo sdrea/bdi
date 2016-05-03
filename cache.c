@@ -384,6 +384,14 @@ cache_create(char *name,		/* name of the cache */
   cp->writebacks = 0;
   cp->invalidations = 0;
 
+//sdrea-begin
+//-----------
+
+  cp->compression = 0;
+
+//---------
+//sdrea-end
+
   /* blow away the last block accessed */
   cp->last_tagset = 0;
   cp->last_blk = NULL;
@@ -774,14 +782,15 @@ else
 // mem is null in cache_access call
 
 }
-/*
-  if (bdi_encode != NULL && *bdi_encode != (byte_t) -1)
+
+
+  if (cp->compression)
     {
 
       count_encode_lines++;
 
       int bdi_size;
-      switch (*bdi_encode)
+      switch (bdi_encode)
         {
           case 0b00000000:
             //zeros
@@ -838,7 +847,7 @@ else
 
       for (bdi_blk2=cp->sets[set].way_head; bdi_blk2; bdi_blk2=bdi_blk2->way_next)
         {
-          switch (bdi_blk2->bdi_encode) 
+          switch (bdi_blk2->bdi_encode)
             {
               case 0b0000:
                 //zeros
@@ -940,7 +949,7 @@ else
             }
         }
     }
-*/
+
 //---------
 //sdrea-end
 

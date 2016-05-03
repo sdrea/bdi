@@ -1,21 +1,3 @@
-//
-// loader.c
-//   from sim-wattch-1.02e - http://www.eecs.harvard.edu/~dbrooks/wattch-form.html
-//
-// updated for modeling Base-Delta-Immediate compression [Pekhimenko, Seshadri, Mutlu, Mowry, Gibbons, and Kozuch]
-//   changes wrapped in //sdrea-begin ... //sdrea-end
-//
-// Sean Rea, P. Eng.
-// Graduate Student
-// Electrical and Computer Engineering
-// Lakehead University
-// Thunder Bay, Ontario, Canada
-// 2016
-//
-// sdrea@lakeheadu.ca
-// rea@ieee.org
-//
-
 /* loader.c - program loader routines */
 
 /* SimpleScalar(TM) Tool Suite
@@ -589,13 +571,7 @@ ld_load_prog(char *fname,		/* program to load */
   /* write [argc] to stack */
   temp = MD_SWAPW(argc);
 
-//sdrea-begin
-//-----------
-
-  mem_access(mem, Write, sp, &temp, sizeof(word_t), NULL, NULL);
-
-//---------
-//sdrea-end
+  mem_access(mem, Write, sp, &temp, sizeof(word_t));
 
   sp += sizeof(word_t);
 
@@ -615,14 +591,8 @@ ld_load_prog(char *fname,		/* program to load */
       /* write the argv pointer array entry */
       temp = MD_SWAPW(sp);
 
-//sdrea-begin
-//-----------
-
       mem_access(mem, Write, argv_addr + i*sizeof(md_addr_t),
-		 &temp, sizeof(md_addr_t), NULL, NULL);
-
-//---------
-//sdrea-end
+		 &temp, sizeof(md_addr_t));
 
       /* and the data */
       mem_strcpy(mem_access, mem, Write, sp, argv[i]);
@@ -630,14 +600,8 @@ ld_load_prog(char *fname,		/* program to load */
     }
   /* terminate argv array with a NULL */
 
-//sdrea-begin
-//-----------
-
   mem_access(mem, Write, argv_addr + i*sizeof(md_addr_t),
-	     &null_ptr, sizeof(md_addr_t), NULL, NULL);
-
-//---------
-//sdrea-end
+	     &null_ptr, sizeof(md_addr_t));
 
   /* write envp pointer array and data to stack */
   for (i = 0; envp[i]; i++)
@@ -645,14 +609,8 @@ ld_load_prog(char *fname,		/* program to load */
       /* write the envp pointer array entry */
       temp = MD_SWAPW(sp);
 
-//sdrea-begin
-//-----------
-
       mem_access(mem, Write, envp_addr + i*sizeof(md_addr_t),
-		 &temp, sizeof(md_addr_t), NULL, NULL);
-
-//---------
-//sdrea-end
+		 &temp, sizeof(md_addr_t));
 
       /* and the data */
       mem_strcpy(mem_access, mem, Write, sp, envp[i]);
@@ -660,14 +618,8 @@ ld_load_prog(char *fname,		/* program to load */
     }
   /* terminate the envp array with a NULL */
 
-//sdrea-begin
-//-----------
-
   mem_access(mem, Write, envp_addr + i*sizeof(md_addr_t),
-	     &null_ptr, sizeof(md_addr_t), NULL, NULL);
-
-//---------
-//sdrea-end
+	     &null_ptr, sizeof(md_addr_t));
 
   /* did we tromp off the stop of the stack? */
   if (sp > ld_stack_base)
@@ -711,25 +663,13 @@ ld_load_prog(char *fname,		/* program to load */
 	 addr += sizeof(md_inst_t))
       {
 
-//sdrea-begin
-//-----------
-
-	fault = mem_access(mem, Read, addr, &inst, sizeof(inst), NULL, NULL);
-
-//---------
-//sdrea-end
+	fault = mem_access(mem, Read, addr, &inst, sizeof(inst));
 
 	if (fault != md_fault_none)
 	  fatal("could not read instruction memory");
 	inst.a = (inst.a & ~0xff) | (word_t)MD_OP_ENUM(MD_OPFIELD(inst));
 
-//sdrea-begin
-//-----------
-
-	fault = mem_access(mem, Write, addr, &inst, sizeof(inst), NULL, NULL);
-
-//---------
-//sdrea-end
+	fault = mem_access(mem, Write, addr, &inst, sizeof(inst));
 
 	if (fault != md_fault_none)
 	  fatal("could not write instruction memory");
