@@ -567,6 +567,15 @@ stat_reg_counter(sdb, "count_encode_1111_uncompressed", "Uncompressed cache line
   stat_reg_counter(sdb, "count_compressible_0110_b4d2", "Count of cache lines compressible as b4d2", &count_compressible_0110_b4d2, 0, "%15d");
   stat_reg_counter(sdb, "count_compressible_0111_b2d1", "Count of cache lines compressible as b2d1", &count_compressible_0111_b2d1, 0, "%15d");
 
+stat_reg_formula(sdb, "rate_compressible_0000_zeros", "Percentage of cache lines compressible as zeros",     "100 * count_compressible_0000_zeros / count_encode_lines", "%15.1f");
+stat_reg_formula(sdb, "rate_compressible_0001_repeats", "Percentage of cache lines compressible as repeats", "100 * count_compressible_0001_repeats / count_encode_lines", "%13.1f");
+stat_reg_formula(sdb, "rate_compressible_0010_b8d1", "Percentage of cache lines compressible as b8d1",       "100 * count_compressible_0010_b8d1 / count_encode_lines", "%16.1f");
+stat_reg_formula(sdb, "rate_compressible_0011_b8d2", "Percentage of cache lines compressible as b8d2",       "100 * count_compressible_0011_b8d2 / count_encode_lines", "%16.1f");
+stat_reg_formula(sdb, "rate_compressible_0100_b8d4", "Percentage of cache lines compressible as b8d4",       "100 * count_compressible_0100_b8d4 / count_encode_lines", "%16.1f");
+stat_reg_formula(sdb, "rate_compressible_0101_b4d1", "Percentage of cache lines compressible as b4d1",       "100 * count_compressible_0101_b4d1 / count_encode_lines", "%16.1f");
+stat_reg_formula(sdb, "rate_compressible_0110_b4d2", "Percentage of cache lines compressible as b4d2",       "100 * count_compressible_0110_b4d2 / count_encode_lines", "%16.1f");
+stat_reg_formula(sdb, "rate_compressible_0111_b2d1", "Percentage of cache lines compressible as b2d1",       "100 * count_compressible_0111_b2d1 / count_encode_lines", "%16.1f");
+
 }
 
 //sdrea-end
