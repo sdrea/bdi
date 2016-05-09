@@ -737,9 +737,9 @@ cache_access(struct cache_t *cp,	/* cache to access */
             if ( ( ( db8[i] - db8[0] < (signed char)        -128 ) || ( db8[i] - db8[0] > (signed char)        127 ) ) && ( ( db8[i] < (signed char)        -128 ) || ( db8[i] > (signed char)        127 ) ) ) delta81 = 0;
             if ( ( ( db8[i] - db8[0] < (signed short)     -32768 ) || ( db8[i] - db8[0] > (signed short)     32767 ) ) && ( ( db8[i] < (signed short)     -32768 ) || ( db8[i] > (signed short)     32767 ) ) ) delta82 = 0;
             if ( ( ( db8[i] - db8[0] < (signed long) -2147483648 ) || ( db8[i] - db8[0] > (signed long) 2147483647 ) ) && ( ( db8[i] < (signed long) -2147483648 ) || ( db8[i] > (signed long) 2147483647 ) ) ) delta84 = 0;
-            if ( ( ( db8[i] - db8[0] < (signed char)        -128 ) || ( db8[i] - db8[0] > (signed char)        127 ) ) && delta81 == 1 ) delta81mask = delta81mask & ~((qword_t)0b11111111 << i); // immediate value was used
-            if ( ( ( db8[i] - db8[0] < (signed short)     -32768 ) || ( db8[i] - db8[0] > (signed short)     32767 ) ) && delta82 == 1 ) delta82mask = delta82mask & ~((qword_t)0b11111111 << i); // immediate value was used
-            if ( ( ( db8[i] - db8[0] < (signed long) -2147483648 ) || ( db8[i] - db8[0] > (signed long) 2147483647 ) ) && delta84 == 1 ) delta84mask = delta84mask & ~((qword_t)0b11111111 << i); // immediate value was used
+            if ( ( ( db8[i] - db8[0] < (signed char)        -128 ) || ( db8[i] - db8[0] > (signed char)        127 ) ) && delta81 == 1 ) delta81mask = delta81mask & ~((qword_t) 255 << i); // immediate value was used
+            if ( ( ( db8[i] - db8[0] < (signed short)     -32768 ) || ( db8[i] - db8[0] > (signed short)     32767 ) ) && delta82 == 1 ) delta82mask = delta82mask & ~((qword_t) 255 << i); // immediate value was used
+            if ( ( ( db8[i] - db8[0] < (signed long) -2147483648 ) || ( db8[i] - db8[0] > (signed long) 2147483647 ) ) && delta84 == 1 ) delta84mask = delta84mask & ~((qword_t) 255 << i); // immediate value was used
 
           }
 
@@ -751,8 +751,8 @@ cache_access(struct cache_t *cp,	/* cache to access */
 
             if ( ( ( db4[i] - db4[0] < (signed char)    -128 ) || ( db4[i] - db4[0] > (signed char)    127 ) ) && ( ( db4[i] < (signed char)    -128 ) || ( db4[i] > (signed char)    127 ) ) ) delta41 = 0;
             if ( ( ( db4[i] - db4[0] < (signed short) -32768 ) || ( db4[i] - db4[0] > (signed short) 32767 ) ) && ( ( db4[i] < (signed short) -32768 ) || ( db4[i] > (signed short) 32767 ) ) ) delta42 = 0;
-            if ( ( ( db4[i] - db4[0] < (signed char)    -128 ) || ( db4[i] - db4[0] > (signed char)    127 ) ) && delta41 == 1 ) delta41mask = delta41mask & ~((qword_t)0b1111 << i); // immediate value was used
-            if ( ( ( db4[i] - db4[0] < (signed short) -32768 ) || ( db4[i] - db4[0] > (signed short) 32767 ) ) && delta42 == 1 ) delta42mask = delta42mask & ~((qword_t)0b1111 << i); // immediate value was used
+            if ( ( ( db4[i] - db4[0] < (signed char)    -128 ) || ( db4[i] - db4[0] > (signed char)    127 ) ) && delta41 == 1 ) delta41mask = delta41mask & ~((qword_t) 15 << i); // immediate value was used
+            if ( ( ( db4[i] - db4[0] < (signed short) -32768 ) || ( db4[i] - db4[0] > (signed short) 32767 ) ) && delta42 == 1 ) delta42mask = delta42mask & ~((qword_t) 15 << i); // immediate value was used
 
           }
 
@@ -761,19 +761,19 @@ cache_access(struct cache_t *cp,	/* cache to access */
             db2[i] += db2[i+1] <<  8;
 
             if ( ( ( db2[i] - db2[0] < (signed char) -128 ) || ( db2[i] - db2[0] > (signed char) 127 ) ) && ( ( db2[i] < (signed char) -128 ) || ( db2[i] > (signed char) 127 ) ) ) delta21 = 0;
-            if ( ( ( db2[i] - db2[0] < (signed char) -128 ) || ( db2[i] - db2[0] > (signed char) 127 ) ) && delta21 == 1 ) delta21mask = delta21mask & ~((qword_t)0b11 << i); // immediate value was used
+            if ( ( ( db2[i] - db2[0] < (signed char) -128 ) || ( db2[i] - db2[0] > (signed char) 127 ) ) && delta21 == 1 ) delta21mask = delta21mask & ~((qword_t) 3 << i); // immediate value was used
 
           }
 
-        if (zeros == 1)         { bdi_encode = 0b00000000; bdi_mask = -1;}
-        else if (repeats == 1)  { bdi_encode = 0b00000001; bdi_mask = -1;}
-        else if (delta81 == 1)  { bdi_encode = 0b00000010; bdi_mask = delta81mask;}
-        else if (delta41 == 1)  { bdi_encode = 0b00000101; bdi_mask = delta41mask;}
-        else if (delta82 == 1)  { bdi_encode = 0b00000011; bdi_mask = delta82mask;}
-        else if (delta21 == 1)  { bdi_encode = 0b00000111; bdi_mask = delta21mask;}
-        else if (delta42 == 1)  { bdi_encode = 0b00000110; bdi_mask = delta42mask;}
-        else if (delta84 == 1)  { bdi_encode = 0b00000100; bdi_mask = delta84mask;}
-        else                    { bdi_encode = 0b00001111; bdi_mask = -1;}
+        if (zeros == 1)         { bdi_encode = 0; bdi_mask = -1;}
+        else if (repeats == 1)  { bdi_encode = 1; bdi_mask = -1;}
+        else if (delta81 == 1)  { bdi_encode = 2; bdi_mask = delta81mask;}
+        else if (delta41 == 1)  { bdi_encode = 5; bdi_mask = delta41mask;}
+        else if (delta82 == 1)  { bdi_encode = 3; bdi_mask = delta82mask;}
+        else if (delta21 == 1)  { bdi_encode = 7; bdi_mask = delta21mask;}
+        else if (delta42 == 1)  { bdi_encode = 6; bdi_mask = delta42mask;}
+        else if (delta84 == 1)  { bdi_encode = 4; bdi_mask = delta84mask;}
+        else                    { bdi_encode = 15; bdi_mask = -1;}
 
             if (zeros == 1)    { count_compressible_0000_zeros++; }
             if (repeats == 1)  { count_compressible_0001_repeats++; }
@@ -801,47 +801,47 @@ else
       int bdi_size;
       switch (bdi_encode)
         {
-          case 0b00000000:
+          case 0:
             //zeros
             count_encode_0000_zeros++;
             bdi_size = 8; // 1 segment, 8 bytes
           break;
-          case 0b00000001:
+          case 1:
             //repeats
             count_encode_0001_repeats++;
             bdi_size = 8; // 1 segment, 8 bytes
           break;
-          case 0b00000010:
+          case 2:
             //base 8 delta 1
             count_encode_0010_b8d1++;
             bdi_size = 16; // 2 segments, 16 bytes
           break;
-          case 0b00000011:
+          case 3:
             //base 8 delta 2
             count_encode_0011_b8d2++;
             bdi_size = 24; // 3 segments, 24 bytes
           break;
-          case 0b00000100:
+          case 4:
             //base 8 delta 4
             count_encode_0100_b8d4++;
             bdi_size = 40; // 5 segments, 40 bytes
           break;
-          case 0b00000101:
+          case 5:
             //base 4 delta 1
             count_encode_0101_b4d1++;
             bdi_size = 24; // 3 segments, 24 bytes
           break;
-          case 0b00000110:
+          case 6:
             //base 4 delta 2
             count_encode_0110_b4d2++;
             bdi_size = 40; // 5 segments, 40 bytes
           break;
-          case 0b00000111:
+          case 7:
             //base 2 delta 1
             count_encode_0111_b2d1++;
             bdi_size = 40; // 5 segments, 40 bytes
           break;
-          case 0b00001111:
+          case 15:
             //decompressed
             count_encode_1111_uncompressed++;
             bdi_size = 64; // 8 segments, 64 bytes
@@ -858,39 +858,39 @@ else
         {
           switch (bdi_blk2->bdi_encode)
             {
-              case 0b0000:
+              case 0:
                 //zeros
                 bdi_blk_size += 8; // 1 segment, 8 bytes
               break;
-              case 0b0001:
+              case 1:
                 //repeats
                 bdi_blk_size += 8; // 1 segment, 8 bytes
               break;
-              case 0b0010:
+              case 2:
                 //base 8 delta 1
                 bdi_blk_size += 16; // 2 segments, 16 bytes
               break;
-              case 0b0011:
+              case 3:
                 //base 8 delta 2
                 bdi_blk_size += 24; // 3 segments, 24 bytes
               break;
-              case 0b0100:
+              case 4:
                 //base 8 delta 4
                 bdi_blk_size += 40; // 5 segments, 40 bytes
               break;
-              case 0b0101:
+              case 5:
                 //base 4 delta 1
                 bdi_blk_size += 24; // 3 segments, 24 bytes
               break;
-              case 0b0110:
+              case 6:
                 //base 4 delta 2
                 bdi_blk_size += 40; // 5 segments, 40 bytes
               break;
-              case 0b0111:
+              case 7:
                 //base 2 delta 1
                 bdi_blk_size += 40; // 5 segments, 40 bytes
               break;
-              case 0b1111:
+              case 15:
                 //decompressed
                 bdi_blk_size += 64; // 8 segments, 64 bytes
               break;
@@ -914,39 +914,39 @@ else
             {
               switch (bdi_blk2->bdi_encode) 
                 {
-                  case 0b0000:
+                  case 0:
                     //zeros
                     bdi_blk_size += 8; // 1 segment, 8 bytes
                   break;
-                  case 0b0001:
+                  case 1:
                     //repeats
                     bdi_blk_size += 8; // 1 segment, 8 bytes
                   break;
-                  case 0b0010:
+                  case 2:
                     //base 8 delta 1
                     bdi_blk_size += 16; // 2 segments, 16 bytes
                   break;
-                  case 0b0011:
+                  case 3:
                     //base 8 delta 2
                     bdi_blk_size += 24; // 3 segments, 24 bytes
                   break;
-                  case 0b0100:
+                  case 4:
                     //base 8 delta 4
                     bdi_blk_size += 40; // 5 segments, 40 bytes
                   break;
-                  case 0b0101:
+                  case 5:
                     //base 4 delta 1
                     bdi_blk_size += 24; // 3 segments, 24 bytes
                   break;
-                  case 0b0110:
+                  case 6:
                     //base 4 delta 2
                     bdi_blk_size += 40; // 5 segments, 40 bytes
                   break;
-                  case 0b0111:
+                  case 7:
                     //base 2 delta 1
                     bdi_blk_size += 40; // 5 segments, 40 bytes
                   break;
-                  case 0b1111:
+                  case 15:
                     //decompressed
                     bdi_blk_size += 64; // 8 segments, 64 bytes
                   break;
