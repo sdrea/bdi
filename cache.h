@@ -114,7 +114,13 @@
 
 /* highly associative caches are implemented using a hash table lookup to
    speed block access, this macro decides if a cache is "highly associative" */
-#define CACHE_HIGHLY_ASSOC(cp)	((cp)->assoc > 4)
+//sdrea-begin
+//-----------
+
+#define CACHE_HIGHLY_ASSOC(cp)	((cp)->assoc > 32)
+
+//---------
+//sdrea-end
 
 /* cache replacement policy */
 enum cache_policy {
