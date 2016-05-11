@@ -510,8 +510,7 @@ dl1_access_fn(enum mem_cmd cmd,		/* access cmd, Read or Write */
 //-----------
 
       cache_dl2->compression = dl2compress;
-      if (dl2compress) { lat = cache_access(cache_dl2, cmd, baddr, NULL, bsize, /* now */now, /* pudata */NULL, /* repl addr */NULL, mem); }
-      else { lat = cache_access(cache_dl2, cmd, baddr, NULL, bsize, /* now */now, /* pudata */NULL, /* repl addr */NULL, NULL); }
+      lat = cache_access(cache_dl2, cmd, baddr, NULL, bsize, /* now */now, /* pudata */NULL, /* repl addr */NULL, mem);
 
 //---------
 //sdrea-end
@@ -579,8 +578,7 @@ if (cache_il2)
 //-----------
 
       cache_il2->compression = il2compress;
-      if (il2compress) { lat = cache_access(cache_il2, cmd, baddr, NULL, bsize, /* now */now, /* pudata */NULL, /* repl addr */NULL, mem); }
-      else { lat = cache_access(cache_il2, cmd, baddr, NULL, bsize, /* now */now, /* pudata */NULL, /* repl addr */NULL, NULL); }
+      lat = cache_access(cache_il2, cmd, baddr, NULL, bsize, /* now */now, /* pudata */NULL, /* repl addr */NULL, mem);
 
 //---------
 //sdrea-end
@@ -2348,8 +2346,7 @@ ruu_commit(void)
 //-----------
 
 		      cache_dl1->compression = dl1compress;
-		      if (dl1compress) { lat = cache_access(cache_dl1, Write, (LSQ[LSQ_head].addr&~3), NULL, 4, sim_cycle, NULL, NULL, mem); }
-		      else { lat = cache_access(cache_dl1, Write, (LSQ[LSQ_head].addr&~3), NULL, 4, sim_cycle, NULL, NULL, NULL); }
+		      lat = cache_access(cache_dl1, Write, (LSQ[LSQ_head].addr&~3), NULL, 4, sim_cycle, NULL, NULL, mem);
 
 //---------
 //sdrea-end
@@ -2965,8 +2962,7 @@ ruu_issue(void)
 //-----------
 
 				  cache_dl1->compression = dl1compress;
-				  if (dl1compress) { load_lat = cache_access(cache_dl1, Read, (rs->addr & ~3), NULL, 4, sim_cycle, NULL, NULL, mem); }
-				  else { load_lat = cache_access(cache_dl1, Read, (rs->addr & ~3), NULL, 4, sim_cycle, NULL, NULL, NULL); }
+				  load_lat = cache_access(cache_dl1, Read, (rs->addr & ~3), NULL, 4, sim_cycle, NULL, NULL, mem); 
 
 //---------
 //sdrea-end
@@ -4628,8 +4624,7 @@ ruu_fetch(void)
 //-----------
 
 	      cache_il1->compression = il1compress;
-	      if (il1compress) { lat = cache_access(cache_il1, Read, IACOMPRESS(fetch_regs_PC), NULL, ISCOMPRESS(sizeof(md_inst_t)), sim_cycle, NULL, NULL, mem); }
-	      else { lat = cache_access(cache_il1, Read, IACOMPRESS(fetch_regs_PC), NULL, ISCOMPRESS(sizeof(md_inst_t)), sim_cycle, NULL, NULL, NULL); }
+	      lat = cache_access(cache_il1, Read, IACOMPRESS(fetch_regs_PC), NULL, ISCOMPRESS(sizeof(md_inst_t)), sim_cycle, NULL, NULL, mem);
 
 //---------
 //sdrea-end

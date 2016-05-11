@@ -80,6 +80,7 @@
 //-----------
 
 static counter_t count_encode_lines = 0;
+static counter_t count_check_lines = 0;
 
 static counter_t count_encode_0000_zeros = 0;
 static counter_t count_encode_0001_repeats = 0;
@@ -567,14 +568,16 @@ stat_reg_counter(sdb, "count_encode_1111_uncompressed", "Uncompressed cache line
   stat_reg_counter(sdb, "count_compressible_0110_b4d2", "Count of cache lines compressible as b4d2", &count_compressible_0110_b4d2, 0, "%15d");
   stat_reg_counter(sdb, "count_compressible_0111_b2d1", "Count of cache lines compressible as b2d1", &count_compressible_0111_b2d1, 0, "%15d");
 
-stat_reg_formula(sdb, "rate_compressible_0000_zeros", "Percentage of cache lines compressible as zeros",     "100 * count_compressible_0000_zeros / count_encode_lines", "%15.1f");
-stat_reg_formula(sdb, "rate_compressible_0001_repeats", "Percentage of cache lines compressible as repeats", "100 * count_compressible_0001_repeats / count_encode_lines", "%13.1f");
-stat_reg_formula(sdb, "rate_compressible_0010_b8d1", "Percentage of cache lines compressible as b8d1",       "100 * count_compressible_0010_b8d1 / count_encode_lines", "%16.1f");
-stat_reg_formula(sdb, "rate_compressible_0011_b8d2", "Percentage of cache lines compressible as b8d2",       "100 * count_compressible_0011_b8d2 / count_encode_lines", "%16.1f");
-stat_reg_formula(sdb, "rate_compressible_0100_b8d4", "Percentage of cache lines compressible as b8d4",       "100 * count_compressible_0100_b8d4 / count_encode_lines", "%16.1f");
-stat_reg_formula(sdb, "rate_compressible_0101_b4d1", "Percentage of cache lines compressible as b4d1",       "100 * count_compressible_0101_b4d1 / count_encode_lines", "%16.1f");
-stat_reg_formula(sdb, "rate_compressible_0110_b4d2", "Percentage of cache lines compressible as b4d2",       "100 * count_compressible_0110_b4d2 / count_encode_lines", "%16.1f");
-stat_reg_formula(sdb, "rate_compressible_0111_b2d1", "Percentage of cache lines compressible as b2d1",       "100 * count_compressible_0111_b2d1 / count_encode_lines", "%16.1f");
+stat_reg_counter(sdb, "count_check_lines", "Cache lines checked for compressibility", &count_check_lines, 0, "%21d");
+
+stat_reg_formula(sdb, "rate_compressible_0000_zeros", "Percentage of cache lines compressible as zeros",     "100 * count_compressible_0000_zeros / count_check_lines", "%15.1f");
+stat_reg_formula(sdb, "rate_compressible_0001_repeats", "Percentage of cache lines compressible as repeats", "100 * count_compressible_0001_repeats / count_check_lines", "%13.1f");
+stat_reg_formula(sdb, "rate_compressible_0010_b8d1", "Percentage of cache lines compressible as b8d1",       "100 * count_compressible_0010_b8d1 / count_check_lines", "%16.1f");
+stat_reg_formula(sdb, "rate_compressible_0011_b8d2", "Percentage of cache lines compressible as b8d2",       "100 * count_compressible_0011_b8d2 / count_check_lines", "%16.1f");
+stat_reg_formula(sdb, "rate_compressible_0100_b8d4", "Percentage of cache lines compressible as b8d4",       "100 * count_compressible_0100_b8d4 / count_check_lines", "%16.1f");
+stat_reg_formula(sdb, "rate_compressible_0101_b4d1", "Percentage of cache lines compressible as b4d1",       "100 * count_compressible_0101_b4d1 / count_check_lines", "%16.1f");
+stat_reg_formula(sdb, "rate_compressible_0110_b4d2", "Percentage of cache lines compressible as b4d2",       "100 * count_compressible_0110_b4d2 / count_check_lines", "%16.1f");
+stat_reg_formula(sdb, "rate_compressible_0111_b2d1", "Percentage of cache lines compressible as b2d1",       "100 * count_compressible_0111_b2d1 / count_check_lines", "%16.1f");
 
 }
 
@@ -765,24 +768,31 @@ cache_access(struct cache_t *cp,	/* cache to access */
 
           }
 
-        if (zeros == 1)         { bdi_encode = 0; bdi_mask = -1;}
-        else if (repeats == 1)  { bdi_encode = 1; bdi_mask = -1;}
-        else if (delta81 == 1)  { bdi_encode = 2; bdi_mask = delta81mask;}
-        else if (delta41 == 1)  { bdi_encode = 5; bdi_mask = delta41mask;}
-        else if (delta82 == 1)  { bdi_encode = 3; bdi_mask = delta82mask;}
-        else if (delta21 == 1)  { bdi_encode = 7; bdi_mask = delta21mask;}
-        else if (delta42 == 1)  { bdi_encode = 6; bdi_mask = delta42mask;}
-        else if (delta84 == 1)  { bdi_encode = 4; bdi_mask = delta84mask;}
-        else                    { bdi_encode = 15; bdi_mask = -1;}
+          if (cp->compression) 
+            {
 
-            if (zeros == 1)    { count_compressible_0000_zeros++; }
-            if (repeats == 1)  { count_compressible_0001_repeats++; }
-            if (delta81 == 1)  { count_compressible_0010_b8d1++; }
-            if (delta82 == 1)  { count_compressible_0011_b8d2++; }
-            if (delta84 == 1)  { count_compressible_0100_b8d4++; }
-            if (delta41 == 1)  { count_compressible_0101_b4d1++; }
-            if (delta42 == 1)  { count_compressible_0110_b4d2++; }
-            if (delta21 == 1)  { count_compressible_0111_b2d1++; }
+              if (zeros == 1)         { bdi_encode = 0; bdi_mask = -1;}
+              else if (repeats == 1)  { bdi_encode = 1; bdi_mask = -1;}
+              else if (delta81 == 1)  { bdi_encode = 2; bdi_mask = delta81mask;}
+              else if (delta41 == 1)  { bdi_encode = 5; bdi_mask = delta41mask;}
+              else if (delta82 == 1)  { bdi_encode = 3; bdi_mask = delta82mask;}
+              else if (delta21 == 1)  { bdi_encode = 7; bdi_mask = delta21mask;}
+              else if (delta42 == 1)  { bdi_encode = 6; bdi_mask = delta42mask;}
+              else if (delta84 == 1)  { bdi_encode = 4; bdi_mask = delta84mask;}
+              else                    { bdi_encode = 15; bdi_mask = -1;}
+
+            }
+
+	  count_check_lines++;
+
+          if (zeros == 1)    { count_compressible_0000_zeros++; }
+          if (repeats == 1)  { count_compressible_0001_repeats++; }
+          if (delta81 == 1)  { count_compressible_0010_b8d1++; }
+          if (delta82 == 1)  { count_compressible_0011_b8d2++; }
+          if (delta84 == 1)  { count_compressible_0100_b8d4++; }
+          if (delta41 == 1)  { count_compressible_0101_b4d1++; }
+          if (delta42 == 1)  { count_compressible_0110_b4d2++; }
+          if (delta21 == 1)  { count_compressible_0111_b2d1++; }
 
 }
 else
