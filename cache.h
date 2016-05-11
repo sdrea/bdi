@@ -237,6 +237,7 @@ struct cache_t
 //-----------
 
   int compression;
+  int compression_check;
 
 //---------
 //sdrea-end

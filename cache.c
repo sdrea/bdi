@@ -389,6 +389,7 @@ cache_create(char *name,		/* name of the cache */
 //-----------
 
   cp->compression = 0;
+  cp->compression_check = 0;
 
 //---------
 //sdrea-end
@@ -783,17 +784,21 @@ cache_access(struct cache_t *cp,	/* cache to access */
 
             }
 
-	  count_check_lines++;
+          if (cp->compression_check)
+            {
 
-          if (zeros == 1)    { count_compressible_0000_zeros++; }
-          if (repeats == 1)  { count_compressible_0001_repeats++; }
-          if (delta81 == 1)  { count_compressible_0010_b8d1++; }
-          if (delta82 == 1)  { count_compressible_0011_b8d2++; }
-          if (delta84 == 1)  { count_compressible_0100_b8d4++; }
-          if (delta41 == 1)  { count_compressible_0101_b4d1++; }
-          if (delta42 == 1)  { count_compressible_0110_b4d2++; }
-          if (delta21 == 1)  { count_compressible_0111_b2d1++; }
+	      count_check_lines++;
 
+              if (zeros == 1)    { count_compressible_0000_zeros++; }
+              if (repeats == 1)  { count_compressible_0001_repeats++; }
+              if (delta81 == 1)  { count_compressible_0010_b8d1++; }
+              if (delta82 == 1)  { count_compressible_0011_b8d2++; }
+              if (delta84 == 1)  { count_compressible_0100_b8d4++; }
+              if (delta41 == 1)  { count_compressible_0101_b4d1++; }
+              if (delta42 == 1)  { count_compressible_0110_b4d2++; }
+              if (delta21 == 1)  { count_compressible_0111_b2d1++; }
+
+            }
 }
 else
 {

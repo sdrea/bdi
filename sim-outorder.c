@@ -472,6 +472,11 @@ static int dl1compress;
 static int il2compress;
 static int dl2compress;
 
+static int il1check;
+static int dl1check;
+static int il2check;
+static int dl2check;
+
 //---------
 //sdrea-end
 
@@ -510,6 +515,7 @@ dl1_access_fn(enum mem_cmd cmd,		/* access cmd, Read or Write */
 //-----------
 
       cache_dl2->compression = dl2compress;
+      cache_dl2->compression_check = dl2check;
       lat = cache_access(cache_dl2, cmd, baddr, NULL, bsize, /* now */now, /* pudata */NULL, /* repl addr */NULL, mem);
 
 //---------
@@ -578,6 +584,7 @@ if (cache_il2)
 //-----------
 
       cache_il2->compression = il2compress;
+      cache_il2->compression_check = il2check;
       lat = cache_access(cache_il2, cmd, baddr, NULL, bsize, /* now */now, /* pudata */NULL, /* repl addr */NULL, mem);
 
 //---------
@@ -986,6 +993,22 @@ sim_reg_options(struct opt_odb_t *odb)
   opt_reg_flag(odb, "-cache:compression:dl2",
 	       "dl2 bdi compression",
 	       &dl2compress, /* default */FALSE, /* print */TRUE, NULL);
+
+  opt_reg_flag(odb, "-cache:compression_check:il1",
+	       "il1 bdi compression check",
+	       &il1check, /* default */FALSE, /* print */TRUE, NULL);
+
+  opt_reg_flag(odb, "-cache:compression_check:dl1",
+	       "dl1 bdi compression check",
+	       &dl1check, /* default */FALSE, /* print */TRUE, NULL);
+
+  opt_reg_flag(odb, "-cache:compression_check:il2",
+	       "il2 bdi compression check",
+	       &il2check, /* default */FALSE, /* print */TRUE, NULL);
+
+  opt_reg_flag(odb, "-cache:compression_check:dl2",
+	       "dl2 bdi compression check",
+	       &dl2check, /* default */FALSE, /* print */TRUE, NULL);
 
 //---------
 //sdrea-end
@@ -2346,6 +2369,7 @@ ruu_commit(void)
 //-----------
 
 		      cache_dl1->compression = dl1compress;
+		      cache_dl1->compression_check = dl1check;
 		      lat = cache_access(cache_dl1, Write, (LSQ[LSQ_head].addr&~3), NULL, 4, sim_cycle, NULL, NULL, mem);
 
 //---------
@@ -2962,6 +2986,7 @@ ruu_issue(void)
 //-----------
 
 				  cache_dl1->compression = dl1compress;
+				  cache_dl1->compression_check = dl1check;
 				  load_lat = cache_access(cache_dl1, Read, (rs->addr & ~3), NULL, 4, sim_cycle, NULL, NULL, mem); 
 
 //---------
@@ -4624,6 +4649,7 @@ ruu_fetch(void)
 //-----------
 
 	      cache_il1->compression = il1compress;
+	      cache_il1->compression_check = il1check;
 	      lat = cache_access(cache_il1, Read, IACOMPRESS(fetch_regs_PC), NULL, ISCOMPRESS(sizeof(md_inst_t)), sim_cycle, NULL, NULL, mem);
 
 //---------
