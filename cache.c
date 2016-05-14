@@ -560,20 +560,27 @@ stat_reg_counter(sdb, "count_encode_0101_b4d1", "Cache blocks compressed as base
 stat_reg_counter(sdb, "count_encode_0110_b4d2", "Cache blocks compressed as base 4 delta 2", &count_encode_0110_b4d2, 0, "%21d");
 stat_reg_counter(sdb, "count_encode_0111_b2d1", "Cache blocks compressed as base 2 delta 1", &count_encode_0111_b2d1, 0, "%21d");
 stat_reg_counter(sdb, "count_encode_1111_uncompressed", "Uncompressed cache lines", &count_encode_1111_uncompressed, 0, "%13d");
+stat_reg_formula(sdb, "rate_encode_0000_zeros", "Percentage of cache lines compressed as zeros",     "100 * count_encode_0000_zeros / count_encode_lines", "%15.1f");
+stat_reg_formula(sdb, "rate_encode_0001_repeats", "Percentage of cache lines compressed as repeats", "100 * count_encode_0001_repeats / count_encode_lines", "%13.1f");
+stat_reg_formula(sdb, "rate_encode_0010_b8d1", "Percentage of cache lines compressed as b8d1",       "100 * count_encode_0010_b8d1 / count_encode_lines", "%16.1f");
+stat_reg_formula(sdb, "rate_encode_0011_b8d2", "Percentage of cache lines compressed as b8d2",       "100 * count_encode_0011_b8d2 / count_encode_lines", "%16.1f");
+stat_reg_formula(sdb, "rate_encode_0100_b8d4", "Percentage of cache lines compressed as b8d4",       "100 * count_encode_0100_b8d4 / count_encode_lines", "%16.1f");
+stat_reg_formula(sdb, "rate_encode_0101_b4d1", "Percentage of cache lines compressed as b4d1",       "100 * count_encode_0101_b4d1 / count_encode_lines", "%16.1f");
+stat_reg_formula(sdb, "rate_encode_0110_b4d2", "Percentage of cache lines compressed as b4d2",       "100 * count_encode_0110_b4d2 / count_encode_lines", "%16.1f");
+stat_reg_formula(sdb, "rate_encode_0111_b2d1", "Percentage of cache lines compressed as b2d1",       "100 * count_encode_0111_b2d1 / count_encode_lines", "%16.1f");
 
-  stat_reg_counter(sdb, "count_compressible_any", "Count of cache lines compressible", &count_compressible_any, 0, "%14d");
-  stat_reg_counter(sdb, "count_compressible_0000_zeros", "Count of cache lines compressible as zeros", &count_compressible_0000_zeros, 0, "%14d");
-  stat_reg_counter(sdb, "count_compressible_0001_repeats", "Count of cache lines compressible as repeating values", &count_compressible_0001_repeats, 0, "%12d");
-  stat_reg_counter(sdb, "count_compressible_0010_b8d1", "Count of cache lines compressible as b8d1", &count_compressible_0010_b8d1, 0, "%15d");
-  stat_reg_counter(sdb, "count_compressible_0011_b8d2", "Count of cache lines compressible as b8d2", &count_compressible_0011_b8d2, 0, "%15d");
-  stat_reg_counter(sdb, "count_compressible_0100_b8d4", "Count of cache lines compressible as b8d4", &count_compressible_0100_b8d4, 0, "%15d");
-  stat_reg_counter(sdb, "count_compressible_0101_b4d1", "Count of cache lines compressible as b4d1", &count_compressible_0101_b4d1, 0, "%15d");
-  stat_reg_counter(sdb, "count_compressible_0110_b4d2", "Count of cache lines compressible as b4d2", &count_compressible_0110_b4d2, 0, "%15d");
-  stat_reg_counter(sdb, "count_compressible_0111_b2d1", "Count of cache lines compressible as b2d1", &count_compressible_0111_b2d1, 0, "%15d");
 
 stat_reg_counter(sdb, "count_check_lines", "Cache lines checked for compressibility", &count_check_lines, 0, "%21d");
-
-stat_reg_formula(sdb, "rate_compressible_any", "Percentage of cache lines compressible",     "100 * count_compressible_any / count_check_lines", "%15.1f");
+stat_reg_counter(sdb, "count_compressible_any", "Count of cache lines compressible", &count_compressible_any, 0, "%21d");
+stat_reg_counter(sdb, "count_compressible_0000_zeros", "Count of cache lines compressible as zeros", &count_compressible_0000_zeros, 0, "%14d");
+stat_reg_counter(sdb, "count_compressible_0001_repeats", "Count of cache lines compressible as repeating values", &count_compressible_0001_repeats, 0, "%12d");
+stat_reg_counter(sdb, "count_compressible_0010_b8d1", "Count of cache lines compressible as b8d1", &count_compressible_0010_b8d1, 0, "%15d");
+stat_reg_counter(sdb, "count_compressible_0011_b8d2", "Count of cache lines compressible as b8d2", &count_compressible_0011_b8d2, 0, "%15d");
+stat_reg_counter(sdb, "count_compressible_0100_b8d4", "Count of cache lines compressible as b8d4", &count_compressible_0100_b8d4, 0, "%15d");
+stat_reg_counter(sdb, "count_compressible_0101_b4d1", "Count of cache lines compressible as b4d1", &count_compressible_0101_b4d1, 0, "%15d");
+stat_reg_counter(sdb, "count_compressible_0110_b4d2", "Count of cache lines compressible as b4d2", &count_compressible_0110_b4d2, 0, "%15d");
+stat_reg_counter(sdb, "count_compressible_0111_b2d1", "Count of cache lines compressible as b2d1", &count_compressible_0111_b2d1, 0, "%15d");
+stat_reg_formula(sdb, "rate_compressible_any", "Percentage of cache lines compressible",     "100 * count_compressible_any / count_check_lines", "%21.1f");
 stat_reg_formula(sdb, "rate_compressible_0000_zeros", "Percentage of cache lines compressible as zeros",     "100 * count_compressible_0000_zeros / count_check_lines", "%15.1f");
 stat_reg_formula(sdb, "rate_compressible_0001_repeats", "Percentage of cache lines compressible as repeats", "100 * count_compressible_0001_repeats / count_check_lines", "%13.1f");
 stat_reg_formula(sdb, "rate_compressible_0010_b8d1", "Percentage of cache lines compressible as b8d1",       "100 * count_compressible_0010_b8d1 / count_check_lines", "%16.1f");
