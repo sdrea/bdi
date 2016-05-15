@@ -102,6 +102,9 @@ static counter_t count_compressible_0101_b4d1 = 0;
 static counter_t count_compressible_0110_b4d2 = 0;
 static counter_t count_compressible_0111_b2d1 = 0;
 
+static counter_t size_uncompressed = 0;
+static counter_t size_compressed = 0;
+
 //---------
 //sdrea-end
 
@@ -590,6 +593,10 @@ stat_reg_formula(sdb, "rate_compressible_0101_b4d1", "Percentage of cache lines 
 stat_reg_formula(sdb, "rate_compressible_0110_b4d2", "Percentage of cache lines compressible as b4d2",       "100 * count_compressible_0110_b4d2 / count_check_lines", "%16.1f");
 stat_reg_formula(sdb, "rate_compressible_0111_b2d1", "Percentage of cache lines compressible as b2d1",       "100 * count_compressible_0111_b2d1 / count_check_lines", "%16.1f");
 
+stat_reg_counter(sdb, "size_compressed", "Size of compressed cache lines", &size_compressed, 0, "%15d");
+stat_reg_counter(sdb, "size_uncompressed", "Size of uncompressed cache lines", &size_uncompressed, 0, "%15d");
+stat_reg_formula(sdb, "compression_ratio", "Compression Ratio",       "size_compressed / size_uncompressed", "%16.1f");
+
 }
 
 //sdrea-end
@@ -782,7 +789,7 @@ cache_access(struct cache_t *cp,	/* cache to access */
           if (cp->compression) 
             {
 
-              if (zeros == 1)         { bdi_encode = 0; bdi_mask = -1;}
+              if (zeros == 1)         { bdi_encode = 0; bdi_mask = -1; }
               else if (repeats == 1)  { bdi_encode = 1; bdi_mask = -1;}
               else if (delta81 == 1)  { bdi_encode = 2; bdi_mask = delta81mask;}
               else if (delta41 == 1)  { bdi_encode = 5; bdi_mask = delta41mask;}
@@ -872,6 +879,9 @@ else
             bdi_size = 64; // 8 segments, 64 bytes
           break;
         }
+
+      size_uncompressed += 64;
+      size_compressed += 128 - bdi_size;
 
       struct cache_blk_t *bdi_blk1, *bdi_blk2;
 
