@@ -186,7 +186,7 @@ static int cache_dl1_lat;
 
 /* l2 data cache config, i.e., {<config>|none} */
 static char *cache_dl2_opt;
-//sdrea-note
+
 /* l2 data cache hit latency (in cycles) */
 static int cache_dl2_lat;
 
@@ -476,6 +476,20 @@ static int il1check;
 static int dl1check;
 static int il2check;
 static int dl2check;
+
+static int cacti_leakage_power_tag;
+static int cacti_dynamic_read_power_tag;
+static int cacti_dynamic_write_power_tag;
+static int cacti_leakage_power_data;
+static int cacti_dynamic_read_power_data;
+static int cacti_dynamic_write_power_data;
+
+static int sim_leakage_power_tag;
+static int sim_dynamic_read_power_tag;
+static int sim_dynamic_write_power_tag;
+static int sim_leakage_power_data;
+static int sim_dynamic_read_power_data;
+static int sim_dynamic_write_power_data;
 
 //---------
 //sdrea-end
@@ -1009,6 +1023,30 @@ sim_reg_options(struct opt_odb_t *odb)
   opt_reg_flag(odb, "-cache:compression_check:dl2",
 	       "dl2 bdi compression check",
 	       &dl2check, /* default */FALSE, /* print */TRUE, NULL);
+
+  opt_reg_float(odb, "-cache:leakage_power_tag",
+                "Leakage power per tag access",
+                "&cacti_leakage_power_tag, 0, TRUE, NULL);
+
+  opt_reg_float(odb, "-cache:dynamic_read_power_tag",
+                "Dynamic power per tag read",
+                "&cacti_dynamic_read_power_tag, 0, TRUE, NULL);
+
+  opt_reg_float(odb, "-cache:dynamic_write_power_tag",
+                "Dynamic power per tag write",
+                "&cacti_dynamic_write_power_tag, 0, TRUE, NULL);
+
+  opt_reg_float(odb, "-cache:leakage_power_data",
+                "Leakage power per data access",
+                "&cacti_leakage_power_data, 0, TRUE, NULL);
+
+  opt_reg_float(odb, "-cache:dynamic_read_power_data",
+                "Dynamic power per data read",
+                "&cacti_dynamic_read_power_data, 0, TRUE, NULL);
+
+  opt_reg_float(odb, "-cache:dynamic_write_power_data",
+                "Dynamic power per data write",
+                "&cacti_dynamic_write_power_data, 0, TRUE, NULL);
 
 //---------
 //sdrea-end
