@@ -94,14 +94,6 @@
 /* added for Wattch */
 #include "power.h"
 
-//sdrea-begin
-//-----------
-
-#include "cacti65/bdi_interface.h"
-
-//---------
-//sdrea-end
-
 /*
  * This file implements a very detailed out-of-order issue superscalar
  * processor with a two-level memory system and speculative execution support.
@@ -1517,17 +1509,8 @@ void
 sim_reg_bdi_stats(struct stat_sdb_t *sdb)   /* stats database */
 {
 
-    int x;
-
     cache_reg_bdi_stats(NULL, sdb);
     // TODO: Reg stats by cache type instead of all at once
-
-    x = bdi_interface();
-
-stat_reg_counter(sdb, "bdi_interface",
-                   "c++ bdi_interface return value",
-                   &x, 0, NULL);
-
 
 }
 

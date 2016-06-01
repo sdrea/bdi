@@ -41,12 +41,6 @@
 
 #include "io.h"
 #include <iostream>
-//sdrea-begin
-//-----------
-#include "bdi_interface.h"
-//---------
-//sdrea-end
-
 
 using namespace std;
 
@@ -56,9 +50,6 @@ int main(int argc,char *argv[])
 
   uca_org_t result;
 
-//sdrea-begin
-//-----------
-/*
   if (argc != 55)
   {
     bool infile_specified = false;
@@ -144,8 +135,7 @@ int main(int argc,char *argv[])
                              atoi(argv[53]),
                              atoi(argv[54]));
   }
-*/
 
-  return bdi_interface();
+  return 0;
 }
 
