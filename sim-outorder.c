@@ -1026,27 +1026,27 @@ sim_reg_options(struct opt_odb_t *odb)
 
   opt_reg_float(odb, "-cache:leakage_power_tag",
                 "Leakage power per tag access",
-                "&cacti_leakage_power_tag, 0, TRUE, NULL);
+                &cacti_leakage_power_tag, 0, TRUE, NULL);
 
   opt_reg_float(odb, "-cache:dynamic_read_power_tag",
                 "Dynamic power per tag read",
-                "&cacti_dynamic_read_power_tag, 0, TRUE, NULL);
+                &cacti_dynamic_read_power_tag, 0, TRUE, NULL);
 
   opt_reg_float(odb, "-cache:dynamic_write_power_tag",
                 "Dynamic power per tag write",
-                "&cacti_dynamic_write_power_tag, 0, TRUE, NULL);
+                &cacti_dynamic_write_power_tag, 0, TRUE, NULL);
 
   opt_reg_float(odb, "-cache:leakage_power_data",
                 "Leakage power per data access",
-                "&cacti_leakage_power_data, 0, TRUE, NULL);
+                &cacti_leakage_power_data, 0, TRUE, NULL);
 
   opt_reg_float(odb, "-cache:dynamic_read_power_data",
                 "Dynamic power per data read",
-                "&cacti_dynamic_read_power_data, 0, TRUE, NULL);
+                &cacti_dynamic_read_power_data, 0, TRUE, NULL);
 
   opt_reg_float(odb, "-cache:dynamic_write_power_data",
                 "Dynamic power per data write",
-                "&cacti_dynamic_write_power_data, 0, TRUE, NULL);
+                &cacti_dynamic_write_power_data, 0, TRUE, NULL);
 
 //---------
 //sdrea-end
