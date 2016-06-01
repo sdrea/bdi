@@ -771,7 +771,15 @@ uca_org_t cacti_interface(
   g_ip->leakage_power_wt_nuca = nuca_obj_func_leakage_power;
   g_ip->area_wt_nuca = nuca_obj_func_area;
   g_ip->cycle_time_wt_nuca    = nuca_obj_func_cycle_time;
-  g_ip->delay_dev_nuca = dev_func_delay;
+
+//sdrea-begin
+//-----------
+
+  g_ip->delay_dev_nuca = nuca_dev_func_delay;
+
+//---------
+//sdrea-end
+
   g_ip->dynamic_power_dev_nuca = nuca_dev_func_dynamic_power;
   g_ip->leakage_power_dev_nuca = nuca_dev_func_leakage_power;
   g_ip->area_dev_nuca = nuca_dev_func_area;
