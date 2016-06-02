@@ -239,6 +239,22 @@ struct cache_t
   int compression;
   int compression_check;
 
+float cacti_leakage_power_tag;
+float cacti_dynamic_read_power_tag;
+float cacti_dynamic_write_power_tag;
+float cacti_leakage_power_data;
+float cacti_dynamic_read_power_data;
+float cacti_dynamic_write_power_data;
+
+float sim_leakage_power_tag;
+float sim_dynamic_read_power_tag;
+float sim_dynamic_write_power_tag;
+float sim_leakage_power_data;
+float sim_dynamic_read_power_data;
+float sim_dynamic_write_power_data;
+
+tick_t last_cache_access;
+
 //---------
 //sdrea-end
 

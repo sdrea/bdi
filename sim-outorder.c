@@ -484,15 +484,6 @@ static float cacti_leakage_power_data;
 static float cacti_dynamic_read_power_data;
 static float cacti_dynamic_write_power_data;
 
-static float sim_leakage_power_tag = 0;
-static float sim_dynamic_read_power_tag = 0;
-static float sim_dynamic_write_power_tag = 0;
-static float sim_leakage_power_data = 0;
-static float sim_dynamic_read_power_data = 0;
-static float sim_dynamic_write_power_data = 0;
-
-static tick_t last_l2_cache_access = 0;
-
 //---------
 //sdrea-end
 
@@ -530,25 +521,7 @@ dl1_access_fn(enum mem_cmd cmd,		/* access cmd, Read or Write */
 //sdrea-begin
 //-----------
 
-      cache_dl2->compression = dl2compress;
-      cache_dl2->compression_check = dl2check;
       lat = cache_access(cache_dl2, cmd, baddr, NULL, bsize, /* now */now, /* pudata */NULL, /* repl addr */NULL, mem);
-
-      sim_leakage_power_tag += (sim_cycle - last_l2_cache_access) * cacti_leakage_power_tag;
-      sim_leakage_power_data += (sim_cycle - last_l2_cache_access) * cacti_leakage_power_data;
-
-      if (cmd == Read) 
-        {
-          sim_dynamic_read_power_tag += cacti_dynamic_read_power_tag;
-          sim_dynamic_read_power_data += cacti_dynamic_read_power_data;
-        }
-      if (cmd == Write)
-        {
-          sim_dynamic_write_power_tag += cacti_dynamic_write_power_tag;
-          sim_dynamic_write_power_data += cacti_dynamic_write_power_data;
-        }
-
-      last_l2_cache_access = sim_cycle;
 
 //---------
 //sdrea-end
@@ -616,25 +589,7 @@ if (cache_il2)
 //sdrea-begin
 //-----------
 
-      cache_il2->compression = il2compress;
-      cache_il2->compression_check = il2check;
       lat = cache_access(cache_il2, cmd, baddr, NULL, bsize, /* now */now, /* pudata */NULL, /* repl addr */NULL, mem);
-
-      sim_leakage_power_tag += (sim_cycle - last_l2_cache_access) * cacti_leakage_power_tag;
-      sim_leakage_power_data += (sim_cycle - last_l2_cache_access) * cacti_leakage_power_data;
-
-      if (cmd == Read)  
-        {
-          sim_dynamic_read_power_tag += cacti_dynamic_read_power_tag;
-          sim_dynamic_read_power_data += cacti_dynamic_read_power_data;
-       	}
-      if (cmd == Write)
-       	{
-          sim_dynamic_write_power_tag += cacti_dynamic_write_power_tag;
-          sim_dynamic_write_power_data += cacti_dynamic_write_power_data;
-       	}
-
-      last_l2_cache_access = sim_cycle;
 
 //---------
 //sdrea-end
@@ -1396,6 +1351,49 @@ sim_check_options(struct opt_odb_t *odb,        /* options database */
   if (res_fpmult > MAX_INSTS_PER_CLASS)
     fatal("number of FP mult/div's must be <= MAX_INSTS_PER_CLASS");
   fu_config[FU_FPMULT_INDEX].quantity = res_fpmult;
+
+//sdrea-begin
+//-----------
+
+      cache_il1->compression = il1compress;
+      cache_il1->compression_check = il1check;
+      cache_il1->cacti_leakage_power_tag = 0;
+      cache_il1->cacti_dynamic_read_power_tag = 0;
+      cache_il1->cacti_dynamic_write_power_tag = 0;
+      cache_il1->cacti_leakage_power_data = 0;
+      cache_il1->cacti_dynamic_read_power_data = 0;
+      cache_il1->cacti_dynamic_write_power_data = 0;
+
+      cache_dl1->compression = dl1compress;
+      cache_dl1->compression_check = dl1check;
+      cache_dl1->cacti_leakage_power_tag = 0;
+      cache_dl1->cacti_dynamic_read_power_tag = 0;
+      cache_dl1->cacti_dynamic_write_power_tag = 0;
+      cache_dl1->cacti_leakage_power_data = 0;
+      cache_dl1->cacti_dynamic_read_power_data = 0;
+      cache_dl1->cacti_dynamic_write_power_data = 0;
+
+      cache_il2->compression = il2compress;
+      cache_il2->compression_check = il2check;
+      cache_il2->cacti_leakage_power_tag = cacti_leakage_power_tag;
+      cache_il2->cacti_dynamic_read_power_tag = cacti_dynamic_read_power_tag;
+      cache_il2->cacti_dynamic_write_power_tag = cacti_dynamic_write_power_tag;
+      cache_il2->cacti_leakage_power_data = cacti_leakage_power_data;
+      cache_il2->cacti_dynamic_read_power_data = cacti_dynamic_read_power_data;
+      cache_il2->cacti_dynamic_write_power_data = cacti_dynamic_write_power_data;
+
+      cache_dl2->compression = dl2compress;
+      cache_dl2->compression_check = dl2check;
+      cache_dl2->cacti_leakage_power_tag = cacti_leakage_power_tag;
+      cache_dl2->cacti_dynamic_read_power_tag = cacti_dynamic_read_power_tag;
+      cache_dl2->cacti_dynamic_write_power_tag = cacti_dynamic_write_power_tag;
+      cache_dl2->cacti_leakage_power_data = cacti_leakage_power_data;
+      cache_dl2->cacti_dynamic_read_power_data = cacti_dynamic_read_power_data;
+      cache_dl2->cacti_dynamic_write_power_data = cacti_dynamic_write_power_data;
+
+//---------
+//sdrea-end
+
 }
 
 /* print simulator-specific configuration information */
@@ -1584,11 +1582,6 @@ sim_reg_bdi_stats(struct stat_sdb_t *sdb)   /* stats database */
 
     cache_reg_bdi_stats(NULL, sdb);
     // TODO: Reg stats by cache type instead of all at once
-
-  stat_reg_float(sdb, "sim_l2_leakage_power_tag",
-	       "L2 Cache Leakage Power",
-	       &sim_leakage_power_tag, 0, "%16.6f");
-
 
 }
 
@@ -2446,8 +2439,6 @@ ruu_commit(void)
 //sdrea-begin
 //-----------
 
-		      cache_dl1->compression = dl1compress;
-		      cache_dl1->compression_check = dl1check;
 		      lat = cache_access(cache_dl1, Write, (LSQ[LSQ_head].addr&~3), NULL, 4, sim_cycle, NULL, NULL, mem);
 
 //---------
@@ -3062,8 +3053,6 @@ ruu_issue(void)
 //sdrea-begin
 //-----------
 
-				  cache_dl1->compression = dl1compress;
-				  cache_dl1->compression_check = dl1check;
 				  load_lat = cache_access(cache_dl1, Read, (rs->addr & ~3), NULL, 4, sim_cycle, NULL, NULL, mem); 
 
 //---------
@@ -4725,8 +4714,6 @@ ruu_fetch(void)
 //sdrea-begin
 //-----------
 
-	      cache_il1->compression = il1compress;
-	      cache_il1->compression_check = il1check;
 	      lat = cache_access(cache_il1, Read, IACOMPRESS(fetch_regs_PC), NULL, ISCOMPRESS(sizeof(md_inst_t)), sim_cycle, NULL, NULL, mem);
 
 //---------
