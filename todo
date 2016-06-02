@@ -1,0 +1,11 @@
+For IPC, please report percentage of improvement relative to the baseline scheme. This makes it easier to compare the compressed cache and the 
+baseline cache.
+
+To justify your plan for thesis, you need to report performance when delay of compression is not zero. Please add a new parameter to .cfg, let's 
+call it -delay_compressed_cache. This delay is added to the delay of the baseline cache only if a read block is compressed. You should take into 
+account delay ONLY for read not for write as a write operation is not on the critical path and can be done in parallel with other tasks.
+
+The last item is comparison of the compressed cache with a cache which its size is double the size of the baseline scheme (both data and tag). This 
+cache is uncompressed. We should show that IPC of the compressed cache is similar to the double sized cache but its power is less. If you have time, 
+you can run simulation for this one before seminar; if not, you can leave it for thesis.
+

@@ -553,6 +553,47 @@ cache_reg_stats(struct cache_t *cp,	/* cache instance */
   sprintf(buf1, "%s.invalidations / %s.accesses", name, name);
   stat_reg_formula(sdb, buf, "invalidation rate (i.e., invs/ref)", buf1, NULL);
 
+//sdrea-begin
+//-----------
+
+  sprintf(buf, "sim_%s_leakage_power_tag", name);
+  sprintf(buf1, "%s Cache Tag Leakage Power (mW)", name);
+  stat_reg_float(sdb, buf,
+               buf1,
+               &cp->sim_leakage_power_tag, 0, "%21.6f");
+
+  sprintf(buf, "sim_%s_dynamic_read_power_tag", name);
+  sprintf(buf1, "%s Cache Tag Dynamic Read Energy (nJ)", name);
+  stat_reg_float(sdb, buf,
+               buf1,
+               &cp->sim_dynamic_read_power_tag, 0, "%16.6f");
+
+  sprintf(buf, "sim_%s_dynamic_write_power_tag", name);
+  sprintf(buf1, "%s Cache Tag Dynamic Write Energy (nJ)", name);
+  stat_reg_float(sdb, buf,
+               buf1,
+               &cp->sim_dynamic_write_power_tag, 0, "%15.6f");
+
+  sprintf(buf, "sim_%s_leakage_power_data", name);
+  sprintf(buf1, "%s Cache Data Leakage Power (mW)", name);
+  stat_reg_float(sdb, buf,
+               buf1,
+               &cp->sim_leakage_power_data, 0, "%20.6f");
+
+  sprintf(buf, "sim_%s_dynamic_read_power_data", name);
+  sprintf(buf1, "%s Cache Data Dynamic Read Energy (nJ)", name);
+  stat_reg_float(sdb, buf,
+               buf1,
+               &cp->sim_dynamic_read_power_data, 0, "%15.6f");
+
+  sprintf(buf, "sim_%s_dynamic_write_power_data", name);
+  sprintf(buf1, "%s Cache Data Dynamic Write Energy (nJ)", name);
+  stat_reg_float(sdb, buf,
+               buf1,
+               &cp->sim_dynamic_write_power_data, 0, "%14.6f");
+
+//sdrea-end
+
 }
 
 //sdrea-begin
@@ -561,14 +602,6 @@ void
 cache_reg_bdi_stats(struct cache_t *cp,	/* cache instance */
 		    struct stat_sdb_t *sdb)	/* stats database */
 {
-
-  char buf[512], buf1[512], *name;
-
-  /* get a name for this cache */
-  if (!cp->name || !cp->name[0])
-    name = "<unknown>";
-  else
-    name = cp->name;
 
 stat_reg_counter(sdb, "count_encode_lines", "Cache lines checked for compression", &count_encode_lines, 0, "%21d");
 stat_reg_counter(sdb, "count_encode_0000_zeros", "Cache blocks compressed as zeros", &count_encode_0000_zeros, 0, "%20d");
@@ -614,42 +647,6 @@ stat_reg_counter(sdb, "size_compressed", "Size of compressed cache lines", &size
 stat_reg_counter(sdb, "size_uncompressed", "Size of uncompressed cache lines", &size_uncompressed, 0, "%15d");
 stat_reg_formula(sdb, "compression_ratio", "Compression Ratio",       "size_compressed / size_uncompressed", "%16.1f");
 
-
-  sprintf(buf, "sim_%s_leakage_power_tag", name);
-  sprintf(buf1, "%s Cache Tag Leakage Power (mW)", name);
-  stat_reg_float(sdb, buf,
-               buf1,
-               &cp->sim_leakage_power_tag, 0, "%21.6f");
-
-  sprintf(buf, "sim_%s_dynamic_read_power_tag", name);
-  sprintf(buf1, "%s Cache Tag Dynamic Read Energy (nJ)", name);
-  stat_reg_float(sdb, buf,
-               buf1,
-               &cp->sim_dynamic_read_power_tag, 0, "%16.6f");
-
-  sprintf(buf, "sim_%s_dynamic_write_power_tag", name);
-  sprintf(buf1, "%s Cache Tag Dynamic Write Energy (nJ)", name);
-  stat_reg_float(sdb, buf,
-               buf1,
-               &cp->sim_dynamic_write_power_tag, 0, "%15.6f");
-
-  sprintf(buf, "sim_%s_leakage_power_data", name);
-  sprintf(buf1, "%s Cache Data Leakage Power (mW)", name);
-  stat_reg_float(sdb, buf,
-               buf1,
-               &cp->sim_leakage_power_data, 0, "%20.6f");
-
-  sprintf(buf, "sim_%s_dynamic_read_power_data", name);
-  sprintf(buf1, "%s Cache Data Dynamic Read Energy (nJ)", name);
-  stat_reg_float(sdb, buf,
-               buf1,
-               &cp->sim_dynamic_read_power_data, 0, "%15.6f");
-
-  sprintf(buf, "sim_%s_dynamic_write_power_data", name);
-  sprintf(buf1, "%s Cache Data Dynamic Write Energy (nJ)", name);
-  stat_reg_float(sdb, buf,
-               buf1,
-               &cp->sim_dynamic_write_power_data, 0, "%14.6f");
 
 
 }
@@ -717,22 +714,6 @@ cache_access(struct cache_t *cp,	/* cache to access */
 
   byte_t bdi_encode = -1;
   qword_t bdi_mask = -1;
-
-  cp->sim_leakage_power_tag += (now - cp->last_cache_access) * cp->cacti_leakage_power_tag;
-  cp->sim_leakage_power_data += (now - cp->last_cache_access) * cp->cacti_leakage_power_data;
-
-  if (cmd == Read)
-    {
-      cp->sim_dynamic_read_power_tag += cp->cacti_dynamic_read_power_tag;
-      cp->sim_dynamic_read_power_data += cp->cacti_dynamic_read_power_data;
-    }
-  if (cmd == Write)
-    {
-      cp->sim_dynamic_write_power_tag += cp->cacti_dynamic_write_power_tag;
-      cp->sim_dynamic_write_power_data += cp->cacti_dynamic_write_power_data;
-    }
-
-  cp->last_cache_access = now;
 
 //---------
 //sdrea-end
@@ -895,13 +876,13 @@ else
 
 }
 
+      int bdi_size = 64;
 
   if (cp->compression)
     {
 
       count_encode_lines++;
 
-      int bdi_size;
       switch (bdi_encode)
         {
           case 0:
@@ -1064,6 +1045,22 @@ else
             }
         }
     }
+
+  cp->sim_leakage_power_tag += (now - cp->last_cache_access) * cp->cacti_leakage_power_tag;
+  cp->sim_leakage_power_data += (now - cp->last_cache_access) * cp->cacti_leakage_power_data;
+
+  if (cmd == Read)
+    {
+      cp->sim_dynamic_read_power_tag += cp->cacti_dynamic_read_power_tag;
+      cp->sim_dynamic_read_power_data += (bdi_size/cp->bsize)*cp->cacti_dynamic_read_power_data;
+    }
+  if (cmd == Write)
+    {
+      cp->sim_dynamic_write_power_tag += cp->cacti_dynamic_write_power_tag;
+      cp->sim_dynamic_write_power_data += (bdi_size/cp->bsize)*cp->cacti_dynamic_write_power_data;
+    }
+
+  cp->last_cache_access = now;
 
 //---------
 //sdrea-end
