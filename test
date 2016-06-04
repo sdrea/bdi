@@ -7,7 +7,10 @@ elif [ $1 = "0" ]; then
 ./sim-outorder -config config/1M-baseline.cfg -fastfwd 1000000 -max:inst 1000000 reabmk
 
 elif [ $1 = "1" ]; then
-./sim-outorder -config config/1M-compressed.cfg -fastfwd 1000000 -max:inst 1000000 reabmk
+./sim-outorder -config config/1M-l2_check.cfg -fastfwd 1000000 -max:inst 1000000 reabmk
+
+elif [ $1 = "2" ]; then
+./sim-outorder -config config/1M-l2_compressed.cfg -fastfwd 1000000 -max:inst 1000000 reabmk
 
 else
 
