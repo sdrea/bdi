@@ -557,10 +557,10 @@ cache_reg_stats(struct cache_t *cp,	/* cache instance */
 //-----------
 
   sprintf(buf, "%s_sim_tag_static_power", name);
-  sprintf(buf1, "%s Cache Tag Leakage Power (mW)", name);
+  sprintf(buf1, "%s Cache Tag Leakage Power (mW-cycles)", name);
   stat_reg_float(sdb, buf,
                buf1,
-               &cp->sim_tag_static_power, 0, "%21.6f");
+               &cp->sim_tag_static_power, 0, "%23.6f");
 
   sprintf(buf, "%s_sim_tag_read_dynamic_energy", name);
   sprintf(buf1, "%s Cache Tag Dynamic Read Energy (nJ)", name);
@@ -575,10 +575,10 @@ cache_reg_stats(struct cache_t *cp,	/* cache instance */
                &cp->sim_tag_write_dynamic_energy, 0, "%15.6f");
 
   sprintf(buf, "%s_sim_data_static_power", name);
-  sprintf(buf1, "%s Cache Data Leakage Power (mW)", name);
+  sprintf(buf1, "%s Cache Data Leakage Power (mW-cycles)", name);
   stat_reg_float(sdb, buf,
                buf1,
-               &cp->sim_data_static_power, 0, "%20.6f");
+               &cp->sim_data_static_power, 0, "%22.6f");
 
   sprintf(buf, "%s_sim_data_read_dynamic_energy", name);
   sprintf(buf1, "%s Cache Data Dynamic Read Energy (nJ)", name);
