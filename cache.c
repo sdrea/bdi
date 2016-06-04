@@ -392,17 +392,17 @@ cache_create(char *name,		/* name of the cache */
 //sdrea-begin
 //-----------
 
-  cp->compression = 0;
-  cp->compression_check = 0;
+  cp->bdi_compress = 0;
+  cp->bdi_check = 0;
 
-float sim_leakage_power_tag = 0;
-float sim_dynamic_read_power_tag = 0;
-float sim_dynamic_write_power_tag = 0;
-float sim_leakage_power_data = 0;
-float sim_dynamic_read_power_data = 0;
-float sim_dynamic_write_power_data = 0;
+  cp->sim_tag_static_power = 0;
+  cp->sim_tag_read_dynamic_energy = 0;
+  cp->sim_tag_write_dynamic_energy = 0;
+  cp->sim_data_static_power = 0;
+  cp->sim_data_read_dynamic_energy = 0;
+  cp->sim_data_write_dynamic_energy = 0;
 
-tick_t last_cache_access = 0;
+  cp->last_cache_access = 0;
 
 //---------
 //sdrea-end
@@ -556,41 +556,41 @@ cache_reg_stats(struct cache_t *cp,	/* cache instance */
 //sdrea-begin
 //-----------
 
-  sprintf(buf, "sim_%s_leakage_power_tag", name);
+  sprintf(buf, "%s_sim_tag_static_power", name);
   sprintf(buf1, "%s Cache Tag Leakage Power (mW)", name);
   stat_reg_float(sdb, buf,
                buf1,
-               &cp->sim_leakage_power_tag, 0, "%21.6f");
+               &cp->sim_tag_static_power, 0, "%21.6f");
 
-  sprintf(buf, "sim_%s_dynamic_read_power_tag", name);
+  sprintf(buf, "%s_sim_tag_read_dynamic_energy", name);
   sprintf(buf1, "%s Cache Tag Dynamic Read Energy (nJ)", name);
   stat_reg_float(sdb, buf,
                buf1,
-               &cp->sim_dynamic_read_power_tag, 0, "%16.6f");
+               &cp->sim_tag_read_dynamic_energy, 0, "%16.6f");
 
-  sprintf(buf, "sim_%s_dynamic_write_power_tag", name);
+  sprintf(buf, "%s_sim_tag_write_dynamic_energy", name);
   sprintf(buf1, "%s Cache Tag Dynamic Write Energy (nJ)", name);
   stat_reg_float(sdb, buf,
                buf1,
-               &cp->sim_dynamic_write_power_tag, 0, "%15.6f");
+               &cp->sim_tag_write_dynamic_energy, 0, "%15.6f");
 
-  sprintf(buf, "sim_%s_leakage_power_data", name);
+  sprintf(buf, "%s_sim_data_static_power", name);
   sprintf(buf1, "%s Cache Data Leakage Power (mW)", name);
   stat_reg_float(sdb, buf,
                buf1,
-               &cp->sim_leakage_power_data, 0, "%20.6f");
+               &cp->sim_data_static_power, 0, "%20.6f");
 
-  sprintf(buf, "sim_%s_dynamic_read_power_data", name);
+  sprintf(buf, "%s_sim_data_read_dynamic_energy", name);
   sprintf(buf1, "%s Cache Data Dynamic Read Energy (nJ)", name);
   stat_reg_float(sdb, buf,
                buf1,
-               &cp->sim_dynamic_read_power_data, 0, "%15.6f");
+               &cp->sim_data_read_dynamic_energy, 0, "%15.6f");
 
-  sprintf(buf, "sim_%s_dynamic_write_power_data", name);
+  sprintf(buf, "%s_sim_data_write_dynamic_energy", name);
   sprintf(buf1, "%s Cache Data Dynamic Write Energy (nJ)", name);
   stat_reg_float(sdb, buf,
                buf1,
-               &cp->sim_dynamic_write_power_data, 0, "%14.6f");
+               &cp->sim_data_write_dynamic_energy, 0, "%14.6f");
 
 //sdrea-end
 
@@ -838,7 +838,7 @@ cache_access(struct cache_t *cp,	/* cache to access */
 
           }
 
-          if (cp->compression) 
+          if (cp->bdi_compress) 
             {
 
               if (zeros == 1)         { bdi_encode = 0; bdi_mask = -1; }
@@ -853,7 +853,7 @@ cache_access(struct cache_t *cp,	/* cache to access */
 
             }
 
-          if (cp->compression_check)
+          if (cp->bdi_check)
             {
 
 	      count_check_lines++;
@@ -878,7 +878,7 @@ else
 
       int bdi_size = 64;
 
-  if (cp->compression)
+  if (cp->bdi_compress)
     {
 
       count_encode_lines++;
@@ -1046,18 +1046,18 @@ else
         }
     }
 
-  cp->sim_leakage_power_tag += (now - cp->last_cache_access) * cp->cacti_leakage_power_tag;
-  cp->sim_leakage_power_data += (now - cp->last_cache_access) * cp->cacti_leakage_power_data;
+  cp->sim_tag_static_power += (now - cp->last_cache_access) * cp->cacti_tag_static_power;
+  cp->sim_data_static_power += (now - cp->last_cache_access) * cp->cacti_data_static_power;
 
   if (cmd == Read)
     {
-      cp->sim_dynamic_read_power_tag += cp->cacti_dynamic_read_power_tag;
-      cp->sim_dynamic_read_power_data += (bdi_size/cp->bsize)*cp->cacti_dynamic_read_power_data;
+      cp->sim_tag_read_dynamic_energy += cp->cacti_tag_read_dynamic_energy;
+      cp->sim_data_read_dynamic_energy += (bdi_size/cp->bsize)*cp->cacti_data_read_dynamic_energy;
     }
   if (cmd == Write)
     {
-      cp->sim_dynamic_write_power_tag += cp->cacti_dynamic_write_power_tag;
-      cp->sim_dynamic_write_power_data += (bdi_size/cp->bsize)*cp->cacti_dynamic_write_power_data;
+      cp->sim_tag_write_dynamic_energy += cp->cacti_tag_write_dynamic_energy;
+      cp->sim_data_write_dynamic_energy += (bdi_size/cp->bsize)*cp->cacti_data_write_dynamic_energy;
     }
 
   cp->last_cache_access = now;
@@ -1139,6 +1139,14 @@ else
   /* read data block */
   lat += cp->blk_access_fn(Read, CACHE_BADDR(cp, addr), cp->bsize,
 			   repl, now+lat);
+
+//sdrea-begin
+//-----------
+
+  if (cp->bdi_compress) lat += cp->decompression_latency;
+
+//---------
+//sdrea-end
 
   /* copy data out of cache block */
   if (cp->balloc)

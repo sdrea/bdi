@@ -236,24 +236,26 @@ struct cache_t
 //sdrea-begin
 //-----------
 
-  int compression;
-  int compression_check;
+  int bdi_compress;
+  int bdi_check;
 
-float cacti_leakage_power_tag;
-float cacti_dynamic_read_power_tag;
-float cacti_dynamic_write_power_tag;
-float cacti_leakage_power_data;
-float cacti_dynamic_read_power_data;
-float cacti_dynamic_write_power_data;
+  float cacti_tag_static_power;
+  float cacti_tag_read_dynamic_energy;
+  float cacti_tag_write_dynamic_energy;
+  float cacti_data_static_power;
+  float cacti_data_read_dynamic_energy;
+  float cacti_data_write_dynamic_energy;
 
-float sim_leakage_power_tag;
-float sim_dynamic_read_power_tag;
-float sim_dynamic_write_power_tag;
-float sim_leakage_power_data;
-float sim_dynamic_read_power_data;
-float sim_dynamic_write_power_data;
+  float decompression_latency;
 
-tick_t last_cache_access;
+  float sim_tag_static_power;
+  float sim_tag_read_dynamic_energy;
+  float sim_tag_write_dynamic_energy;
+  float sim_data_static_power;
+  float sim_data_read_dynamic_energy;
+  float sim_data_write_dynamic_energy;
+
+  tick_t last_cache_access;
 
 //---------
 //sdrea-end
