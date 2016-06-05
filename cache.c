@@ -711,6 +711,8 @@ cache_access(struct cache_t *cp,	/* cache to access */
   signed long db4[64];
   signed short db2[64];
   int i;
+  int bdi_size = 64;
+
 
   byte_t bdi_encode = -1;
   qword_t bdi_mask = -1;
@@ -875,8 +877,6 @@ else
 // mem is null in cache_access call
 
 }
-
-      int bdi_size = 64;
 
   if (cp->bdi_compress)
     {
