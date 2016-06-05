@@ -1166,6 +1166,9 @@ else
 
  cache_hit: /* slow hit handler */
 
+  /* **HIT** */
+  cp->hits++;
+
 //sdrea-begin
 //-----------
 
@@ -1232,9 +1235,6 @@ else
 //---------
 //sdrea-end
   
-  /* **HIT** */
-  cp->hits++;
-
   /* copy data out of cache block, if block exists */
   if (cp->balloc)
     {
