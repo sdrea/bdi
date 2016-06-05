@@ -239,14 +239,14 @@ struct cache_t
   int bdi_compress;
   int bdi_check;
 
-  float cacti_tag_static_power;
-  float cacti_tag_read_dynamic_energy;
-  float cacti_tag_write_dynamic_energy;
-  float cacti_data_static_power;
-  float cacti_data_read_dynamic_energy;
-  float cacti_data_write_dynamic_energy;
+  double cacti_tag_static_power;
+  double cacti_tag_read_dynamic_energy;
+  double cacti_tag_write_dynamic_energy;
+  double cacti_data_static_power;
+  double cacti_data_read_dynamic_energy;
+  double cacti_data_write_dynamic_energy;
 
-  float decompression_latency;
+  int decompression_latency;
 
   double sim_tag_static_power;
   double sim_tag_read_dynamic_energy;

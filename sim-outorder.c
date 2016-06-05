@@ -469,43 +469,43 @@ static struct stat_stat_t *pcstat_sdists[MAX_PCSTAT_VARS];
 
 static int il1_bdi_compress;
 static int il1_bdi_check;
-static float il1_cacti_tag_static_power;
-static float il1_cacti_tag_read_dynamic_energy;
-static float il1_cacti_tag_write_dynamic_energy;
-static float il1_cacti_data_static_power;
-static float il1_cacti_data_read_dynamic_energy;
-static float il1_cacti_data_write_dynamic_energy;
-static float il1_decompression_latency;
+static double il1_cacti_tag_static_power;
+static double il1_cacti_tag_read_dynamic_energy;
+static double il1_cacti_tag_write_dynamic_energy;
+static double il1_cacti_data_static_power;
+static double il1_cacti_data_read_dynamic_energy;
+static double il1_cacti_data_write_dynamic_energy;
+static int il1_decompression_latency;
 
 static int dl1_bdi_compress;
 static int dl1_bdi_check;
-static float dl1_cacti_tag_static_power;
-static float dl1_cacti_tag_read_dynamic_energy;
-static float dl1_cacti_tag_write_dynamic_energy;
-static float dl1_cacti_data_static_power;
-static float dl1_cacti_data_read_dynamic_energy;
-static float dl1_cacti_data_write_dynamic_energy;
-static float dl1_decompression_latency;
+static double dl1_cacti_tag_static_power;
+static double dl1_cacti_tag_read_dynamic_energy;
+static double dl1_cacti_tag_write_dynamic_energy;
+static double dl1_cacti_data_static_power;
+static double dl1_cacti_data_read_dynamic_energy;
+static double dl1_cacti_data_write_dynamic_energy;
+static int dl1_decompression_latency;
 
 static int il2_bdi_compress;
 static int il2_bdi_check;
-static float il2_cacti_tag_static_power;
-static float il2_cacti_tag_read_dynamic_energy;
-static float il2_cacti_tag_write_dynamic_energy;
-static float il2_cacti_data_static_power;
-static float il2_cacti_data_read_dynamic_energy;
-static float il2_cacti_data_write_dynamic_energy;
-static float il2_decompression_latency;
+static double il2_cacti_tag_static_power;
+static double il2_cacti_tag_read_dynamic_energy;
+static double il2_cacti_tag_write_dynamic_energy;
+static double il2_cacti_data_static_power;
+static double il2_cacti_data_read_dynamic_energy;
+static double il2_cacti_data_write_dynamic_energy;
+static int il2_decompression_latency;
 
 static int dl2_bdi_compress;
 static int dl2_bdi_check;
-static float dl2_cacti_tag_static_power;
-static float dl2_cacti_tag_read_dynamic_energy;
-static float dl2_cacti_tag_write_dynamic_energy;
-static float dl2_cacti_data_static_power;
-static float dl2_cacti_data_read_dynamic_energy;
-static float dl2_cacti_data_write_dynamic_energy;
-static float dl2_decompression_latency;
+static double dl2_cacti_tag_static_power;
+static double dl2_cacti_tag_read_dynamic_energy;
+static double dl2_cacti_tag_write_dynamic_energy;
+static double dl2_cacti_data_static_power;
+static double dl2_cacti_data_read_dynamic_energy;
+static double dl2_cacti_data_write_dynamic_energy;
+static int dl2_decompression_latency;
 
 //---------
 //sdrea-end
@@ -1013,31 +1013,31 @@ sim_reg_options(struct opt_odb_t *odb)
 	       "il1 checked for compressibility using Base-Delta-Immediate",
 	       &il1_bdi_check, /* default */FALSE, /* print */TRUE, NULL);
 
-  opt_reg_float(odb, "-cache:il1:tag:static-power",
+  opt_reg_double(odb, "-cache:il1:tag:static-power",
                 "il1 tag leakage power (static power) (mW)",
                 &il1_cacti_tag_static_power, 0, TRUE, NULL);
 
-  opt_reg_float(odb, "-cache:il1:tag:read:dynamic-energy",
+  opt_reg_double(odb, "-cache:il1:tag:read:dynamic-energy",
                 "il1 tag dynamic read energy per access (nJ)",
                 &il1_cacti_tag_read_dynamic_energy, 0, TRUE, NULL);
 
-  opt_reg_float(odb, "-cache:il1:tag:write:dynamic-energy",
+  opt_reg_double(odb, "-cache:il1:tag:write:dynamic-energy",
                 "il1 tag dynamic write energy per access (nJ)",
                 &il1_cacti_tag_write_dynamic_energy, 0, TRUE, NULL);
 
-  opt_reg_float(odb, "-cache:il1:data:static-power",
+  opt_reg_double(odb, "-cache:il1:data:static-power",
                 "il1 data leakage power (static power) (mW)",
                 &il1_cacti_data_static_power, 0, TRUE, NULL);
 
-  opt_reg_float(odb, "-cache:il1:data:read:dynamic-energy",
+  opt_reg_double(odb, "-cache:il1:data:read:dynamic-energy",
                 "il1 data dynamic read energy per access (nJ)",
                 &il1_cacti_data_read_dynamic_energy, 0, TRUE, NULL);
 
-  opt_reg_float(odb, "-cache:il1:data:write:dynamic-energy",
+  opt_reg_double(odb, "-cache:il1:data:write:dynamic-energy",
                 "il1 data dynamic write energy per access (nJ)",
                 &il1_cacti_data_write_dynamic_energy, 0, TRUE, NULL);
 
-  opt_reg_float(odb, "-cache:il1:decompression-latency",
+  opt_reg_int(odb, "-cache:il1:decompression-latency",
                 "il1 decompression latency",
                 &il1_decompression_latency, 0, TRUE, NULL);
 
@@ -1050,31 +1050,31 @@ sim_reg_options(struct opt_odb_t *odb)
 	       "dl1 checked for compressibility using Base-Delta-Immediate",
 	       &dl1_bdi_check, /* default */FALSE, /* print */TRUE, NULL);
 
-  opt_reg_float(odb, "-cache:dl1:tag:static-power",
+  opt_reg_double(odb, "-cache:dl1:tag:static-power",
                 "dl1 tag leakage power (static power) (mW)",
                 &dl1_cacti_tag_static_power, 0, TRUE, NULL);
 
-  opt_reg_float(odb, "-cache:dl1:tag:read:dynamic-energy",
+  opt_reg_double(odb, "-cache:dl1:tag:read:dynamic-energy",
                 "dl1 tag dynamic read energy per access (nJ)",
                 &dl1_cacti_tag_read_dynamic_energy, 0, TRUE, NULL);
 
-  opt_reg_float(odb, "-cache:dl1:tag:write:dynamic-energy",
+  opt_reg_double(odb, "-cache:dl1:tag:write:dynamic-energy",
                 "dl1 tag dynamic write energy per access (nJ)",
                 &dl1_cacti_tag_write_dynamic_energy, 0, TRUE, NULL);
 
-  opt_reg_float(odb, "-cache:dl1:data:static-power",
+  opt_reg_double(odb, "-cache:dl1:data:static-power",
                 "dl1 data leakage power (static power) (mW)",
                 &dl1_cacti_data_static_power, 0, TRUE, NULL);
 
-  opt_reg_float(odb, "-cache:dl1:data:read:dynamic-energy",
+  opt_reg_double(odb, "-cache:dl1:data:read:dynamic-energy",
                 "dl1 data dynamic read energy per access (nJ)",
                 &dl1_cacti_data_read_dynamic_energy, 0, TRUE, NULL);
 
-  opt_reg_float(odb, "-cache:dl1:data:write:dynamic-energy",
+  opt_reg_double(odb, "-cache:dl1:data:write:dynamic-energy",
                 "dl1 data dynamic write energy per access (nJ)",
                 &dl1_cacti_data_write_dynamic_energy, 0, TRUE, NULL);
 
-  opt_reg_float(odb, "-cache:dl1:decompression-latency",
+  opt_reg_int(odb, "-cache:dl1:decompression-latency",
                 "dl1 decompression latency",
                 &dl1_decompression_latency, 0, TRUE, NULL);
 
@@ -1087,31 +1087,31 @@ sim_reg_options(struct opt_odb_t *odb)
 	       "il2 checked for compressibility using Base-Delta-Immediate",
 	       &il2_bdi_check, /* default */FALSE, /* print */TRUE, NULL);
 
-  opt_reg_float(odb, "-cache:il2:tag:static-power",
+  opt_reg_double(odb, "-cache:il2:tag:static-power",
                 "il2 tag leakage power (static power) (mW)",
                 &il2_cacti_tag_static_power, 0, TRUE, NULL);
 
-  opt_reg_float(odb, "-cache:il2:tag:read:dynamic-energy",
+  opt_reg_double(odb, "-cache:il2:tag:read:dynamic-energy",
                 "il2 tag dynamic read energy per access (nJ)",
                 &il2_cacti_tag_read_dynamic_energy, 0, TRUE, NULL);
 
-  opt_reg_float(odb, "-cache:il2:tag:write:dynamic-energy",
+  opt_reg_double(odb, "-cache:il2:tag:write:dynamic-energy",
                 "il2 tag dynamic write energy per access (nJ)",
                 &il2_cacti_tag_write_dynamic_energy, 0, TRUE, NULL);
 
-  opt_reg_float(odb, "-cache:il2:data:static-power",
+  opt_reg_double(odb, "-cache:il2:data:static-power",
                 "il2 data leakage power (static power) (mW)",
                 &il2_cacti_data_static_power, 0, TRUE, NULL);
 
-  opt_reg_float(odb, "-cache:il2:data:read:dynamic-energy",
+  opt_reg_double(odb, "-cache:il2:data:read:dynamic-energy",
                 "il2 data dynamic read energy per access (nJ)",
                 &il2_cacti_data_read_dynamic_energy, 0, TRUE, NULL);
 
-  opt_reg_float(odb, "-cache:il2:data:write:dynamic-energy",
+  opt_reg_double(odb, "-cache:il2:data:write:dynamic-energy",
                 "il2 data dynamic write energy per access (nJ)",
                 &il2_cacti_data_write_dynamic_energy, 0, TRUE, NULL);
 
-  opt_reg_float(odb, "-cache:il2:decompression-latency",
+  opt_reg_int(odb, "-cache:il2:decompression-latency",
                 "il2 decompression latency",
                 &il2_decompression_latency, 0, TRUE, NULL);
 
@@ -1124,31 +1124,31 @@ sim_reg_options(struct opt_odb_t *odb)
 	       "dl2 checked for compressibility using Base-Delta-Immediate",
 	       &dl2_bdi_check, /* default */FALSE, /* print */TRUE, NULL);
 
-  opt_reg_float(odb, "-cache:dl2:tag:static-power",
+  opt_reg_double(odb, "-cache:dl2:tag:static-power",
                 "dl2 tag leakage power (static power) (mW)",
                 &dl2_cacti_tag_static_power, 0, TRUE, NULL);
 
-  opt_reg_float(odb, "-cache:dl2:tag:read:dynamic-energy",
+  opt_reg_double(odb, "-cache:dl2:tag:read:dynamic-energy",
                 "dl2 tag dynamic read energy per access (nJ)",
                 &dl2_cacti_tag_read_dynamic_energy, 0, TRUE, NULL);
 
-  opt_reg_float(odb, "-cache:dl2:tag:write:dynamic-energy",
+  opt_reg_double(odb, "-cache:dl2:tag:write:dynamic-energy",
                 "dl2 tag dynamic write energy per access (nJ)",
                 &dl2_cacti_tag_write_dynamic_energy, 0, TRUE, NULL);
 
-  opt_reg_float(odb, "-cache:dl2:data:static-power",
+  opt_reg_double(odb, "-cache:dl2:data:static-power",
                 "dl2 data leakage power (static power) (mW)",
                 &dl2_cacti_data_static_power, 0, TRUE, NULL);
 
-  opt_reg_float(odb, "-cache:dl2:data:read:dynamic-energy",
+  opt_reg_double(odb, "-cache:dl2:data:read:dynamic-energy",
                 "dl2 data dynamic read energy per access (nJ)",
                 &dl2_cacti_data_read_dynamic_energy, 0, TRUE, NULL);
 
-  opt_reg_float(odb, "-cache:dl2:data:write:dynamic-energy",
+  opt_reg_double(odb, "-cache:dl2:data:write:dynamic-energy",
                 "dl2 data dynamic write energy per access (nJ)",
                 &dl2_cacti_data_write_dynamic_energy, 0, TRUE, NULL);
 
-  opt_reg_float(odb, "-cache:dl2:decompression-latency",
+  opt_reg_int(odb, "-cache:dl2:decompression-latency",
                 "dl2 decompression latency",
                 &dl2_decompression_latency, 0, TRUE, NULL);
 

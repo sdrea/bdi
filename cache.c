@@ -1051,7 +1051,6 @@ else
   cp->sim_data_static_power += (now - cp->last_cache_access) * cp->cacti_data_static_power;
 
   cp->sim_tag_read_dynamic_energy += cp->assoc*cp->cacti_tag_read_dynamic_energy;
-//  cp->sim_data_read_dynamic_energy += (bdi_size/cp->bsize)*cp->cacti_data_read_dynamic_energy;
 
   cp->sim_tag_write_dynamic_energy += cp->cacti_tag_write_dynamic_energy;
   cp->sim_data_write_dynamic_energy += (bdi_size/cp->bsize)*cp->cacti_data_write_dynamic_energy;
@@ -1211,10 +1210,6 @@ else
             //decompressed
             bdi_size = 64; // 8 segments, 64 bytes
           break;
-          case -1:
-            //decompressed
-            bdi_size = 64; // 8 segments, 64 bytes
-          break;
         }
 
   
@@ -1225,9 +1220,6 @@ else
 
   cp->sim_tag_read_dynamic_energy += cp->assoc*cp->cacti_tag_read_dynamic_energy;
   cp->sim_data_read_dynamic_energy += (bdi_size/cp->bsize)*cp->cacti_data_read_dynamic_energy;
-
-//  cp->sim_tag_write_dynamic_energy += cp->cacti_tag_write_dynamic_energy;
-//  cp->sim_data_write_dynamic_energy += (bdi_size/cp->bsize)*cp->cacti_data_write_dynamic_energy;
 
   cp->last_cache_access = now;
 
