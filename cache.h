@@ -248,12 +248,12 @@ struct cache_t
 
   float decompression_latency;
 
-  float sim_tag_static_power;
-  float sim_tag_read_dynamic_energy;
-  float sim_tag_write_dynamic_energy;
-  float sim_data_static_power;
-  float sim_data_read_dynamic_energy;
-  float sim_data_write_dynamic_energy;
+  double sim_tag_static_power;
+  double sim_tag_read_dynamic_energy;
+  double sim_tag_write_dynamic_energy;
+  double sim_data_static_power;
+  double sim_data_read_dynamic_energy;
+  double sim_data_write_dynamic_energy;
 
   tick_t last_cache_access;
 

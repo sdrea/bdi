@@ -558,37 +558,37 @@ cache_reg_stats(struct cache_t *cp,	/* cache instance */
 
   sprintf(buf, "%s_sim_tag_static_power", name);
   sprintf(buf1, "%s Cache Tag Leakage Power (mW-cycles)", name);
-  stat_reg_float(sdb, buf,
+  stat_reg_double(sdb, buf,
                buf1,
                &cp->sim_tag_static_power, 0, "%23.6f");
 
   sprintf(buf, "%s_sim_tag_read_dynamic_energy", name);
   sprintf(buf1, "%s Cache Tag Dynamic Read Energy (nJ)", name);
-  stat_reg_float(sdb, buf,
+  stat_reg_double(sdb, buf,
                buf1,
                &cp->sim_tag_read_dynamic_energy, 0, "%16.6f");
 
   sprintf(buf, "%s_sim_tag_write_dynamic_energy", name);
   sprintf(buf1, "%s Cache Tag Dynamic Write Energy (nJ)", name);
-  stat_reg_float(sdb, buf,
+  stat_reg_double(sdb, buf,
                buf1,
                &cp->sim_tag_write_dynamic_energy, 0, "%15.6f");
 
   sprintf(buf, "%s_sim_data_static_power", name);
   sprintf(buf1, "%s Cache Data Leakage Power (mW-cycles)", name);
-  stat_reg_float(sdb, buf,
+  stat_reg_double(sdb, buf,
                buf1,
                &cp->sim_data_static_power, 0, "%22.6f");
 
   sprintf(buf, "%s_sim_data_read_dynamic_energy", name);
   sprintf(buf1, "%s Cache Data Dynamic Read Energy (nJ)", name);
-  stat_reg_float(sdb, buf,
+  stat_reg_double(sdb, buf,
                buf1,
                &cp->sim_data_read_dynamic_energy, 0, "%15.6f");
 
   sprintf(buf, "%s_sim_data_write_dynamic_energy", name);
   sprintf(buf1, "%s Cache Data Dynamic Write Energy (nJ)", name);
-  stat_reg_float(sdb, buf,
+  stat_reg_double(sdb, buf,
                buf1,
                &cp->sim_data_write_dynamic_energy, 0, "%14.6f");
 
@@ -1046,19 +1046,15 @@ else
         }
     }
 
+  // On cache miss, every tag will have been read for the given set, 1 tag write, 1 data write, no data read
   cp->sim_tag_static_power += (now - cp->last_cache_access) * cp->cacti_tag_static_power;
   cp->sim_data_static_power += (now - cp->last_cache_access) * cp->cacti_data_static_power;
 
-  if (cmd == Read)
-    {
-      cp->sim_tag_read_dynamic_energy += cp->cacti_tag_read_dynamic_energy;
-      cp->sim_data_read_dynamic_energy += (bdi_size/cp->bsize)*cp->cacti_data_read_dynamic_energy;
-    }
-  if (cmd == Write)
-    {
-      cp->sim_tag_write_dynamic_energy += cp->cacti_tag_write_dynamic_energy;
-      cp->sim_data_write_dynamic_energy += (bdi_size/cp->bsize)*cp->cacti_data_write_dynamic_energy;
-    }
+  cp->sim_tag_read_dynamic_energy += cp->assoc*cp->cacti_tag_read_dynamic_energy;
+//  cp->sim_data_read_dynamic_energy += (bdi_size/cp->bsize)*cp->cacti_data_read_dynamic_energy;
+
+  cp->sim_tag_write_dynamic_energy += cp->cacti_tag_write_dynamic_energy;
+  cp->sim_data_write_dynamic_energy += (bdi_size/cp->bsize)*cp->cacti_data_write_dynamic_energy;
 
   cp->last_cache_access = now;
 
@@ -1125,13 +1121,8 @@ else
 //sdrea-begin
 //-----------
 
-  if (bdi_encode != NULL && *(cp->name) == 117 ) 
-    {  
-
-      repl->bdi_encode = bdi_encode;
-      repl->bdi_mask = bdi_mask;
-
-    }
+  repl->bdi_encode = bdi_encode;
+  repl->bdi_mask = bdi_mask;
 
 //---------
 //sdrea-end
@@ -1174,6 +1165,72 @@ else
 
 
  cache_hit: /* slow hit handler */
+
+//sdrea-begin
+//-----------
+
+  // need bdi size
+      switch (blk->bdi_encode)
+        {
+          case 0:
+            //zeros
+            bdi_size = 8; // 1 segment, 8 bytes
+          break;
+          case 1:
+            //repeats
+            bdi_size = 8; // 1 segment, 8 bytes
+          break;
+          case 2:
+            //base 8 delta 1
+            bdi_size = 16; // 2 segments, 16 bytes
+          break;
+          case 3:
+            //base 8 delta 2
+            bdi_size = 24; // 3 segments, 24 bytes
+          break;
+          case 4:
+            //base 8 delta 4
+            bdi_size = 40; // 5 segments, 40 bytes
+          break;
+          case 5:
+            //base 4 delta 1
+            bdi_size = 24; // 3 segments, 24 bytes
+          break;
+          case 6:
+            //base 4 delta 2
+            bdi_size = 40; // 5 segments, 40 bytes
+          break;
+          case 7:
+            //base 2 delta 1
+            bdi_size = 40; // 5 segments, 40 bytes
+          break;
+          case 15:
+            //decompressed
+            bdi_size = 64; // 8 segments, 64 bytes
+          break;
+          case -1:
+            //decompressed
+            bdi_size = 64; // 8 segments, 64 bytes
+          break;
+        }
+
+  
+
+  // On cache hit, every tag will have been read for the given set, no tag write, no data write, 1 data read
+  cp->sim_tag_static_power += (now - cp->last_cache_access) * cp->cacti_tag_static_power;
+  cp->sim_data_static_power += (now - cp->last_cache_access) * cp->cacti_data_static_power;
+
+  cp->sim_tag_read_dynamic_energy += cp->assoc*cp->cacti_tag_read_dynamic_energy;
+  cp->sim_data_read_dynamic_energy += (bdi_size/cp->bsize)*cp->cacti_data_read_dynamic_energy;
+
+//  cp->sim_tag_write_dynamic_energy += cp->cacti_tag_write_dynamic_energy;
+//  cp->sim_data_write_dynamic_energy += (bdi_size/cp->bsize)*cp->cacti_data_write_dynamic_energy;
+
+  cp->last_cache_access = now;
+
+
+//---------
+//sdrea-end
   
   /* **HIT** */
   cp->hits++;
