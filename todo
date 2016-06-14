@@ -1,11 +1,19 @@
-For IPC, please report percentage of improvement relative to the baseline scheme. This makes it easier to compare the compressed cache and the 
-baseline cache.
+Please rerun simulations based on the second approach: tag array the same- reducing data array by a factor of 
+two.  I expect small slow-down relative to the baseline scheme with large power savings.
 
-To justify your plan for thesis, you need to report performance when delay of compression is not zero. Please add a new parameter to .cfg, let's 
-call it -delay_compressed_cache. This delay is added to the delay of the baseline cache only if a read block is compressed. You should take into 
-account delay ONLY for read not for write as a write operation is not on the critical path and can be done in parallel with other tasks.
+in cache.c size_compressed += 128 - bdi_size; I am not sure why bdi_size should be subtracted from 128.
 
-The last item is comparison of the compressed cache with a cache which its size is double the size of the baseline scheme (both data and tag). This 
-cache is uncompressed. We should show that IPC of the compressed cache is similar to the double sized cache but its power is less. If you have time, 
-you can run simulation for this one before seminar; if not, you can leave it for thesis.
+in cache.c cp->sim_tag_read_dynamic_energy += cp->assoc*cp->cacti_tag_read_dynamic_energy;
 
+I think Cacti reports energy for all ways within a set. You do not need to multiply energy by cp->assoc.
+
+the same here for cache hit:
+  cp->sim_tag_read_dynamic_energy += cp->assoc*cp->cacti_tag_read_dynamic_energy;
+
+for dynamic power of read and write, you need to check cmd (Read or Write) in cache.c. Now, both commands are 
+treated equally.
+
+Latency of decompression should be accounted only for read 
+  if (cp->bdi_compress) lat += cp->decompression_latency;
+decompression_latency should be accounted only for read hit. In the event of miss, uncompressed block is read 
+from memory and is brought to L2.
