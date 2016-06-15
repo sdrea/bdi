@@ -932,8 +932,8 @@ else
           break;
         }
 
-      size_uncompressed += 64;
-      size_compressed += 128 - bdi_size;
+//      size_uncompressed += 64;
+//      size_compressed += 128 - bdi_size;
 
       struct cache_blk_t *bdi_blk1, *bdi_blk2;
 
@@ -983,6 +983,14 @@ else
               break;
             }
         }
+
+      if (bdi_size + bdi_blk_size > cp->bsize * cp->assoc / 2) {
+
+        // todo
+        // compressed cache size is about to change.
+        // calc weighted cache size (bdi_blk_size * (now - cp->last_compression_change))
+
+      }
 
       for (bdi_blk1=cp->sets[set].way_tail; bdi_blk1 && (bdi_size + bdi_blk_size > cp->bsize * cp->assoc / 2); bdi_blk1=bdi_blk1->way_prev)
         {
@@ -1046,14 +1054,29 @@ else
         }
     }
 
-  // On cache miss, every tag will have been read for the given set, 1 tag write, 1 data write, no data read
+  // Static energy is updated every cache access, regardless of operation and hit result  
+
   cp->sim_tag_static_power += (now - cp->last_cache_access) * cp->cacti_tag_static_power;
   cp->sim_data_static_power += (now - cp->last_cache_access) * cp->cacti_data_static_power;
 
+  // On cache miss, tag read will occur for read and write operation
+
   cp->sim_tag_read_dynamic_energy += cp->cacti_tag_read_dynamic_energy;
 
-  cp->sim_tag_write_dynamic_energy += cp->cacti_tag_write_dynamic_energy;
-  cp->sim_data_write_dynamic_energy += (double) bdi_size / cp->bsize * cp->cacti_data_write_dynamic_energy;
+  // On cache miss, read operation, there will be 1 tag write, 1 data write, 0 data read
+
+  if (cmd == Read) {
+                     cp->sim_tag_write_dynamic_energy += cp->cacti_tag_write_dynamic_energy;
+                     cp->sim_data_write_dynamic_energy += (double) bdi_size / cp->bsize * cp->cacti_data_write_dynamic_energy;
+                   }
+
+  // On cache miss, write operation, there will be 1 tag write (plus a dirty bit write), 1 data write, 0 data reads
+
+  if (cmd == Write) {
+                      cp->sim_tag_write_dynamic_energy += cp->cacti_tag_write_dynamic_energy;
+                      cp->sim_data_write_dynamic_energy += (double) bdi_size / cp->bsize * cp->cacti_data_write_dynamic_energy;
+                      // todo - dirty bit
+                    }
 
   cp->last_cache_access = now;
 
@@ -1163,7 +1186,7 @@ else
 //sdrea-begin
 //-----------
 
-  if (cp->bdi_compress) lat += cp->decompression_latency;
+  if (cmd == Read && cp->bdi_compress) lat += cp->decompression_latency;
 
   // need bdi size
       switch (blk->bdi_encode)
@@ -1206,17 +1229,27 @@ else
           break;
         }
 
-  
+  // Static energy is updated every cache access, regardless of operation and hit result  
 
-  // On cache hit, every tag will have been read for the given set, no tag write, no data write, 1 data read
   cp->sim_tag_static_power += (now - cp->last_cache_access) * cp->cacti_tag_static_power;
   cp->sim_data_static_power += (now - cp->last_cache_access) * cp->cacti_data_static_power;
 
+  // On cache hit, tag read will occur for read and write operation
+
   cp->sim_tag_read_dynamic_energy += cp->cacti_tag_read_dynamic_energy;
-  cp->sim_data_read_dynamic_energy += (double) bdi_size / cp->bsize * cp->cacti_data_read_dynamic_energy;
+
+  // On cache hit, read operation, there will be 0 tag writes, 0 data writes, 1 data read
+
+  if (cmd == Read) cp->sim_data_read_dynamic_energy += (double) bdi_size / cp->bsize * cp->cacti_data_read_dynamic_energy;
+
+  // On cache hit, write operation, there will be 0 tag writes (but a dirty bit write), 1 data write, 0 data reads
+
+  if (cmd == Write) {
+                      cp->sim_data_write_dynamic_energy += (double) bdi_size / cp->bsize * cp->cacti_data_write_dynamic_energy;
+                      // todo - dirty bit
+                    }
 
   cp->last_cache_access = now;
-
 
 //---------
 //sdrea-end

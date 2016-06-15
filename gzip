@@ -1,5 +1,5 @@
 SIM_PATH=./sim-outorder
-CFG_PATH=./config/1M-baseline.cfg
+CFG_PATH=./config/1M-l2_compressed.cfg
 MAX_INST=5000000
 FAST_FWD=5000000
 
