@@ -1,19 +1,34 @@
-Please rerun simulations based on the second approach: tag array the same- reducing data array by a factor of 
-two.  I expect small slow-down relative to the baseline scheme with large power savings.
+-------------------------------------
+Previously (double tag, same data)...
+-------------------------------------
 
-in cache.c size_compressed += 128 - bdi_size; I am not sure why bdi_size should be subtracted from 128.
+config
+  baseline (1M, 4 way, 4096 sets)
+    ul2:4096:64:4:l
+  compressed (1M, 8 bdi ways, 4096 sets)
+    ul2:4096:64:8:l
 
-in cache.c cp->sim_tag_read_dynamic_energy += cp->assoc*cp->cacti_tag_read_dynamic_energy;
+cacti
+  baseline (1M, 4 way, 4096 sets)
+    tagsize=32-6-12=14
+  compressed (2M, 8 way, 4096 sets) >>> tag results only, data result same as baseline
+    tagsize=32-6-12+32+4=50
 
-I think Cacti reports energy for all ways within a set. You do not need to multiply energy by cp->assoc.
+-------------------------------------
+Now (same tag, half data)...
+-------------------------------------
 
-the same here for cache hit:
-  cp->sim_tag_read_dynamic_energy += cp->assoc*cp->cacti_tag_read_dynamic_energy;
+config
+  baseline (1M, 4 way, 4096 sets)
+    ul2:4096:64:4:l
+  compressed (512k, 4 bdi ways, 4096 sets)
+    ul2:4096:64:4:l
 
-for dynamic power of read and write, you need to check cmd (Read or Write) in cache.c. Now, both commands are 
-treated equally.
+cacti
+  baseline (1M, 4 way, 4096 sets)
+    tagsize=32-6-12=14
+  compressed tag sim (1M, 4 way, 4096 sets) 
+    tagsize=32-6-12+32+4=50
+  compressed data sim (512k, 2 way, 4096 sets)
+    tagsize=32-6-12=14
 
-Latency of decompression should be accounted only for read 
-  if (cp->bdi_compress) lat += cp->decompression_latency;
-decompression_latency should be accounted only for read hit. In the event of miss, uncompressed block is read 
-from memory and is brought to L2.
