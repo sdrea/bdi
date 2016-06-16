@@ -656,7 +656,7 @@ stat_reg_formula(sdb, "rate_compressible_0111_b2d1", "Percentage of cache lines 
 
 stat_reg_counter(sdb, "size_compressed", "Size of compressed cache lines", &size_compressed, 0, "%15d");
 stat_reg_counter(sdb, "size_uncompressed", "Size of uncompressed cache lines", &size_uncompressed, 0, "%15d");
-stat_reg_formula(sdb, "compression_ratio", "Compression Ratio",       "( size_uncompressed - size_compressed ) / size_compressed", "%16.3f");
+stat_reg_formula(sdb, "compression_ratio", "Compression Ratio",       "( size_uncompressed - size_compressed ) / size_uncompressed", "%16.5f");
 
 
 
