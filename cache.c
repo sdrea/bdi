@@ -592,6 +592,17 @@ cache_reg_stats(struct cache_t *cp,	/* cache instance */
                buf1,
                &cp->sim_data_write_dynamic_energy, 0, "%14.6f");
 
+//totals
+
+  sprintf(buf, "%s.sim_total_static_power", name);
+  sprintf(buf1, "%s_sim_tag_static_power + %s_sim_data_static_power", name, name);
+  stat_reg_formula(sdb, buf, "Total static power", buf1, "%12.0f");
+
+  sprintf(buf, "%s.sim_total_dynamic_energy", name);
+  sprintf(buf1, "%s_sim_tag_read_dynamic_energy + %s_sim_tag_write_dynamic_energy + %s_sim_data_read_dynamic_energy + %s_sim_data_write_dynamic_energy", name, name, name, name);
+  stat_reg_formula(sdb, buf, "Total dynamic energy", buf1, "%12.0f");
+
+
 //sdrea-end
 
 }
