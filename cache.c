@@ -1197,8 +1197,6 @@ else
 //sdrea-begin
 //-----------
 
-  if (cmd == Read && cp->bdi_compress) lat += cp->decompression_latency;
-
   // need bdi size
       switch (blk->bdi_encode)
         {
@@ -1293,7 +1291,19 @@ else
     *udata = blk->user_data;
 
   /* return first cycle data is available to access */
-  return (int) MAX(cp->hit_latency, (blk->ready - now));
+
+//sdrea-begin
+//-----------
+
+  if (cmd == Read && cp->bdi_compress) { 
+    return (int) MAX(cp->hit_latency + cp->decompression_latency, (blk->ready - now) + cp->decompression_latency);
+  }
+  else {
+    return (int) MAX(cp->hit_latency, (blk->ready - now));
+  }
+
+//---------
+//sdrea-end
 
  cache_fast_hit: /* fast hit handler */
   
@@ -1323,7 +1333,21 @@ else
   cp->last_blk = blk;
 
   /* return first cycle data is available to access */
-  return (int) MAX(cp->hit_latency, (blk->ready - now));
+
+//sdrea-begin
+//-----------
+
+  if (cmd == Read && cp->bdi_compress) { 
+    return (int) MAX(cp->hit_latency + cp->decompression_latency, (blk->ready - now) + cp->decompression_latency);
+  }
+  else {
+    return (int) MAX(cp->hit_latency, (blk->ready - now));
+  }
+
+//---------
+//sdrea-end
+
+ // return (int) MAX(cp->hit_latency, (blk->ready - now));
 }
 
 /* return non-zero if block containing address ADDR is contained in cache
