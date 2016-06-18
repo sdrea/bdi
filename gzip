@@ -1,7 +1,7 @@
 SIM_PATH=./sim-outorder
-CFG_PATH=./config/1M-l2_compressed.cfg
-MAX_INST=5000000
-FAST_FWD=5000000
+CFG_PATH=./config/64k-l1_compressed.cfg
+MAX_INST=50
+FAST_FWD=5000
 
 $SIM_PATH \
 -config $CFG_PATH \
