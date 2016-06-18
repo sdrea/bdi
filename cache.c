@@ -1296,10 +1296,10 @@ else
 //-----------
 
   if (cmd == Read && cp->bdi_compress) { 
-    return (int) MAX(cp->hit_latency + cp->decompression_latency, (blk->ready - now) + cp->decompression_latency);
+    return (int) MAX( (cp->hit_latency + cp->decompression_latency), (blk->ready - now) );
   }
   else {
-    return (int) MAX(cp->hit_latency, (blk->ready - now));
+    return (int) MAX( cp->hit_latency, (blk->ready - now) );
   }
 
 //---------
@@ -1338,10 +1338,10 @@ else
 //-----------
 
   if (cmd == Read && cp->bdi_compress) { 
-    return (int) MAX(cp->hit_latency + cp->decompression_latency, (blk->ready - now) + cp->decompression_latency);
+    return (int) MAX( (cp->hit_latency + cp->decompression_latency), (blk->ready - now) );
   }
   else {
-    return (int) MAX(cp->hit_latency, (blk->ready - now));
+    return (int) MAX( cp->hit_latency, (blk->ready - now) );
   }
 
 //---------

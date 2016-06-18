@@ -2562,7 +2562,7 @@ ruu_commit(void)
 		      lat = cache_access(cache_dl1, Write, (LSQ[LSQ_head].addr&~3), NULL, 4, sim_cycle, NULL, NULL, mem);
 
 
-		      if (lat > cache_dl1_lat) events |= PEV_CACHEMISS;
+		      if ( ( !(cache_dl1->bdi_compress) && (lat > cache_dl1_lat) ) || ( (cache_dl1->bdi_compress) && (lat > (cache_dl1_lat + cache_dl1->decompression_latency)) ) ) events |= PEV_CACHEMISS;
 //---------
 //sdrea-end
 		    }
@@ -3176,7 +3176,7 @@ ruu_issue(void)
 
 
 				  if ( (load_lat > cache_dl1_lat) && !(cache_dl1->bdi_compress) ) events |= PEV_CACHEMISS;
-				  if ( (load_lat > cache_dl1_lat + cache_dl1->decompression_latency) && (cache_dl1->bdi_compress) ) events |= PEV_CACHEMISS;
+				  if ( (load_lat > (cache_dl1_lat + cache_dl1->decompression_latency) ) && (cache_dl1->bdi_compress) ) events |= PEV_CACHEMISS;
 //---------
 //sdrea-end
 				}
@@ -4867,7 +4867,9 @@ ruu_fetch(void)
 	    }
 
 	  /* I-cache/I-TLB miss? assumes I-cache hit >= I-TLB hit */
-	  if (lat != cache_il1_lat)
+
+//sdrea-fixing the following IF statement.  Without consideration for the decompression latency, the program will run indefinitely waiting to fetch the next inst...
+	  if ( ( (lat != cache_il1_lat) && !(cache_il1->bdi_compress) ) || ( (lat != (cache_il1_lat + cache_il1->decompression_latency) ) && (cache_il1->bdi_compress) ) )
 	    {
 	      /* I-cache miss, block fetch until it is resolved */
 	      ruu_fetch_issue_delay += lat - 1;
