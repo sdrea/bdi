@@ -2561,11 +2561,10 @@ ruu_commit(void)
 
 		      lat = cache_access(cache_dl1, Write, (LSQ[LSQ_head].addr&~3), NULL, 4, sim_cycle, NULL, NULL, mem);
 
+
+		      if (lat > cache_dl1_lat) events |= PEV_CACHEMISS;
 //---------
 //sdrea-end
-
-		      if (lat > cache_dl1_lat)
-			events |= PEV_CACHEMISS;
 		    }
 
 		  /* all loads and stores must to access D-TLB */
@@ -3175,11 +3174,11 @@ ruu_issue(void)
 
 				  load_lat = cache_access(cache_dl1, Read, (rs->addr & ~3), NULL, 4, sim_cycle, NULL, NULL, mem); 
 
+
+				  if ( (load_lat > cache_dl1_lat) && !(cache_dl1->bdi_compress) ) events |= PEV_CACHEMISS;
+				  if ( (load_lat > cache_dl1_lat + cache_dl1->decompression_latency) && (cache_dl1->bdi_compress) ) events |= PEV_CACHEMISS;
 //---------
 //sdrea-end
-
-				  if (load_lat > cache_dl1_lat)
-				    events |= PEV_CACHEMISS;
 				}
 			      else
 				{
@@ -4836,11 +4835,12 @@ ruu_fetch(void)
 
 	      lat = cache_access(cache_il1, Read, IACOMPRESS(fetch_regs_PC), NULL, ISCOMPRESS(sizeof(md_inst_t)), sim_cycle, NULL, NULL, mem);
 
+	      if ( ( lat > (cache_il1_lat + cache_il1->decompression_latency) ) && cache_il1->bdi_compress ) last_inst_missed = TRUE;
+	      if ( ( lat > (cache_il1_lat) ) && !(cache_il1->bdi_compress) ) last_inst_missed = TRUE;
+
 //---------
 //sdrea-end
 
-	      if (lat > cache_il1_lat)
-		last_inst_missed = TRUE;
 	    }
 
 	  if (itlb)
