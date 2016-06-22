@@ -658,6 +658,19 @@ stat_reg_counter(sdb, "size_compressed", "Size of compressed cache lines", &size
 stat_reg_counter(sdb, "size_uncompressed", "Size of uncompressed cache lines", &size_uncompressed, 0, "%15d");
 stat_reg_formula(sdb, "compression_ratio", "Compression Ratio",       "size_uncompressed / size_compressed", "%16.5f");
 
+// L1 totals
+
+  stat_reg_formula(sdb, 
+"L1.sim_total_static_power", 
+"L1 Static Energy", 
+"il1_sim_tag_static_power + il1_sim_data_static_power + dl1_sim_tag_static_power + dl1_sim_data_static_power", 
+"%12.0f");
+
+  stat_reg_formula(sdb, 
+"L1.sim_total_dynamic_energy", 
+"L1 Dynamic Energy", 
+"il1_sim_tag_read_dynamic_energy + il1_sim_tag_write_dynamic_energy + il1_sim_data_read_dynamic_energy + il1_sim_data_write_dynamic_energy + il1_sim_tag_read_dynamic_energy + il1_sim_tag_write_dynamic_energy + il1_sim_data_read_dynamic_energy + il1_sim_data_write_dynamic_energy", 
+"%12.0f");
 
 
 }
