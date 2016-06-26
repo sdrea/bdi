@@ -820,7 +820,6 @@ cache_access(struct cache_t *cp,	/* cache to access */
             db4[i] = MEM_READ_BYTE(mem, addr - bofs + i);
             db2[i] = MEM_READ_BYTE(mem, addr - bofs + i);
             if (db[i] != 0) zeros = 0;
-            if (db[i] != db[0]) repeats = 0;
           }
 
         for (i = 0; i < cp->bsize; i+=8)
@@ -833,6 +832,7 @@ cache_access(struct cache_t *cp,	/* cache to access */
             db8[i] += db8[i+6] << 48;
             db8[i] += db8[i+7] << 56;
 
+            if (db[i] != db[0]) repeats = 0;
             if ( ( ( db8[i] - db8[0] < (signed char)        -128 ) || ( db8[i] - db8[0] > (signed char)        127 ) ) && ( ( db8[i] < (signed char)        -128 ) || ( db8[i] > (signed char)        127 ) ) ) delta81 = 0;
             if ( ( ( db8[i] - db8[0] < (signed short)     -32768 ) || ( db8[i] - db8[0] > (signed short)     32767 ) ) && ( ( db8[i] < (signed short)     -32768 ) || ( db8[i] > (signed short)     32767 ) ) ) delta82 = 0;
             if ( ( ( db8[i] - db8[0] < (signed long) -2147483648 ) || ( db8[i] - db8[0] > (signed long) 2147483647 ) ) && ( ( db8[i] < (signed long) -2147483648 ) || ( db8[i] > (signed long) 2147483647 ) ) ) delta84 = 0;
