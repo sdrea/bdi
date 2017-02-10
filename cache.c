@@ -1082,6 +1082,9 @@ else
 
   cp->sim_tag_static_power += (now - cp->last_cache_access) * cp->cacti_tag_static_power;
   cp->sim_data_static_power += (now - cp->last_cache_access) * cp->cacti_data_static_power;
+  //TODO 2017 Compressor static power
+  //TODO 2017 Decompressor static power
+  //TODO 2017 Compressor dynamic energy
 
   // On cache miss, tag read will occur for read and write operation
 
@@ -1255,6 +1258,9 @@ else
 
   cp->sim_tag_static_power += (now - cp->last_cache_access) * cp->cacti_tag_static_power;
   cp->sim_data_static_power += (now - cp->last_cache_access) * cp->cacti_data_static_power;
+  //TODO 2017 Compressor static power
+  //TODO 2017 Decompressor static power
+
 
   // On cache hit, tag read will occur for read and write operation
 
@@ -1263,12 +1269,14 @@ else
   // On cache hit, read operation, there will be 0 tag writes, 0 data writes, 1 data read
 
   if (cmd == Read) cp->sim_data_read_dynamic_energy += (double) bdi_size / cp->bsize * cp->cacti_data_read_dynamic_energy;
+  //TODO 2017 Decompressor dynamic energy
 
   // On cache hit, write operation, there will be 0 tag writes (but a dirty bit write), 1 data write, 0 data reads
 
   if (cmd == Write) {
                       cp->sim_data_write_dynamic_energy += (double) bdi_size / cp->bsize * cp->cacti_data_write_dynamic_energy;
                       // todo - dirty bit
+		      //TODO 2017 Compressor dynamic energy
                     }
 
   cp->last_cache_access = now;
