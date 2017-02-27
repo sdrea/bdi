@@ -78,6 +78,7 @@
 
 //sdrea-begin
 //-----------
+#include <time.h>
 
 static counter_t count_encode_lines = 0;
 static counter_t count_check_lines = 0;
@@ -104,6 +105,9 @@ static counter_t count_compressible_0111_b2d1 = 0;
 
 static counter_t size_uncompressed = 0;
 static counter_t size_compressed = 0;
+
+FILE *compressorVCD;
+FILE *decompressorVCD;
 
 //---------
 //sdrea-end
@@ -407,39 +411,81 @@ cache_create(char *name,		/* name of the cache */
   //TODO 2017
   // setup VCD files (2 separate files for compressor and decompressor)
 
-/*
-$date
-DD-Mmm-YYYY HH:mm:ss
-$end
+  time_t now;
+  struct tm *ts;
+  char tbuf[80];
+  now = time(NULL);
+  ts = localtime(&now);
+  strftime(tbuf, sizeof(tbuf), "%Y-%m-%d %H:%M:%S %Z\n", ts);
 
-$version
-SimRea version 0.0
-$end
+  compressorVCD = fopen("compressor.vcd", "w+");
+  fprintf(compressorVCD, "$date\n");
+  fprintf(compressorVCD, tbuf);
+  fprintf(compressorVCD, "$end\n");
+  fprintf(compressorVCD, "\n");
+  fprintf(compressorVCD, "$version\n");
+  fprintf(compressorVCD, "ReaVCD version 0.1\n");
+  fprintf(compressorVCD, "$end\n");
+  fprintf(compressorVCD, "\n");
+  fprintf(compressorVCD, "$timescale\n");
+  fprintf(compressorVCD, "1 ns\n");
+  fprintf(compressorVCD, "$end\n");
+  fprintf(compressorVCD, "\n");
+  fprintf(compressorVCD, "$scope\n");
+  fprintf(compressorVCD, "module compressor\n");
+  fprintf(compressorVCD, "$end\n");
+  fprintf(compressorVCD, "\n");
+  fprintf(compressorVCD, "$var wire 1 ! Original Data [0] $end\n");
+  fprintf(compressorVCD, "$var wire 1 \" Recovered Clock [0] $end\n");
+  fprintf(compressorVCD, "$var wire 1 # Recovered Data [0] $end\n");
+  fprintf(compressorVCD, "$var wire 1 $ Data Validity [0] $end\n");
+  fprintf(compressorVCD, "\n");
+  fprintf(compressorVCD, "$upscope $end\n");
+  fprintf(compressorVCD, "$enddefinitions $end\n");
+  fprintf(compressorVCD, "\n");
+  fprintf(compressorVCD, "#0\n");
+  fprintf(compressorVCD, "$dumpvars\n");
+  fprintf(compressorVCD, " 0!\n");
+  fprintf(compressorVCD, " 0\"\n");
+  fprintf(compressorVCD, " 0#\n");
+  fprintf(compressorVCD, " 0$\n");
+  fprintf(compressorVCD, "$end\n");
+  fclose(compressorVCD);
 
-$timescale
-1 ns
-$end
+  decompressorVCD = fopen("decompressor.vcd", "w+");
+  fprintf(decompressorVCD, "$date\n");
+  fprintf(decompressorVCD, tbuf);
+  fprintf(decompressorVCD, "$end\n");
+  fprintf(decompressorVCD, "\n");
+  fprintf(decompressorVCD, "$version\n");
+  fprintf(decompressorVCD, "ReaVCD version 0.1\n");
+  fprintf(decompressorVCD, "$end\n");
+  fprintf(decompressorVCD, "\n");
+  fprintf(decompressorVCD, "$timescale\n");
+  fprintf(decompressorVCD, "1 ns\n");
+  fprintf(decompressorVCD, "$end\n");
+  fprintf(decompressorVCD, "\n");
+  fprintf(decompressorVCD, "$scope\n");
+  fprintf(decompressorVCD, "module decompressor\n");
+  fprintf(decompressorVCD, "$end\n");
+  fprintf(decompressorVCD, "\n");
+  fprintf(decompressorVCD, "$var wire 1 ! Original Data [0] $end\n");
+  fprintf(decompressorVCD, "$var wire 1 \" Recovered Clock [0] $end\n");
+  fprintf(decompressorVCD, "$var wire 1 # Recovered Data [0] $end\n");
+  fprintf(decompressorVCD, "$var wire 1 $ Data Validity [0] $end\n");
+  fprintf(decompressorVCD, "\n");
+  fprintf(decompressorVCD, "$upscope $end\n");
+  fprintf(decompressorVCD, "$enddefinitions $end\n");
+  fprintf(decompressorVCD, "\n");
+  fprintf(decompressorVCD, "#0\n");
+  fprintf(decompressorVCD, "$dumpvars\n");
+  fprintf(decompressorVCD, " 0!\n");
+  fprintf(decompressorVCD, " 0\"\n");
+  fprintf(decompressorVCD, " 0#\n");
+  fprintf(decompressorVCD, " 0$\n");
+  fprintf(decompressorVCD, "$end\n");
+  fclose(decompressorVCD);
 
-$scope
-module compressor
-$end
-
-$var wire 1 ! Original Data [0] $end
-$var wire 1 " Recovered Clock [0] $end
-$var wire 1 # Recovered Data [0] $end
-$var wire 1 $ Data Validity [0] $end
-
-$upscope $end
-$enddefinitions $end
-
-#0
-$dumpvars
- 0!
- 0"
- 0#
- 0$
-$end
-*/
 //---------
 //sdrea-end
 
