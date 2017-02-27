@@ -10,7 +10,7 @@
 // Electrical and Computer Engineering
 // Lakehead University
 // Thunder Bay, Ontario, Canada
-// 2016
+// 2017
 //
 // sdrea@lakeheadu.ca
 // rea@ieee.org
@@ -404,6 +404,42 @@ cache_create(char *name,		/* name of the cache */
 
   cp->last_cache_access = 0;
 
+  //TODO 2017
+  // setup VCD files (2 separate files for compressor and decompressor)
+
+/*
+$date
+DD-Mmm-YYYY HH:mm:ss
+$end
+
+$version
+SimRea version 0.0
+$end
+
+$timescale
+1 ns
+$end
+
+$scope
+module compressor
+$end
+
+$var wire 1 ! Original Data [0] $end
+$var wire 1 " Recovered Clock [0] $end
+$var wire 1 # Recovered Data [0] $end
+$var wire 1 $ Data Validity [0] $end
+
+$upscope $end
+$enddefinitions $end
+
+#0
+$dumpvars
+ 0!
+ 0"
+ 0#
+ 0$
+$end
+*/
 //---------
 //sdrea-end
 
@@ -1084,7 +1120,8 @@ else
   cp->sim_data_static_power += (now - cp->last_cache_access) * cp->cacti_data_static_power;
   //TODO 2017 Compressor static power
   //TODO 2017 Decompressor static power
-  //TODO 2017 Compressor dynamic energy
+  //TODO 2017 Compressor dynamic energy ... OR VCD output (input of the compressor will change)
+
 
   // On cache miss, tag read will occur for read and write operation
 
@@ -1269,7 +1306,7 @@ else
   // On cache hit, read operation, there will be 0 tag writes, 0 data writes, 1 data read
 
   if (cmd == Read) cp->sim_data_read_dynamic_energy += (double) bdi_size / cp->bsize * cp->cacti_data_read_dynamic_energy;
-  //TODO 2017 Decompressor dynamic energy
+  //TODO 2017 Decompressor dynamic energy ... OR... VCD file update (decompressor input will change)
 
   // On cache hit, write operation, there will be 0 tag writes (but a dirty bit write), 1 data write, 0 data reads
 
