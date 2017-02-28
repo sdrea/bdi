@@ -257,6 +257,14 @@ struct cache_t
 
   tick_t last_cache_access;
 
+//2017
+
+  double compressor_static_power;
+  double compressor_dynamic_power;
+  double decompressor_static_power;
+  double decompressor_dynamic_power;
+  double sim_frequency;
+
 //---------
 //sdrea-end
 
