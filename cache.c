@@ -411,11 +411,10 @@ cache_create(char *name,		/* name of the cache */
 
   //sdrea 2017
 
-  cp->compressor_static_power = 0;
-  cp->compressor_dynamic_power = 0;
-  cp->decompressor_static_power = 0;
-  cp->decompressor_dynamic_power = 0;
-  cp->sim_frequency = 0;
+  cp->sim_compressor_static_power = 0;
+  cp->sim_compressor_dynamic_power = 0;
+  cp->sim_decompressor_static_power = 0;
+  cp->sim_decompressor_dynamic_power = 0;
 
   time_t now;
   struct tm *ts;
@@ -451,6 +450,7 @@ cache_create(char *name,		/* name of the cache */
   fprintf(compressorVCD, "$dumpvars\n");
   fprintf(compressorVCD, "b0 !\n");
   fprintf(compressorVCD, "$end\n");
+  fprintf(compressorVCD, "\n");
   fclose(compressorVCD);
   char dfnVCD[32] = "vcd_decompressor_";
   strcat(dfnVCD, name);
@@ -484,6 +484,7 @@ cache_create(char *name,		/* name of the cache */
   fprintf(decompressorVCD, "0 #\n");
   fprintf(decompressorVCD, "b0000 $\n");
   fprintf(decompressorVCD, "$end\n");
+  fprintf(decompressorVCD, "\n");
   fclose(decompressorVCD);
 
 //---------
@@ -684,6 +685,32 @@ cache_reg_stats(struct cache_t *cp,	/* cache instance */
   sprintf(buf1, "%s_sim_tag_read_dynamic_energy + %s_sim_tag_write_dynamic_energy + %s_sim_data_read_dynamic_energy + %s_sim_data_write_dynamic_energy", name, name, name, name);
   stat_reg_formula(sdb, buf, "Total dynamic energy", buf1, "%12.0f");
 
+// compressor-decompressor
+
+  sprintf(buf, "%s.compressor_static_power", name);
+  sprintf(buf1, "%s Compressor Static Power (mW-cycles)", name);
+  stat_reg_double(sdb, buf,
+               buf1,
+               &cp->sim_compressor_static_power, 0, "%14.6f");
+
+  sprintf(buf, "%s.compressor_dynamic_power", name);
+  sprintf(buf1, "%s Compressor Dynamic Energy (nJ)", name);
+  stat_reg_double(sdb, buf,
+               buf1,
+               &cp->sim_compressor_dynamic_power, 0, "%14.6f");
+
+  sprintf(buf, "%s.decompressor_static_power", name);
+  sprintf(buf1, "%s Decompressor Static Power (mW-cycles)", name);
+  stat_reg_double(sdb, buf,
+               buf1,
+               &cp->sim_decompressor_static_power, 0, "%14.6f");
+
+  sprintf(buf, "%s.decompressor_dynamic_power", name);
+  sprintf(buf1, "%s Decompressor Dynamic Energy (nJ)", name);
+  stat_reg_double(sdb, buf,
+               buf1,
+               &cp->sim_decompressor_dynamic_power, 0, "%14.6f");
+
 
 //sdrea-end
 
@@ -742,17 +769,6 @@ stat_reg_formula(sdb, "compression_ratio", "Compression Ratio",       "size_unco
 
 // L1 totals
 
-  stat_reg_formula(sdb, 
-"L1.sim_total_static_power", 
-"L1 Static Energy", 
-"il1_sim_tag_static_power + il1_sim_data_static_power + dl1_sim_tag_static_power + dl1_sim_data_static_power", 
-"%12.0f");
-
-  stat_reg_formula(sdb, 
-"L1.sim_total_dynamic_energy", 
-"L1 Dynamic Energy", 
-"il1_sim_tag_read_dynamic_energy + il1_sim_tag_write_dynamic_energy + il1_sim_data_read_dynamic_energy + il1_sim_data_write_dynamic_energy + il1_sim_tag_read_dynamic_energy + il1_sim_tag_write_dynamic_energy + il1_sim_data_read_dynamic_energy + il1_sim_data_write_dynamic_energy", 
-"%12.0f");
 
 
 }
@@ -816,6 +832,7 @@ cache_access(struct cache_t *cp,	/* cache to access */
   signed long long db[64], db8[64];
   signed long db4[64];
   signed short db2[64];
+  char vcddb[64];
   int i;
   int bdi_size = 64;
 
@@ -890,6 +907,7 @@ cache_access(struct cache_t *cp,	/* cache to access */
         for (i = 0; i < 64; i++)
           {
             db[i] = 0;
+            vcddb[i] = 0;
             db8[i] = 0;
             db4[i] = 0;
             db2[i] = 0;
@@ -897,6 +915,7 @@ cache_access(struct cache_t *cp,	/* cache to access */
 
         for (i = 0; i < cp->bsize; i++)
           {
+            vcddb[i]  = MEM_READ_BYTE(mem, addr - bofs + i);
             db[i]  = MEM_READ_BYTE(mem, addr - bofs + i);
             db8[i] = MEM_READ_BYTE(mem, addr - bofs + i);
             db4[i] = MEM_READ_BYTE(mem, addr - bofs + i);
@@ -1164,10 +1183,40 @@ else
 
   cp->sim_tag_static_power += (now - cp->last_cache_access) * cp->cacti_tag_static_power;
   cp->sim_data_static_power += (now - cp->last_cache_access) * cp->cacti_data_static_power;
-  //TODO 2017 Compressor static power
-  //TODO 2017 Decompressor static power
+  cp->sim_compressor_static_power += (now - cp->last_cache_access) * cp->compressor_static_power;
+  cp->sim_decompressor_static_power += (now - cp->last_cache_access) * cp->decompressor_static_power;
+
+  cp->sim_compressor_dynamic_power += (cp->compressor_dynamic_power * cp->compressor_delay / 1000000);
+
   //TODO 2017 Compressor dynamic energy ... OR VCD output (input of the compressor will change)
 
+  char vcdbuf[32] = "vcd_compressor_";
+  strcat(vcdbuf, cp->name);
+  compressorVCD = fopen(vcdbuf, "a");
+  char vcdbuf1[32];
+  sprintf(vcdbuf1, "#%d\n", cp->compressor_frequency*now);
+
+  //db[0-63].. is the cache line being read from memory / written into cache / compressed
+  fprintf(compressorVCD, vcdbuf1);
+
+  char vcdbuf2[516];
+  vcdbuf2[0] = 'b';
+  vcdbuf2[513] = ' ';
+  vcdbuf2[514] = '!';
+  vcdbuf2[515] = '\0';
+
+  for (int i = 0; i < 64; i++) {
+  for (int  j = 0; j < 8; j++) {
+        vcdbuf2[504-(i*8)+8-j]  = (vcddb[i] & 1) + '0';
+        vcddb[i] >>= 1;
+    }
+}
+
+//byte0 505 506 507 508 509 510 511 512
+
+  fprintf(compressorVCD, vcdbuf2);
+  fprintf(compressorVCD, "\n");
+  fclose(compressorVCD);
 
   // On cache miss, tag read will occur for read and write operation
 
@@ -1341,8 +1390,8 @@ else
 
   cp->sim_tag_static_power += (now - cp->last_cache_access) * cp->cacti_tag_static_power;
   cp->sim_data_static_power += (now - cp->last_cache_access) * cp->cacti_data_static_power;
-  //TODO 2017 Compressor static power
-  //TODO 2017 Decompressor static power
+  cp->sim_compressor_static_power += (now - cp->last_cache_access) * cp->compressor_static_power;
+  cp->sim_decompressor_static_power += (now - cp->last_cache_access) * cp->decompressor_static_power;
 
 
   // On cache hit, tag read will occur for read and write operation
@@ -1351,15 +1400,20 @@ else
 
   // On cache hit, read operation, there will be 0 tag writes, 0 data writes, 1 data read
 
-  if (cmd == Read) cp->sim_data_read_dynamic_energy += (double) bdi_size / cp->bsize * cp->cacti_data_read_dynamic_energy;
-  //TODO 2017 Decompressor dynamic energy ... OR... VCD file update (decompressor input will change)
+  if (cmd == Read) { 
+
+    cp->sim_data_read_dynamic_energy += (double) bdi_size / cp->bsize * cp->cacti_data_read_dynamic_energy;
+    cp->sim_decompressor_dynamic_power += (cp->decompressor_dynamic_power * cp->decompressor_delay / 1000000);
+  
+
+  }
 
   // On cache hit, write operation, there will be 0 tag writes (but a dirty bit write), 1 data write, 0 data reads
 
   if (cmd == Write) {
                       cp->sim_data_write_dynamic_energy += (double) bdi_size / cp->bsize * cp->cacti_data_write_dynamic_energy;
                       // todo - dirty bit
-		      //TODO 2017 Compressor dynamic energy
+		      cp->sim_compressor_dynamic_power += (cp->compressor_dynamic_power * cp->compressor_delay / 1000000);
                     }
 
   cp->last_cache_access = now;

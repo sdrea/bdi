@@ -91,6 +91,14 @@
 #include "dlite.h"
 #include "sim.h"
 
+//sdrea-begin
+
+//#include <string.h>
+//FILE *compressorVCD;
+//FILE *decompressorVCD;
+
+//sdrea-end
+
 /* added for Wattch */
 #include "power.h"
 
@@ -509,9 +517,11 @@ static int dl2_decompression_latency;
 
 static double compressor_static_power;
 static double compressor_dynamic_power;
+static double compressor_delay;
+static int compressor_frequency;
 static double decompressor_static_power;
 static double decompressor_dynamic_power;
-static double sim_frequency;
+static double decompressor_delay;
 
 
 //---------
@@ -1176,10 +1186,18 @@ sim_reg_options(struct opt_odb_t *odb)
                 "decompressor dynamic power (nW)",
                 &decompressor_dynamic_power, 0, TRUE, NULL);
 
-  opt_reg_double(odb, "-cache:frequency",
-                "simulation frequency (Hz)",
-                &sim_frequency, 0, TRUE, NULL);
+  opt_reg_double(odb, "-cache:compressor:delay",
+                "compressor delay (ps)",
+                &compressor_delay, 0, TRUE, NULL);
 
+  opt_reg_int(odb, "-cache:compressor:frequency",
+                "compressor frequency (GHz)",
+                &compressor_frequency, 0, TRUE, NULL);
+
+
+  opt_reg_double(odb, "-cache:decompressor:delay",
+                "decompressor delay (ps)",
+                &decompressor_delay, 0, TRUE, NULL);
 
 //---------
 //sdrea-end
@@ -1339,6 +1357,7 @@ sim_check_options(struct opt_odb_t *odb,        /* options database */
 		     name, &nsets, &bsize, &assoc, &c) != 5)
 	    fatal("bad l2 D-cache parms: "
 		  "<name>:<nsets>:<bsize>:<assoc>:<repl>");
+
 	  cache_dl2 = cache_create(name, nsets, bsize, /* balloc */FALSE,
 				       /* usize */0, assoc, cache_char2policy(c),
    				       dl2_access_fn, /* hit lat */cache_dl2_lat);
@@ -1402,6 +1421,7 @@ sim_check_options(struct opt_odb_t *odb,        /* options database */
 		     name, &nsets, &bsize, &assoc, &c) != 5)
 	    fatal("bad l2 I-cache parms: "
 		  "<name>:<nsets>:<bsize>:<assoc>:<repl>");
+
 	  cache_il2 = cache_create(name, nsets, bsize, /* balloc */FALSE,
 				   /* usize */0, assoc, cache_char2policy(c),
 				   il2_access_fn, /* hit lat */cache_il2_lat);
@@ -1512,7 +1532,9 @@ sim_check_options(struct opt_odb_t *odb,        /* options database */
   cache_il1->compressor_dynamic_power = compressor_dynamic_power;
   cache_il1->decompressor_static_power = decompressor_static_power;
   cache_il1->decompressor_dynamic_power = decompressor_dynamic_power;
-  cache_il1->sim_frequency = sim_frequency;
+  cache_il1->compressor_delay = compressor_delay;
+  cache_il1->decompressor_delay = decompressor_delay;
+  cache_il1->compressor_frequency = compressor_frequency;
 
       cache_dl1->bdi_compress = dl1_bdi_compress;
       cache_dl1->bdi_check = dl1_bdi_check;
@@ -1528,7 +1550,9 @@ sim_check_options(struct opt_odb_t *odb,        /* options database */
   cache_dl1->compressor_dynamic_power = compressor_dynamic_power;
   cache_dl1->decompressor_static_power = decompressor_static_power;
   cache_dl1->decompressor_dynamic_power = decompressor_dynamic_power;
-  cache_dl1->sim_frequency = sim_frequency;
+  cache_dl1->compressor_delay = compressor_delay;
+  cache_dl1->decompressor_delay = decompressor_delay;
+  cache_dl1->compressor_frequency = compressor_frequency;
 
       cache_il2->bdi_compress = il2_bdi_compress;
       cache_il2->bdi_check = il2_bdi_check;
@@ -1544,7 +1568,9 @@ sim_check_options(struct opt_odb_t *odb,        /* options database */
   cache_il2->compressor_dynamic_power = compressor_dynamic_power;
   cache_il2->decompressor_static_power = decompressor_static_power;
   cache_il2->decompressor_dynamic_power = decompressor_dynamic_power;
-  cache_il2->sim_frequency = sim_frequency;
+  cache_il2->compressor_delay = compressor_delay;
+  cache_il2->decompressor_delay = decompressor_delay;
+  cache_il2->compressor_frequency = compressor_frequency;
 
       cache_dl2->bdi_compress = dl2_bdi_compress;
       cache_dl2->bdi_check = dl2_bdi_check;
@@ -1560,7 +1586,9 @@ sim_check_options(struct opt_odb_t *odb,        /* options database */
   cache_dl2->compressor_dynamic_power = compressor_dynamic_power;
   cache_dl2->decompressor_static_power = decompressor_static_power;
   cache_dl2->decompressor_dynamic_power = decompressor_dynamic_power;
-  cache_dl2->sim_frequency = sim_frequency;
+  cache_dl2->compressor_delay = compressor_delay;
+  cache_dl2->decompressor_delay = decompressor_delay;
+  cache_dl2->compressor_frequency = compressor_frequency;
 
 
 //---------
@@ -1754,6 +1782,7 @@ sim_reg_bdi_stats(struct stat_sdb_t *sdb)   /* stats database */
 
     cache_reg_bdi_stats(NULL, sdb);
     // TODO: Reg stats by cache type instead of all at once
+ 
 
 }
 

@@ -263,7 +263,14 @@ struct cache_t
   double compressor_dynamic_power;
   double decompressor_static_power;
   double decompressor_dynamic_power;
-  double sim_frequency;
+  double compressor_delay;
+  double decompressor_delay;
+  int compressor_frequency;
+
+  double sim_compressor_static_power;
+  double sim_compressor_dynamic_power;
+  double sim_decompressor_static_power;
+  double sim_decompressor_dynamic_power;
 
 //---------
 //sdrea-end
