@@ -933,7 +933,7 @@ cache_access(struct cache_t *cp,	/* cache to access */
             db8[i] += db8[i+6] << 48;
             db8[i] += db8[i+7] << 56;
 
-            if (db[i] != db[0]) repeats = 0;
+            if (db8[i] != db8[0]) repeats = 0;
             if ( ( ( db8[i] - db8[0] < (signed char)        -128 ) || ( db8[i] - db8[0] > (signed char)        127 ) ) && ( ( db8[i] < (signed char)        -128 ) || ( db8[i] > (signed char)        127 ) ) ) delta81 = 0;
             if ( ( ( db8[i] - db8[0] < (signed short)     -32768 ) || ( db8[i] - db8[0] > (signed short)     32767 ) ) && ( ( db8[i] < (signed short)     -32768 ) || ( db8[i] > (signed short)     32767 ) ) ) delta82 = 0;
             if ( ( ( db8[i] - db8[0] < (signed long) -2147483648 ) || ( db8[i] - db8[0] > (signed long) 2147483647 ) ) && ( ( db8[i] < (signed long) -2147483648 ) || ( db8[i] > (signed long) 2147483647 ) ) ) delta84 = 0;
@@ -1344,6 +1344,47 @@ else
 
 //sdrea-begin
 //-----------
+if (mem != NULL)
+    {
+        for (i = 0; i < 64; i++)
+          {
+            vcddb[i] = 0;
+	    db[i] = 0;
+            db8[i] = 0;
+            db4[i] = 0;
+            db2[i] = 0;
+          }
+
+        for (i = 0; i < 64; i++)
+          {
+            db[i] = MEM_READ_BYTE(mem, addr - bofs + i);
+	    db8[i] = MEM_READ_BYTE(mem, addr - bofs + i);
+            db4[i] = MEM_READ_BYTE(mem, addr - bofs + i);
+            db2[i] = MEM_READ_BYTE(mem, addr - bofs + i);
+          }
+
+        for (i = 0; i < 64; i+=8)
+          {
+            db8[i] += db8[i+1] <<  8;
+            db8[i] += db8[i+2] << 16;
+            db8[i] += db8[i+3] << 24;
+            db8[i] += db8[i+4] << 32;
+            db8[i] += db8[i+5] << 40;
+            db8[i] += db8[i+6] << 48;
+            db8[i] += db8[i+7] << 56;
+          }
+
+        for (i = 0; i < 64; i+=4)
+          {
+            db4[i] += db4[i+1] <<  8;
+            db4[i] += db4[i+2] << 16;
+            db4[i] += db4[i+3] << 24;
+          }
+
+        for (i = 0; i < 64; i+=2)
+          {
+            db2[i] += db2[i+1] <<  8;
+          }
 
   // need bdi size
       switch (blk->bdi_encode)
@@ -1355,22 +1396,96 @@ else
           case 1:
             //repeats
             bdi_size = 8; // 1 segment, 8 bytes
+	    for (i = 0; i < 8; i++)
+              {
+                vcddb[i] = MEM_READ_BYTE(mem, addr - bofs + i);
+              }
           break;
           case 2:
             //base 8 delta 1
             bdi_size = 16; // 2 segments, 16 bytes
+	    for (i = 0; i < 8; i++)
+              {
+                vcddb[i] = MEM_READ_BYTE(mem, addr - bofs + i);
+              }
+                vcddb[8] = ((blk->bdi_mask) & (1<<0)) ? (signed char) db8[0]-db8[0] : (signed char) db8[0];
+                vcddb[9] = ((blk->bdi_mask) & (1<<8)) ? (signed char) db8[8]-db8[0] : (signed char) db8[8];
+                vcddb[10] = ((blk->bdi_mask) & (1<<16)) ? (signed char) db8[16]-db8[0] : (signed char) db8[16];
+                vcddb[11] = ((blk->bdi_mask) & (1<<24)) ? (signed char) db8[24]-db8[0] : (signed char) db8[24];
+                vcddb[12] = ((blk->bdi_mask) & (1<<32)) ? (signed char) db8[32]-db8[0] : (signed char) db8[32];
+                vcddb[13] = ((blk->bdi_mask) & (1<<40)) ? (signed char) db8[40]-db8[0] : (signed char) db8[40];
+                vcddb[14] = ((blk->bdi_mask) & (1<<48)) ? (signed char) db8[48]-db8[0] : (signed char) db8[48];
+                vcddb[15] = ((blk->bdi_mask) & (1<<56)) ? (signed char) db8[56]-db8[0] : (signed char) db8[56];
           break;
           case 3:
             //base 8 delta 2
             bdi_size = 24; // 3 segments, 24 bytes
+	    for (i = 0; i < 8; i++)
+              {
+                vcddb[i] = MEM_READ_BYTE(mem, addr - bofs + i);
+              }
+                vcddb[8] =  (((blk->bdi_mask) & (1<<0)) ? (signed short) db8[0]-db8[0] : (signed short) db8[0]) &  255;
+                vcddb[9] =  ((((blk->bdi_mask) & (1<<0)) ? (signed short) db8[0]-db8[0] : (signed short) db8[0]) & -256) >> 8;
+                vcddb[10] = (((blk->bdi_mask) & (1<<8)) ? (signed short) db8[8]-db8[0] : (signed short) db8[8]) &  255;
+                vcddb[11] = ((((blk->bdi_mask) & (1<<8)) ? (signed short) db8[8]-db8[0] : (signed short) db8[8]) & -256) >> 8;
+                vcddb[12] = (((blk->bdi_mask) & (1<<16)) ? (signed short) db8[16]-db8[0] : (signed short) db8[16]) &  255;
+                vcddb[13] = ((((blk->bdi_mask) & (1<<16)) ? (signed short) db8[16]-db8[0] : (signed short) db8[16]) &  -256) >> 8;
+                vcddb[14] = (((blk->bdi_mask) & (1<<24)) ? (signed short) db8[24]-db8[0] : (signed short) db8[24]) &  255;
+                vcddb[15] = ((((blk->bdi_mask) & (1<<24)) ? (signed short) db8[24]-db8[0] : (signed short) db8[24]) &  -256) >> 8;
+                vcddb[16] = (((blk->bdi_mask) & (1<<32)) ? (signed short) db8[32]-db8[0] : (signed short) db8[32]) &  255;
+                vcddb[17] = ((((blk->bdi_mask) & (1<<32)) ? (signed short) db8[32]-db8[0] : (signed short) db8[32]) &  -256) >> 8;
+                vcddb[18] = (((blk->bdi_mask) & (1<<40)) ? (signed short) db8[40]-db8[0] : (signed short) db8[40]) &  255;
+                vcddb[19] = ((((blk->bdi_mask) & (1<<40)) ? (signed short) db8[40]-db8[0] : (signed short) db8[40]) &  -256) >> 8;
+                vcddb[20] = (((blk->bdi_mask) & (1<<48)) ? (signed short) db8[48]-db8[0] : (signed short) db8[48]) &  255;
+                vcddb[21] = ((((blk->bdi_mask) & (1<<48)) ? (signed short) db8[48]-db8[0] : (signed short) db8[48]) &  -256) >> 8;
+                vcddb[22] = (((blk->bdi_mask) & (1<<56)) ? (signed short) db8[56]-db8[0] : (signed short) db8[56]) &  255;
+                vcddb[23] = ((((blk->bdi_mask) & (1<<56)) ? (signed short) db8[56]-db8[0] : (signed short) db8[56]) &  -256) >> 8;
           break;
           case 4:
             //base 8 delta 4
             bdi_size = 40; // 5 segments, 40 bytes
+	    for (i = 0; i < 8; i++)
+              {
+                vcddb[i] = MEM_READ_BYTE(mem, addr - bofs + i);
+              }
+                vcddb[8] =  (((blk->bdi_mask) & (1<<0)) ? (signed long) db8[0]-db8[0] : (signed long) db8[0]) & 255;
+                vcddb[9] =  ((((blk->bdi_mask) & (1<<0)) ? (signed long) db8[0]-db8[0] : (signed long) db8[0]) & 65280) >> 8;
+                vcddb[10] =  ((((blk->bdi_mask) & (1<<0)) ? (signed long) db8[0]-db8[0] : (signed long) db8[0]) &  16711680) >> 16;
+                vcddb[11] =  ((((blk->bdi_mask) & (1<<0)) ? (signed long) db8[0]-db8[0] : (signed long) db8[0]) & -16777216) >> 24;
+                vcddb[12] =  (((blk->bdi_mask) & (1<<8)) ? (signed long) db8[8]-db8[0] : (signed long) db8[8]) & 255;
+                vcddb[13] =  ((((blk->bdi_mask) & (1<<8)) ? (signed long) db8[8]-db8[0] : (signed long) db8[8]) & 65280) >> 8;
+                vcddb[14] =  ((((blk->bdi_mask) & (1<<8)) ? (signed long) db8[8]-db8[0] : (signed long) db8[8]) &  16711680) >> 16;
+                vcddb[15] =  ((((blk->bdi_mask) & (1<<8)) ? (signed long) db8[8]-db8[0] : (signed long) db8[8]) & -16777216) >> 24;
+                vcddb[16] =  (((blk->bdi_mask) & (1<<16)) ? (signed long) db8[16]-db8[0] : (signed long) db8[16]) & 255;
+                vcddb[17] =  ((((blk->bdi_mask) & (1<<16)) ? (signed long) db8[16]-db8[0] : (signed long) db8[16]) & 65280) >> 8;
+                vcddb[18] =  ((((blk->bdi_mask) & (1<<16)) ? (signed long) db8[16]-db8[0] : (signed long) db8[16]) &  16711680) >> 16;
+                vcddb[19] =  ((((blk->bdi_mask) & (1<<16)) ? (signed long) db8[16]-db8[0] : (signed long) db8[16]) & -16777216) >> 24;
+                vcddb[20] =  (((blk->bdi_mask) & (1<<24)) ? (signed long) db8[24]-db8[0] : (signed long) db8[24]) & 255;
+                vcddb[21] =  ((((blk->bdi_mask) & (1<<24)) ? (signed long) db8[24]-db8[0] : (signed long) db8[24]) & 65280) >> 8;
+                vcddb[22] =  ((((blk->bdi_mask) & (1<<24)) ? (signed long) db8[24]-db8[0] : (signed long) db8[24]) &  16711680) >> 16;
+                vcddb[23] =  ((((blk->bdi_mask) & (1<<24)) ? (signed long) db8[24]-db8[0] : (signed long) db8[24]) & -16777216) >> 24;
+                vcddb[24] =  (((blk->bdi_mask) & (1<<32)) ? (signed long) db8[32]-db8[0] : (signed long) db8[32]) & 255;
+                vcddb[25] =  ((((blk->bdi_mask) & (1<<32)) ? (signed long) db8[32]-db8[0] : (signed long) db8[32]) & 65280) >> 8;
+                vcddb[26] =  ((((blk->bdi_mask) & (1<<32)) ? (signed long) db8[32]-db8[0] : (signed long) db8[32]) &  16711680) >> 16;
+                vcddb[27] =  ((((blk->bdi_mask) & (1<<32)) ? (signed long) db8[32]-db8[0] : (signed long) db8[32]) & -16777216) >> 24;
+                vcddb[28] =  (((blk->bdi_mask) & (1<<40)) ? (signed long) db8[40]-db8[0] : (signed long) db8[40]) & 255;
+                vcddb[29] =  ((((blk->bdi_mask) & (1<<40)) ? (signed long) db8[40]-db8[0] : (signed long) db8[40]) & 65280) >> 8;
+                vcddb[30] =  ((((blk->bdi_mask) & (1<<40)) ? (signed long) db8[40]-db8[0] : (signed long) db8[40]) &  16711680) >> 16;
+                vcddb[31] =  ((((blk->bdi_mask) & (1<<40)) ? (signed long) db8[40]-db8[0] : (signed long) db8[40]) & -16777216) >> 24;
+                vcddb[32] =  (((blk->bdi_mask) & (1<<48)) ? (signed long) db8[48]-db8[0] : (signed long) db8[48]) & 255;
+                vcddb[33] =  ((((blk->bdi_mask) & (1<<48)) ? (signed long) db8[48]-db8[0] : (signed long) db8[48]) & 65280) >> 8;
+                vcddb[34] =  ((((blk->bdi_mask) & (1<<48)) ? (signed long) db8[48]-db8[0] : (signed long) db8[48]) &  16711680) >> 16;
+                vcddb[35] =  ((((blk->bdi_mask) & (1<<48)) ? (signed long) db8[48]-db8[0] : (signed long) db8[48]) & -16777216) >> 24;
+                vcddb[36] =  (((blk->bdi_mask) & (1<<56)) ? (signed long) db8[56]-db8[0] : (signed long) db8[56]) & 255;
+                vcddb[37] =  ((((blk->bdi_mask) & (1<<56)) ? (signed long) db8[56]-db8[0] : (signed long) db8[56]) & 65280) >> 8;
+                vcddb[38] =  ((((blk->bdi_mask) & (1<<56)) ? (signed long) db8[56]-db8[0] : (signed long) db8[56]) &  16711680) >> 16;
+                vcddb[39] =  ((((blk->bdi_mask) & (1<<56)) ? (signed long) db8[56]-db8[0] : (signed long) db8[56]) & -16777216) >> 24;
+
           break;
           case 5:
             //base 4 delta 1
             bdi_size = 24; // 3 segments, 24 bytes
+
           break;
           case 6:
             //base 4 delta 2
@@ -1383,9 +1498,44 @@ else
           case 15:
             //decompressed
             bdi_size = 64; // 8 segments, 64 bytes
+	    for (i = 0; i < 64; i++)
+              {
+                vcddb[i] = MEM_READ_BYTE(mem, addr - bofs + i);
+              }
           break;
         }
+}
+/*
 
+
+
+  char vcdbuf[32] = "vcd_decompressor_";
+  strcat(vcdbuf, cp->name);
+  decompressorVCD = fopen(vcdbuf, "a");
+  char vcdbuf1[32];
+  sprintf(vcdbuf1, "#%d\n", cp->compressor_frequency*now);
+
+  //db[0-63].. is the cache line being read from memory / written into cache / compressed
+  fprintf(compressorVCD, vcdbuf1);
+
+  char vcdbuf2[516];
+  vcdbuf2[0] = 'b';
+  vcdbuf2[513] = ' ';
+  vcdbuf2[514] = '!';
+  vcdbuf2[515] = '\0';
+
+  for (int i = 0; i < 64; i++) {
+  for (int  j = 0; j < 8; j++) {
+        vcdbuf2[504-(i*8)+8-j]  = (vcddb[i] & 1) + '0';
+        vcddb[i] >>= 1;
+    }
+  }
+
+  fprintf(compressorVCD, vcdbuf2);
+  fprintf(compressorVCD, "\n");
+  fclose(compressorVCD);
+
+*/
   // Static energy is updated every cache access, regardless of operation and hit result  
 
   cp->sim_tag_static_power += (now - cp->last_cache_access) * cp->cacti_tag_static_power;
@@ -1467,6 +1617,89 @@ else
   
   /* **FAST HIT** */
   cp->hits++;
+
+//sdrea-begin
+//-----------
+
+  // need bdi size
+      switch (blk->bdi_encode)
+        {
+          case 0:
+            //zeros
+            bdi_size = 8; // 1 segment, 8 bytes
+          break;
+          case 1:
+            //repeats
+            bdi_size = 8; // 1 segment, 8 bytes
+          break;
+          case 2:
+            //base 8 delta 1
+            bdi_size = 16; // 2 segments, 16 bytes
+          break;
+          case 3:
+            //base 8 delta 2
+            bdi_size = 24; // 3 segments, 24 bytes
+          break;
+          case 4:
+            //base 8 delta 4
+            bdi_size = 40; // 5 segments, 40 bytes
+          break;
+          case 5:
+            //base 4 delta 1
+            bdi_size = 24; // 3 segments, 24 bytes
+          break;
+          case 6:
+            //base 4 delta 2
+            bdi_size = 40; // 5 segments, 40 bytes
+          break;
+          case 7:
+            //base 2 delta 1
+            bdi_size = 40; // 5 segments, 40 bytes
+          break;
+          case 15:
+            //decompressed
+            bdi_size = 64; // 8 segments, 64 bytes
+          break;
+        }
+
+  //ADD VCD Decompressor Inputs Here
+
+  
+
+  // Static energy is updated every cache access, regardless of operation and hit result  
+
+  cp->sim_tag_static_power += (now - cp->last_cache_access) * cp->cacti_tag_static_power;
+  cp->sim_data_static_power += (now - cp->last_cache_access) * cp->cacti_data_static_power;
+  cp->sim_compressor_static_power += (now - cp->last_cache_access) * cp->compressor_static_power;
+  cp->sim_decompressor_static_power += (now - cp->last_cache_access) * cp->decompressor_static_power;
+
+
+  // On cache hit, tag read will occur for read and write operation
+
+  cp->sim_tag_read_dynamic_energy += cp->cacti_tag_read_dynamic_energy;
+
+  // On cache hit, read operation, there will be 0 tag writes, 0 data writes, 1 data read
+
+  if (cmd == Read) { 
+
+    cp->sim_data_read_dynamic_energy += (double) bdi_size / cp->bsize * cp->cacti_data_read_dynamic_energy;
+    cp->sim_decompressor_dynamic_power += (cp->decompressor_dynamic_power * cp->decompressor_delay / 1000000);
+  
+
+  }
+
+  // On cache hit, write operation, there will be 0 tag writes (but a dirty bit write), 1 data write, 0 data reads
+
+  if (cmd == Write) {
+                      cp->sim_data_write_dynamic_energy += (double) bdi_size / cp->bsize * cp->cacti_data_write_dynamic_energy;
+                      // todo - dirty bit
+		      cp->sim_compressor_dynamic_power += (cp->compressor_dynamic_power * cp->compressor_delay / 1000000);
+                    }
+
+  cp->last_cache_access = now;
+
+//---------
+//sdrea-end
 
   /* copy data out of cache block, if block exists */
   if (cp->balloc)
