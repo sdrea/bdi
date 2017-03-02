@@ -441,7 +441,7 @@ cache_create(char *name,		/* name of the cache */
   fprintf(compressorVCD, "module compressor\n");
   fprintf(compressorVCD, "$end\n");
   fprintf(compressorVCD, "\n");
-  fprintf(compressorVCD, "$var wire 512 ! uncompressed $end\n");
+  fprintf(compressorVCD, "$var wire 512 ! x $end\n");
   fprintf(compressorVCD, "\n");
   fprintf(compressorVCD, "$upscope $end\n");
   fprintf(compressorVCD, "$enddefinitions $end\n");
