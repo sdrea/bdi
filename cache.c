@@ -481,7 +481,7 @@ cache_create(char *name,		/* name of the cache */
   fprintf(decompressorVCD, "#0\n");
   fprintf(decompressorVCD, "$dumpvars\n");
   fprintf(decompressorVCD, "b0 !\n");
-  fprintf(decompressorVCD, "0 #\n");
+  fprintf(decompressorVCD, "b0 #\n");
   fprintf(decompressorVCD, "b0000 $\n");
   fprintf(decompressorVCD, "$end\n");
   fprintf(decompressorVCD, "\n");
