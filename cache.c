@@ -1485,15 +1485,109 @@ if (mem != NULL)
           case 5:
             //base 4 delta 1
             bdi_size = 24; // 3 segments, 24 bytes
+	    for (i = 0; i < 4; i++)
+              {
+                vcddb[i] = MEM_READ_BYTE(mem, addr - bofs + i);
+              }
+                vcddb[4] = ((blk->bdi_mask) & (1<<0)) ? (signed char) db4[0]-db4[0] : (signed char) db4[0];
+                vcddb[5] = ((blk->bdi_mask) & (1<<4)) ? (signed char) db4[4]-db4[0] : (signed char) db4[4];
+                vcddb[6] = ((blk->bdi_mask) & (1<<8)) ? (signed char) db4[8]-db4[0] : (signed char) db4[8];
+                vcddb[7] = ((blk->bdi_mask) & (1<<12)) ? (signed char) db4[12]-db4[0] : (signed char) db4[12];
+                vcddb[8] = ((blk->bdi_mask) & (1<<16)) ? (signed char) db4[16]-db4[0] : (signed char) db4[16];
+                vcddb[9] = ((blk->bdi_mask) & (1<<20)) ? (signed char) db4[20]-db4[0] : (signed char) db4[20];
+                vcddb[10] = ((blk->bdi_mask) & (1<<24)) ? (signed char) db4[24]-db4[0] : (signed char) db4[24];
+                vcddb[11] = ((blk->bdi_mask) & (1<<28)) ? (signed char) db4[28]-db4[0] : (signed char) db4[28];
+                vcddb[12] = ((blk->bdi_mask) & (1<<32)) ? (signed char) db4[32]-db4[0] : (signed char) db4[32];
+                vcddb[13] = ((blk->bdi_mask) & (1<<36)) ? (signed char) db4[36]-db4[0] : (signed char) db4[36];
+                vcddb[14] = ((blk->bdi_mask) & (1<<40)) ? (signed char) db4[40]-db4[0] : (signed char) db4[40];
+                vcddb[15] = ((blk->bdi_mask) & (1<<44)) ? (signed char) db4[44]-db4[0] : (signed char) db4[44];
+                vcddb[16] = ((blk->bdi_mask) & (1<<48)) ? (signed char) db4[48]-db4[0] : (signed char) db4[48];
+                vcddb[17] = ((blk->bdi_mask) & (1<<52)) ? (signed char) db4[52]-db4[0] : (signed char) db4[52];
+                vcddb[18] = ((blk->bdi_mask) & (1<<56)) ? (signed char) db4[56]-db4[0] : (signed char) db4[56];
+                vcddb[19] = ((blk->bdi_mask) & (1<<60)) ? (signed char) db4[60]-db4[0] : (signed char) db4[60];
 
           break;
           case 6:
             //base 4 delta 2
             bdi_size = 40; // 5 segments, 40 bytes
+	    for (i = 0; i < 4; i++)
+              {
+                vcddb[i] = MEM_READ_BYTE(mem, addr - bofs + i);
+              }
+                vcddb[4] = (((blk->bdi_mask) & (1<<0)) ? (signed short) db4[0]-db4[0] : (signed short) db4[0]) & 255;
+                vcddb[5] = ((((blk->bdi_mask) & (1<<0)) ? (signed short) db4[0]-db4[0] : (signed short) db4[0]) & -256) >> 8;
+                vcddb[6] = (((blk->bdi_mask) & (1<<4)) ? (signed short) db4[4]-db4[0] : (signed short) db4[4]) & 255;
+                vcddb[7] = ((((blk->bdi_mask) & (1<<4)) ? (signed short) db4[4]-db4[0] : (signed short) db4[4]) & -256) >> 8;
+                vcddb[8] = (((blk->bdi_mask) & (1<<8)) ? (signed short) db4[8]-db4[0] : (signed short) db4[8]) & 255;
+                vcddb[9] = ((((blk->bdi_mask) & (1<<8)) ? (signed short) db4[8]-db4[0] : (signed short) db4[8]) & -256) >> 8;
+                vcddb[10] = (((blk->bdi_mask) & (1<<12)) ? (signed short) db4[12]-db4[0] : (signed short) db4[12]) & 255;
+                vcddb[11] = ((((blk->bdi_mask) & (1<<12)) ? (signed short) db4[12]-db4[0] : (signed short) db4[12]) & -256) >> 8;
+                vcddb[12] = (((blk->bdi_mask) & (1<<16)) ? (signed short) db4[16]-db4[0] : (signed short) db4[16]) & 255;
+                vcddb[13] = ((((blk->bdi_mask) & (1<<16)) ? (signed short) db4[16]-db4[0] : (signed short) db4[16]) & -256) >> 8;
+                vcddb[14] = (((blk->bdi_mask) & (1<<20)) ? (signed short) db4[20]-db4[0] : (signed short) db4[20]) & 255;
+                vcddb[15] = ((((blk->bdi_mask) & (1<<20)) ? (signed short) db4[20]-db4[0] : (signed short) db4[20]) & -256) >> 8;
+                vcddb[16] = (((blk->bdi_mask) & (1<<24)) ? (signed short) db4[24]-db4[0] : (signed short) db4[24]) & 255;
+                vcddb[17] = ((((blk->bdi_mask) & (1<<24)) ? (signed short) db4[24]-db4[0] : (signed short) db4[24]) & -256) >> 8;
+                vcddb[18] = (((blk->bdi_mask) & (1<<28)) ? (signed short) db4[28]-db4[0] : (signed short) db4[28]) & 255;
+                vcddb[19] = ((((blk->bdi_mask) & (1<<28)) ? (signed short) db4[28]-db4[0] : (signed short) db4[28]) & -256) >> 8;
+                vcddb[20] = (((blk->bdi_mask) & (1<<32)) ? (signed short) db4[32]-db4[0] : (signed short) db4[32]) & 255;
+                vcddb[21] = ((((blk->bdi_mask) & (1<<32)) ? (signed short) db4[32]-db4[0] : (signed short) db4[32]) & -256) >> 8;
+                vcddb[22] = (((blk->bdi_mask) & (1<<36)) ? (signed short) db4[36]-db4[0] : (signed short) db4[36]) & 255;
+                vcddb[23] = ((((blk->bdi_mask) & (1<<36)) ? (signed short) db4[36]-db4[0] : (signed short) db4[36]) & -256) >> 8;
+                vcddb[24] = (((blk->bdi_mask) & (1<<40)) ? (signed short) db4[40]-db4[0] : (signed short) db4[40]) & 255;
+                vcddb[25] = ((((blk->bdi_mask) & (1<<40)) ? (signed short) db4[40]-db4[0] : (signed short) db4[40]) & -256) >> 8;
+                vcddb[26] = (((blk->bdi_mask) & (1<<44)) ? (signed short) db4[44]-db4[0] : (signed short) db4[44]) & 255;
+                vcddb[27] = ((((blk->bdi_mask) & (1<<44)) ? (signed short) db4[44]-db4[0] : (signed short) db4[44]) & -256) >> 8;
+                vcddb[28] = (((blk->bdi_mask) & (1<<48)) ? (signed short) db4[48]-db4[0] : (signed short) db4[48]) & 255;
+                vcddb[29] = ((((blk->bdi_mask) & (1<<48)) ? (signed short) db4[48]-db4[0] : (signed short) db4[48]) & -256) >> 8;
+                vcddb[30] = (((blk->bdi_mask) & (1<<52)) ? (signed short) db4[52]-db4[0] : (signed short) db4[52]) & 255;
+                vcddb[31] = ((((blk->bdi_mask) & (1<<52)) ? (signed short) db4[52]-db4[0] : (signed short) db4[52]) & -256) >> 8;
+                vcddb[32] = (((blk->bdi_mask) & (1<<56)) ? (signed short) db4[56]-db4[0] : (signed short) db4[56]) & 255;
+                vcddb[33] = ((((blk->bdi_mask) & (1<<56)) ? (signed short) db4[56]-db4[0] : (signed short) db4[56]) & -256) >> 8;
+                vcddb[34] = (((blk->bdi_mask) & (1<<60)) ? (signed short) db4[60]-db4[0] : (signed short) db4[60]) & 255;
+                vcddb[35] = ((((blk->bdi_mask) & (1<<60)) ? (signed short) db4[60]-db4[0] : (signed short) db4[60]) & -256) >> 8;
+
           break;
           case 7:
             //base 2 delta 1
             bdi_size = 40; // 5 segments, 40 bytes
+	    for (i = 0; i < 2; i++)
+              {
+                vcddb[i] = MEM_READ_BYTE(mem, addr - bofs + i);
+              }
+                vcddb[2] = ((blk->bdi_mask) & (1<<0)) ? (signed char) db2[0]-db2[0] : (signed char) db2[0];
+                vcddb[3] = ((blk->bdi_mask) & (1<<2)) ? (signed char) db2[2]-db2[0] : (signed char) db2[2];
+                vcddb[4] = ((blk->bdi_mask) & (1<<4)) ? (signed char) db2[4]-db2[0] : (signed char) db2[4];
+                vcddb[5] = ((blk->bdi_mask) & (1<<6)) ? (signed char) db2[6]-db2[0] : (signed char) db2[6];
+                vcddb[6] = ((blk->bdi_mask) & (1<<8)) ? (signed char) db2[8]-db2[0] : (signed char) db2[8];
+                vcddb[7] = ((blk->bdi_mask) & (1<<10)) ? (signed char) db2[10]-db2[0] : (signed char) db2[10];
+                vcddb[8] = ((blk->bdi_mask) & (1<<12)) ? (signed char) db2[12]-db2[0] : (signed char) db2[12];
+                vcddb[9] = ((blk->bdi_mask) & (1<<14)) ? (signed char) db2[14]-db2[0] : (signed char) db2[14];
+                vcddb[10] = ((blk->bdi_mask) & (1<<16)) ? (signed char) db2[16]-db2[0] : (signed char) db2[16];
+                vcddb[11] = ((blk->bdi_mask) & (1<<18)) ? (signed char) db2[18]-db2[0] : (signed char) db2[18];
+                vcddb[12] = ((blk->bdi_mask) & (1<<20)) ? (signed char) db2[20]-db2[0] : (signed char) db2[20];
+                vcddb[13] = ((blk->bdi_mask) & (1<<22)) ? (signed char) db2[22]-db2[0] : (signed char) db2[22];
+                vcddb[14] = ((blk->bdi_mask) & (1<<24)) ? (signed char) db2[24]-db2[0] : (signed char) db2[24];
+                vcddb[15] = ((blk->bdi_mask) & (1<<26)) ? (signed char) db2[26]-db2[0] : (signed char) db2[26];
+                vcddb[16] = ((blk->bdi_mask) & (1<<28)) ? (signed char) db2[28]-db2[0] : (signed char) db2[28];
+                vcddb[17] = ((blk->bdi_mask) & (1<<30)) ? (signed char) db2[30]-db2[0] : (signed char) db2[30];
+                vcddb[18] = ((blk->bdi_mask) & (1<<32)) ? (signed char) db2[32]-db2[0] : (signed char) db2[32];
+                vcddb[19] = ((blk->bdi_mask) & (1<<34)) ? (signed char) db2[34]-db2[0] : (signed char) db2[34];
+                vcddb[20] = ((blk->bdi_mask) & (1<<36)) ? (signed char) db2[36]-db2[0] : (signed char) db2[36];
+                vcddb[21] = ((blk->bdi_mask) & (1<<38)) ? (signed char) db2[38]-db2[0] : (signed char) db2[38];
+                vcddb[22] = ((blk->bdi_mask) & (1<<40)) ? (signed char) db2[40]-db2[0] : (signed char) db2[40];
+                vcddb[23] = ((blk->bdi_mask) & (1<<42)) ? (signed char) db2[42]-db2[0] : (signed char) db2[42];
+                vcddb[24] = ((blk->bdi_mask) & (1<<44)) ? (signed char) db2[44]-db2[0] : (signed char) db2[44];
+                vcddb[25] = ((blk->bdi_mask) & (1<<46)) ? (signed char) db2[46]-db2[0] : (signed char) db2[46];
+                vcddb[26] = ((blk->bdi_mask) & (1<<48)) ? (signed char) db2[48]-db2[0] : (signed char) db2[48];
+                vcddb[27] = ((blk->bdi_mask) & (1<<50)) ? (signed char) db2[50]-db2[0] : (signed char) db2[50];
+                vcddb[28] = ((blk->bdi_mask) & (1<<52)) ? (signed char) db2[52]-db2[0] : (signed char) db2[52];
+                vcddb[29] = ((blk->bdi_mask) & (1<<54)) ? (signed char) db2[54]-db2[0] : (signed char) db2[54];
+                vcddb[30] = ((blk->bdi_mask) & (1<<56)) ? (signed char) db2[56]-db2[0] : (signed char) db2[56];
+                vcddb[31] = ((blk->bdi_mask) & (1<<58)) ? (signed char) db2[58]-db2[0] : (signed char) db2[58];
+                vcddb[32] = ((blk->bdi_mask) & (1<<60)) ? (signed char) db2[60]-db2[0] : (signed char) db2[60];
+                vcddb[33] = ((blk->bdi_mask) & (1<<62)) ? (signed char) db2[62]-db2[0] : (signed char) db2[62];
+
           break;
           case 15:
             //decompressed
@@ -1505,37 +1599,49 @@ if (mem != NULL)
           break;
         }
 }
-/*
+if (bdi_size != 64) {
 
-
-
-  char vcdbuf[32] = "vcd_decompressor_";
-  strcat(vcdbuf, cp->name);
-  decompressorVCD = fopen(vcdbuf, "a");
-  char vcdbuf1[32];
-  sprintf(vcdbuf1, "#%d\n", cp->compressor_frequency*now);
+  char dvcdbuf[32] = "vcd_decompressor_";
+  strcat(dvcdbuf, cp->name);
+  decompressorVCD = fopen(dvcdbuf, "a");
+  char dvcdbuf1[32];
+  sprintf(dvcdbuf1, "#%d\n", cp->compressor_frequency*now);
 
   //db[0-63].. is the cache line being read from memory / written into cache / compressed
-  fprintf(compressorVCD, vcdbuf1);
+  fprintf(decompressorVCD, dvcdbuf1);
 
-  char vcdbuf2[516];
-  vcdbuf2[0] = 'b';
-  vcdbuf2[513] = ' ';
-  vcdbuf2[514] = '!';
-  vcdbuf2[515] = '\0';
+  char dvcdbuf2[516];
+  dvcdbuf2[0] = 'b';
+  dvcdbuf2[513] = ' ';
+  dvcdbuf2[514] = '!';
+  dvcdbuf2[515] = '\0';
+
 
   for (int i = 0; i < 64; i++) {
   for (int  j = 0; j < 8; j++) {
-        vcdbuf2[504-(i*8)+8-j]  = (vcddb[i] & 1) + '0';
+        dvcdbuf2[504-(i*8)+8-j]  = (vcddb[i] & 1) + '0';
         vcddb[i] >>= 1;
     }
   }
 
-  fprintf(compressorVCD, vcdbuf2);
-  fprintf(compressorVCD, "\n");
-  fclose(compressorVCD);
+  char dvcdbuf3[8];
+  dvcdbuf3[0] = 'b';
+  dvcdbuf3[1] = ((blk->bdi_encode >> 3) & 1) + '0';
+  dvcdbuf3[2] = ((blk->bdi_encode >> 2) & 1) + '0';
+  dvcdbuf3[3] = ((blk->bdi_encode >> 1) & 1) + '0';
+  dvcdbuf3[4] = ((blk->bdi_encode) & 1) + '0';
+  dvcdbuf3[5] = ' ';
+  dvcdbuf3[6] = '$';
+  dvcdbuf3[7] = '\0';
 
-*/
+
+  fprintf(decompressorVCD, dvcdbuf2);
+  fprintf(decompressorVCD, "\n");
+  fprintf(decompressorVCD, dvcdbuf3);
+  fprintf(decompressorVCD, "\n");
+  fclose(decompressorVCD);
+
+}
   // Static energy is updated every cache access, regardless of operation and hit result  
 
   cp->sim_tag_static_power += (now - cp->last_cache_access) * cp->cacti_tag_static_power;
@@ -1620,6 +1726,47 @@ if (mem != NULL)
 
 //sdrea-begin
 //-----------
+if (mem != NULL)
+    {
+        for (i = 0; i < 64; i++)
+          {
+            vcddb[i] = 0;
+	    db[i] = 0;
+            db8[i] = 0;
+            db4[i] = 0;
+            db2[i] = 0;
+          }
+
+        for (i = 0; i < 64; i++)
+          {
+            db[i] = MEM_READ_BYTE(mem, addr - bofs + i);
+	    db8[i] = MEM_READ_BYTE(mem, addr - bofs + i);
+            db4[i] = MEM_READ_BYTE(mem, addr - bofs + i);
+            db2[i] = MEM_READ_BYTE(mem, addr - bofs + i);
+          }
+
+        for (i = 0; i < 64; i+=8)
+          {
+            db8[i] += db8[i+1] <<  8;
+            db8[i] += db8[i+2] << 16;
+            db8[i] += db8[i+3] << 24;
+            db8[i] += db8[i+4] << 32;
+            db8[i] += db8[i+5] << 40;
+            db8[i] += db8[i+6] << 48;
+            db8[i] += db8[i+7] << 56;
+          }
+
+        for (i = 0; i < 64; i+=4)
+          {
+            db4[i] += db4[i+1] <<  8;
+            db4[i] += db4[i+2] << 16;
+            db4[i] += db4[i+3] << 24;
+          }
+
+        for (i = 0; i < 64; i+=2)
+          {
+            db2[i] += db2[i+1] <<  8;
+          }
 
   // need bdi size
       switch (blk->bdi_encode)
@@ -1631,41 +1778,252 @@ if (mem != NULL)
           case 1:
             //repeats
             bdi_size = 8; // 1 segment, 8 bytes
+	    for (i = 0; i < 8; i++)
+              {
+                vcddb[i] = MEM_READ_BYTE(mem, addr - bofs + i);
+              }
           break;
           case 2:
             //base 8 delta 1
             bdi_size = 16; // 2 segments, 16 bytes
+	    for (i = 0; i < 8; i++)
+              {
+                vcddb[i] = MEM_READ_BYTE(mem, addr - bofs + i);
+              }
+                vcddb[8] = ((blk->bdi_mask) & (1<<0)) ? (signed char) db8[0]-db8[0] : (signed char) db8[0];
+                vcddb[9] = ((blk->bdi_mask) & (1<<8)) ? (signed char) db8[8]-db8[0] : (signed char) db8[8];
+                vcddb[10] = ((blk->bdi_mask) & (1<<16)) ? (signed char) db8[16]-db8[0] : (signed char) db8[16];
+                vcddb[11] = ((blk->bdi_mask) & (1<<24)) ? (signed char) db8[24]-db8[0] : (signed char) db8[24];
+                vcddb[12] = ((blk->bdi_mask) & (1<<32)) ? (signed char) db8[32]-db8[0] : (signed char) db8[32];
+                vcddb[13] = ((blk->bdi_mask) & (1<<40)) ? (signed char) db8[40]-db8[0] : (signed char) db8[40];
+                vcddb[14] = ((blk->bdi_mask) & (1<<48)) ? (signed char) db8[48]-db8[0] : (signed char) db8[48];
+                vcddb[15] = ((blk->bdi_mask) & (1<<56)) ? (signed char) db8[56]-db8[0] : (signed char) db8[56];
           break;
           case 3:
             //base 8 delta 2
             bdi_size = 24; // 3 segments, 24 bytes
+	    for (i = 0; i < 8; i++)
+              {
+                vcddb[i] = MEM_READ_BYTE(mem, addr - bofs + i);
+              }
+                vcddb[8] =  (((blk->bdi_mask) & (1<<0)) ? (signed short) db8[0]-db8[0] : (signed short) db8[0]) &  255;
+                vcddb[9] =  ((((blk->bdi_mask) & (1<<0)) ? (signed short) db8[0]-db8[0] : (signed short) db8[0]) & -256) >> 8;
+                vcddb[10] = (((blk->bdi_mask) & (1<<8)) ? (signed short) db8[8]-db8[0] : (signed short) db8[8]) &  255;
+                vcddb[11] = ((((blk->bdi_mask) & (1<<8)) ? (signed short) db8[8]-db8[0] : (signed short) db8[8]) & -256) >> 8;
+                vcddb[12] = (((blk->bdi_mask) & (1<<16)) ? (signed short) db8[16]-db8[0] : (signed short) db8[16]) &  255;
+                vcddb[13] = ((((blk->bdi_mask) & (1<<16)) ? (signed short) db8[16]-db8[0] : (signed short) db8[16]) &  -256) >> 8;
+                vcddb[14] = (((blk->bdi_mask) & (1<<24)) ? (signed short) db8[24]-db8[0] : (signed short) db8[24]) &  255;
+                vcddb[15] = ((((blk->bdi_mask) & (1<<24)) ? (signed short) db8[24]-db8[0] : (signed short) db8[24]) &  -256) >> 8;
+                vcddb[16] = (((blk->bdi_mask) & (1<<32)) ? (signed short) db8[32]-db8[0] : (signed short) db8[32]) &  255;
+                vcddb[17] = ((((blk->bdi_mask) & (1<<32)) ? (signed short) db8[32]-db8[0] : (signed short) db8[32]) &  -256) >> 8;
+                vcddb[18] = (((blk->bdi_mask) & (1<<40)) ? (signed short) db8[40]-db8[0] : (signed short) db8[40]) &  255;
+                vcddb[19] = ((((blk->bdi_mask) & (1<<40)) ? (signed short) db8[40]-db8[0] : (signed short) db8[40]) &  -256) >> 8;
+                vcddb[20] = (((blk->bdi_mask) & (1<<48)) ? (signed short) db8[48]-db8[0] : (signed short) db8[48]) &  255;
+                vcddb[21] = ((((blk->bdi_mask) & (1<<48)) ? (signed short) db8[48]-db8[0] : (signed short) db8[48]) &  -256) >> 8;
+                vcddb[22] = (((blk->bdi_mask) & (1<<56)) ? (signed short) db8[56]-db8[0] : (signed short) db8[56]) &  255;
+                vcddb[23] = ((((blk->bdi_mask) & (1<<56)) ? (signed short) db8[56]-db8[0] : (signed short) db8[56]) &  -256) >> 8;
           break;
           case 4:
             //base 8 delta 4
             bdi_size = 40; // 5 segments, 40 bytes
+	    for (i = 0; i < 8; i++)
+              {
+                vcddb[i] = MEM_READ_BYTE(mem, addr - bofs + i);
+              }
+                vcddb[8] =  (((blk->bdi_mask) & (1<<0)) ? (signed long) db8[0]-db8[0] : (signed long) db8[0]) & 255;
+                vcddb[9] =  ((((blk->bdi_mask) & (1<<0)) ? (signed long) db8[0]-db8[0] : (signed long) db8[0]) & 65280) >> 8;
+                vcddb[10] =  ((((blk->bdi_mask) & (1<<0)) ? (signed long) db8[0]-db8[0] : (signed long) db8[0]) &  16711680) >> 16;
+                vcddb[11] =  ((((blk->bdi_mask) & (1<<0)) ? (signed long) db8[0]-db8[0] : (signed long) db8[0]) & -16777216) >> 24;
+                vcddb[12] =  (((blk->bdi_mask) & (1<<8)) ? (signed long) db8[8]-db8[0] : (signed long) db8[8]) & 255;
+                vcddb[13] =  ((((blk->bdi_mask) & (1<<8)) ? (signed long) db8[8]-db8[0] : (signed long) db8[8]) & 65280) >> 8;
+                vcddb[14] =  ((((blk->bdi_mask) & (1<<8)) ? (signed long) db8[8]-db8[0] : (signed long) db8[8]) &  16711680) >> 16;
+                vcddb[15] =  ((((blk->bdi_mask) & (1<<8)) ? (signed long) db8[8]-db8[0] : (signed long) db8[8]) & -16777216) >> 24;
+                vcddb[16] =  (((blk->bdi_mask) & (1<<16)) ? (signed long) db8[16]-db8[0] : (signed long) db8[16]) & 255;
+                vcddb[17] =  ((((blk->bdi_mask) & (1<<16)) ? (signed long) db8[16]-db8[0] : (signed long) db8[16]) & 65280) >> 8;
+                vcddb[18] =  ((((blk->bdi_mask) & (1<<16)) ? (signed long) db8[16]-db8[0] : (signed long) db8[16]) &  16711680) >> 16;
+                vcddb[19] =  ((((blk->bdi_mask) & (1<<16)) ? (signed long) db8[16]-db8[0] : (signed long) db8[16]) & -16777216) >> 24;
+                vcddb[20] =  (((blk->bdi_mask) & (1<<24)) ? (signed long) db8[24]-db8[0] : (signed long) db8[24]) & 255;
+                vcddb[21] =  ((((blk->bdi_mask) & (1<<24)) ? (signed long) db8[24]-db8[0] : (signed long) db8[24]) & 65280) >> 8;
+                vcddb[22] =  ((((blk->bdi_mask) & (1<<24)) ? (signed long) db8[24]-db8[0] : (signed long) db8[24]) &  16711680) >> 16;
+                vcddb[23] =  ((((blk->bdi_mask) & (1<<24)) ? (signed long) db8[24]-db8[0] : (signed long) db8[24]) & -16777216) >> 24;
+                vcddb[24] =  (((blk->bdi_mask) & (1<<32)) ? (signed long) db8[32]-db8[0] : (signed long) db8[32]) & 255;
+                vcddb[25] =  ((((blk->bdi_mask) & (1<<32)) ? (signed long) db8[32]-db8[0] : (signed long) db8[32]) & 65280) >> 8;
+                vcddb[26] =  ((((blk->bdi_mask) & (1<<32)) ? (signed long) db8[32]-db8[0] : (signed long) db8[32]) &  16711680) >> 16;
+                vcddb[27] =  ((((blk->bdi_mask) & (1<<32)) ? (signed long) db8[32]-db8[0] : (signed long) db8[32]) & -16777216) >> 24;
+                vcddb[28] =  (((blk->bdi_mask) & (1<<40)) ? (signed long) db8[40]-db8[0] : (signed long) db8[40]) & 255;
+                vcddb[29] =  ((((blk->bdi_mask) & (1<<40)) ? (signed long) db8[40]-db8[0] : (signed long) db8[40]) & 65280) >> 8;
+                vcddb[30] =  ((((blk->bdi_mask) & (1<<40)) ? (signed long) db8[40]-db8[0] : (signed long) db8[40]) &  16711680) >> 16;
+                vcddb[31] =  ((((blk->bdi_mask) & (1<<40)) ? (signed long) db8[40]-db8[0] : (signed long) db8[40]) & -16777216) >> 24;
+                vcddb[32] =  (((blk->bdi_mask) & (1<<48)) ? (signed long) db8[48]-db8[0] : (signed long) db8[48]) & 255;
+                vcddb[33] =  ((((blk->bdi_mask) & (1<<48)) ? (signed long) db8[48]-db8[0] : (signed long) db8[48]) & 65280) >> 8;
+                vcddb[34] =  ((((blk->bdi_mask) & (1<<48)) ? (signed long) db8[48]-db8[0] : (signed long) db8[48]) &  16711680) >> 16;
+                vcddb[35] =  ((((blk->bdi_mask) & (1<<48)) ? (signed long) db8[48]-db8[0] : (signed long) db8[48]) & -16777216) >> 24;
+                vcddb[36] =  (((blk->bdi_mask) & (1<<56)) ? (signed long) db8[56]-db8[0] : (signed long) db8[56]) & 255;
+                vcddb[37] =  ((((blk->bdi_mask) & (1<<56)) ? (signed long) db8[56]-db8[0] : (signed long) db8[56]) & 65280) >> 8;
+                vcddb[38] =  ((((blk->bdi_mask) & (1<<56)) ? (signed long) db8[56]-db8[0] : (signed long) db8[56]) &  16711680) >> 16;
+                vcddb[39] =  ((((blk->bdi_mask) & (1<<56)) ? (signed long) db8[56]-db8[0] : (signed long) db8[56]) & -16777216) >> 24;
+
           break;
           case 5:
             //base 4 delta 1
             bdi_size = 24; // 3 segments, 24 bytes
+	    for (i = 0; i < 4; i++)
+              {
+                vcddb[i] = MEM_READ_BYTE(mem, addr - bofs + i);
+              }
+                vcddb[4] = ((blk->bdi_mask) & (1<<0)) ? (signed char) db4[0]-db4[0] : (signed char) db4[0];
+                vcddb[5] = ((blk->bdi_mask) & (1<<4)) ? (signed char) db4[4]-db4[0] : (signed char) db4[4];
+                vcddb[6] = ((blk->bdi_mask) & (1<<8)) ? (signed char) db4[8]-db4[0] : (signed char) db4[8];
+                vcddb[7] = ((blk->bdi_mask) & (1<<12)) ? (signed char) db4[12]-db4[0] : (signed char) db4[12];
+                vcddb[8] = ((blk->bdi_mask) & (1<<16)) ? (signed char) db4[16]-db4[0] : (signed char) db4[16];
+                vcddb[9] = ((blk->bdi_mask) & (1<<20)) ? (signed char) db4[20]-db4[0] : (signed char) db4[20];
+                vcddb[10] = ((blk->bdi_mask) & (1<<24)) ? (signed char) db4[24]-db4[0] : (signed char) db4[24];
+                vcddb[11] = ((blk->bdi_mask) & (1<<28)) ? (signed char) db4[28]-db4[0] : (signed char) db4[28];
+                vcddb[12] = ((blk->bdi_mask) & (1<<32)) ? (signed char) db4[32]-db4[0] : (signed char) db4[32];
+                vcddb[13] = ((blk->bdi_mask) & (1<<36)) ? (signed char) db4[36]-db4[0] : (signed char) db4[36];
+                vcddb[14] = ((blk->bdi_mask) & (1<<40)) ? (signed char) db4[40]-db4[0] : (signed char) db4[40];
+                vcddb[15] = ((blk->bdi_mask) & (1<<44)) ? (signed char) db4[44]-db4[0] : (signed char) db4[44];
+                vcddb[16] = ((blk->bdi_mask) & (1<<48)) ? (signed char) db4[48]-db4[0] : (signed char) db4[48];
+                vcddb[17] = ((blk->bdi_mask) & (1<<52)) ? (signed char) db4[52]-db4[0] : (signed char) db4[52];
+                vcddb[18] = ((blk->bdi_mask) & (1<<56)) ? (signed char) db4[56]-db4[0] : (signed char) db4[56];
+                vcddb[19] = ((blk->bdi_mask) & (1<<60)) ? (signed char) db4[60]-db4[0] : (signed char) db4[60];
+
           break;
           case 6:
             //base 4 delta 2
             bdi_size = 40; // 5 segments, 40 bytes
+	    for (i = 0; i < 4; i++)
+              {
+                vcddb[i] = MEM_READ_BYTE(mem, addr - bofs + i);
+              }
+                vcddb[4] = (((blk->bdi_mask) & (1<<0)) ? (signed short) db4[0]-db4[0] : (signed short) db4[0]) & 255;
+                vcddb[5] = ((((blk->bdi_mask) & (1<<0)) ? (signed short) db4[0]-db4[0] : (signed short) db4[0]) & -256) >> 8;
+                vcddb[6] = (((blk->bdi_mask) & (1<<4)) ? (signed short) db4[4]-db4[0] : (signed short) db4[4]) & 255;
+                vcddb[7] = ((((blk->bdi_mask) & (1<<4)) ? (signed short) db4[4]-db4[0] : (signed short) db4[4]) & -256) >> 8;
+                vcddb[8] = (((blk->bdi_mask) & (1<<8)) ? (signed short) db4[8]-db4[0] : (signed short) db4[8]) & 255;
+                vcddb[9] = ((((blk->bdi_mask) & (1<<8)) ? (signed short) db4[8]-db4[0] : (signed short) db4[8]) & -256) >> 8;
+                vcddb[10] = (((blk->bdi_mask) & (1<<12)) ? (signed short) db4[12]-db4[0] : (signed short) db4[12]) & 255;
+                vcddb[11] = ((((blk->bdi_mask) & (1<<12)) ? (signed short) db4[12]-db4[0] : (signed short) db4[12]) & -256) >> 8;
+                vcddb[12] = (((blk->bdi_mask) & (1<<16)) ? (signed short) db4[16]-db4[0] : (signed short) db4[16]) & 255;
+                vcddb[13] = ((((blk->bdi_mask) & (1<<16)) ? (signed short) db4[16]-db4[0] : (signed short) db4[16]) & -256) >> 8;
+                vcddb[14] = (((blk->bdi_mask) & (1<<20)) ? (signed short) db4[20]-db4[0] : (signed short) db4[20]) & 255;
+                vcddb[15] = ((((blk->bdi_mask) & (1<<20)) ? (signed short) db4[20]-db4[0] : (signed short) db4[20]) & -256) >> 8;
+                vcddb[16] = (((blk->bdi_mask) & (1<<24)) ? (signed short) db4[24]-db4[0] : (signed short) db4[24]) & 255;
+                vcddb[17] = ((((blk->bdi_mask) & (1<<24)) ? (signed short) db4[24]-db4[0] : (signed short) db4[24]) & -256) >> 8;
+                vcddb[18] = (((blk->bdi_mask) & (1<<28)) ? (signed short) db4[28]-db4[0] : (signed short) db4[28]) & 255;
+                vcddb[19] = ((((blk->bdi_mask) & (1<<28)) ? (signed short) db4[28]-db4[0] : (signed short) db4[28]) & -256) >> 8;
+                vcddb[20] = (((blk->bdi_mask) & (1<<32)) ? (signed short) db4[32]-db4[0] : (signed short) db4[32]) & 255;
+                vcddb[21] = ((((blk->bdi_mask) & (1<<32)) ? (signed short) db4[32]-db4[0] : (signed short) db4[32]) & -256) >> 8;
+                vcddb[22] = (((blk->bdi_mask) & (1<<36)) ? (signed short) db4[36]-db4[0] : (signed short) db4[36]) & 255;
+                vcddb[23] = ((((blk->bdi_mask) & (1<<36)) ? (signed short) db4[36]-db4[0] : (signed short) db4[36]) & -256) >> 8;
+                vcddb[24] = (((blk->bdi_mask) & (1<<40)) ? (signed short) db4[40]-db4[0] : (signed short) db4[40]) & 255;
+                vcddb[25] = ((((blk->bdi_mask) & (1<<40)) ? (signed short) db4[40]-db4[0] : (signed short) db4[40]) & -256) >> 8;
+                vcddb[26] = (((blk->bdi_mask) & (1<<44)) ? (signed short) db4[44]-db4[0] : (signed short) db4[44]) & 255;
+                vcddb[27] = ((((blk->bdi_mask) & (1<<44)) ? (signed short) db4[44]-db4[0] : (signed short) db4[44]) & -256) >> 8;
+                vcddb[28] = (((blk->bdi_mask) & (1<<48)) ? (signed short) db4[48]-db4[0] : (signed short) db4[48]) & 255;
+                vcddb[29] = ((((blk->bdi_mask) & (1<<48)) ? (signed short) db4[48]-db4[0] : (signed short) db4[48]) & -256) >> 8;
+                vcddb[30] = (((blk->bdi_mask) & (1<<52)) ? (signed short) db4[52]-db4[0] : (signed short) db4[52]) & 255;
+                vcddb[31] = ((((blk->bdi_mask) & (1<<52)) ? (signed short) db4[52]-db4[0] : (signed short) db4[52]) & -256) >> 8;
+                vcddb[32] = (((blk->bdi_mask) & (1<<56)) ? (signed short) db4[56]-db4[0] : (signed short) db4[56]) & 255;
+                vcddb[33] = ((((blk->bdi_mask) & (1<<56)) ? (signed short) db4[56]-db4[0] : (signed short) db4[56]) & -256) >> 8;
+                vcddb[34] = (((blk->bdi_mask) & (1<<60)) ? (signed short) db4[60]-db4[0] : (signed short) db4[60]) & 255;
+                vcddb[35] = ((((blk->bdi_mask) & (1<<60)) ? (signed short) db4[60]-db4[0] : (signed short) db4[60]) & -256) >> 8;
+
           break;
           case 7:
             //base 2 delta 1
             bdi_size = 40; // 5 segments, 40 bytes
+	    for (i = 0; i < 2; i++)
+              {
+                vcddb[i] = MEM_READ_BYTE(mem, addr - bofs + i);
+              }
+                vcddb[2] = ((blk->bdi_mask) & (1<<0)) ? (signed char) db2[0]-db2[0] : (signed char) db2[0];
+                vcddb[3] = ((blk->bdi_mask) & (1<<2)) ? (signed char) db2[2]-db2[0] : (signed char) db2[2];
+                vcddb[4] = ((blk->bdi_mask) & (1<<4)) ? (signed char) db2[4]-db2[0] : (signed char) db2[4];
+                vcddb[5] = ((blk->bdi_mask) & (1<<6)) ? (signed char) db2[6]-db2[0] : (signed char) db2[6];
+                vcddb[6] = ((blk->bdi_mask) & (1<<8)) ? (signed char) db2[8]-db2[0] : (signed char) db2[8];
+                vcddb[7] = ((blk->bdi_mask) & (1<<10)) ? (signed char) db2[10]-db2[0] : (signed char) db2[10];
+                vcddb[8] = ((blk->bdi_mask) & (1<<12)) ? (signed char) db2[12]-db2[0] : (signed char) db2[12];
+                vcddb[9] = ((blk->bdi_mask) & (1<<14)) ? (signed char) db2[14]-db2[0] : (signed char) db2[14];
+                vcddb[10] = ((blk->bdi_mask) & (1<<16)) ? (signed char) db2[16]-db2[0] : (signed char) db2[16];
+                vcddb[11] = ((blk->bdi_mask) & (1<<18)) ? (signed char) db2[18]-db2[0] : (signed char) db2[18];
+                vcddb[12] = ((blk->bdi_mask) & (1<<20)) ? (signed char) db2[20]-db2[0] : (signed char) db2[20];
+                vcddb[13] = ((blk->bdi_mask) & (1<<22)) ? (signed char) db2[22]-db2[0] : (signed char) db2[22];
+                vcddb[14] = ((blk->bdi_mask) & (1<<24)) ? (signed char) db2[24]-db2[0] : (signed char) db2[24];
+                vcddb[15] = ((blk->bdi_mask) & (1<<26)) ? (signed char) db2[26]-db2[0] : (signed char) db2[26];
+                vcddb[16] = ((blk->bdi_mask) & (1<<28)) ? (signed char) db2[28]-db2[0] : (signed char) db2[28];
+                vcddb[17] = ((blk->bdi_mask) & (1<<30)) ? (signed char) db2[30]-db2[0] : (signed char) db2[30];
+                vcddb[18] = ((blk->bdi_mask) & (1<<32)) ? (signed char) db2[32]-db2[0] : (signed char) db2[32];
+                vcddb[19] = ((blk->bdi_mask) & (1<<34)) ? (signed char) db2[34]-db2[0] : (signed char) db2[34];
+                vcddb[20] = ((blk->bdi_mask) & (1<<36)) ? (signed char) db2[36]-db2[0] : (signed char) db2[36];
+                vcddb[21] = ((blk->bdi_mask) & (1<<38)) ? (signed char) db2[38]-db2[0] : (signed char) db2[38];
+                vcddb[22] = ((blk->bdi_mask) & (1<<40)) ? (signed char) db2[40]-db2[0] : (signed char) db2[40];
+                vcddb[23] = ((blk->bdi_mask) & (1<<42)) ? (signed char) db2[42]-db2[0] : (signed char) db2[42];
+                vcddb[24] = ((blk->bdi_mask) & (1<<44)) ? (signed char) db2[44]-db2[0] : (signed char) db2[44];
+                vcddb[25] = ((blk->bdi_mask) & (1<<46)) ? (signed char) db2[46]-db2[0] : (signed char) db2[46];
+                vcddb[26] = ((blk->bdi_mask) & (1<<48)) ? (signed char) db2[48]-db2[0] : (signed char) db2[48];
+                vcddb[27] = ((blk->bdi_mask) & (1<<50)) ? (signed char) db2[50]-db2[0] : (signed char) db2[50];
+                vcddb[28] = ((blk->bdi_mask) & (1<<52)) ? (signed char) db2[52]-db2[0] : (signed char) db2[52];
+                vcddb[29] = ((blk->bdi_mask) & (1<<54)) ? (signed char) db2[54]-db2[0] : (signed char) db2[54];
+                vcddb[30] = ((blk->bdi_mask) & (1<<56)) ? (signed char) db2[56]-db2[0] : (signed char) db2[56];
+                vcddb[31] = ((blk->bdi_mask) & (1<<58)) ? (signed char) db2[58]-db2[0] : (signed char) db2[58];
+                vcddb[32] = ((blk->bdi_mask) & (1<<60)) ? (signed char) db2[60]-db2[0] : (signed char) db2[60];
+                vcddb[33] = ((blk->bdi_mask) & (1<<62)) ? (signed char) db2[62]-db2[0] : (signed char) db2[62];
+
           break;
           case 15:
             //decompressed
             bdi_size = 64; // 8 segments, 64 bytes
+	    for (i = 0; i < 64; i++)
+              {
+                vcddb[i] = MEM_READ_BYTE(mem, addr - bofs + i);
+              }
           break;
         }
+}
+if (bdi_size != 64) {
 
-  //ADD VCD Decompressor Inputs Here
+  char dvcdbuf[32] = "vcd_decompressor_";
+  strcat(dvcdbuf, cp->name);
+  decompressorVCD = fopen(dvcdbuf, "a");
+  char dvcdbuf1[32];
+  sprintf(dvcdbuf1, "#%d\n", cp->compressor_frequency*now);
 
-  
+  //db[0-63].. is the cache line being read from memory / written into cache / compressed
+  fprintf(decompressorVCD, dvcdbuf1);
 
+  char dvcdbuf2[516];
+  dvcdbuf2[0] = 'b';
+  dvcdbuf2[513] = ' ';
+  dvcdbuf2[514] = '!';
+  dvcdbuf2[515] = '\0';
+
+
+  for (int i = 0; i < 64; i++) {
+  for (int  j = 0; j < 8; j++) {
+        dvcdbuf2[504-(i*8)+8-j]  = (vcddb[i] & 1) + '0';
+        vcddb[i] >>= 1;
+    }
+  }
+
+  char dvcdbuf3[8];
+  dvcdbuf3[0] = 'b';
+  dvcdbuf3[1] = ((blk->bdi_encode >> 3) & 1) + '0';
+  dvcdbuf3[2] = ((blk->bdi_encode >> 2) & 1) + '0';
+  dvcdbuf3[3] = ((blk->bdi_encode >> 1) & 1) + '0';
+  dvcdbuf3[4] = ((blk->bdi_encode) & 1) + '0';
+  dvcdbuf3[5] = ' ';
+  dvcdbuf3[6] = '$';
+  dvcdbuf3[7] = '\0';
+
+
+  fprintf(decompressorVCD, dvcdbuf2);
+  fprintf(decompressorVCD, "\n");
+  fprintf(decompressorVCD, dvcdbuf3);
+  fprintf(decompressorVCD, "\n");
+  fclose(decompressorVCD);
+
+}
   // Static energy is updated every cache access, regardless of operation and hit result  
 
   cp->sim_tag_static_power += (now - cp->last_cache_access) * cp->cacti_tag_static_power;
