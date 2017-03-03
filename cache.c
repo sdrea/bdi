@@ -471,7 +471,7 @@ cache_create(char *name,		/* name of the cache */
   fprintf(decompressorVCD, "module decompressor\n");
   fprintf(decompressorVCD, "$end\n");
   fprintf(decompressorVCD, "\n");
-  fprintf(decompressorVCD, "$var wire 512 ! uncompressed $end\n");
+  fprintf(decompressorVCD, "$var wire 512 ! x $end\n");
   fprintf(decompressorVCD, "$var wire 1 # carry $end\n");
   fprintf(decompressorVCD, "$var wire 4 $ encoding $end\n");
   fprintf(decompressorVCD, "\n");
