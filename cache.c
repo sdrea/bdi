@@ -1194,10 +1194,10 @@ else
   strcat(vcdbuf, cp->name);
   compressorVCD = fopen(vcdbuf, "a");
   char vcdbuf1[32];
-  sprintf(vcdbuf1, "#%d\n", cp->compressor_frequency*now);
+  sprintf(vcdbuf1, "#%d", cp->compressor_frequency*now);
 
-  //db[0-63].. is the cache line being read from memory / written into cache / compressed
-  fprintf(compressorVCD, vcdbuf1);
+  
+  
 
   char vcdbuf2[516];
   vcdbuf2[0] = 'b';
@@ -1212,10 +1212,12 @@ else
     }
 }
 
-//byte0 505 506 507 508 509 510 511 512
-
+  /* disable for now - large files
+  fprintf(compressorVCD, vcdbuf1);
+  fprintf(compressorVCD, "\n");
   fprintf(compressorVCD, vcdbuf2);
   fprintf(compressorVCD, "\n");
+  */
   fclose(compressorVCD);
 
   // On cache miss, tag read will occur for read and write operation
@@ -1605,10 +1607,10 @@ if (bdi_size != 64) {
   strcat(dvcdbuf, cp->name);
   decompressorVCD = fopen(dvcdbuf, "a");
   char dvcdbuf1[32];
-  sprintf(dvcdbuf1, "#%d\n", cp->compressor_frequency*now);
+  sprintf(dvcdbuf1, "#%d", cp->compressor_frequency*now);
 
   //db[0-63].. is the cache line being read from memory / written into cache / compressed
-  fprintf(decompressorVCD, dvcdbuf1);
+  
 
   char dvcdbuf2[516];
   dvcdbuf2[0] = 'b';
@@ -1634,11 +1636,14 @@ if (bdi_size != 64) {
   dvcdbuf3[6] = '$';
   dvcdbuf3[7] = '\0';
 
-
+  /* disable for now - large files
+  fprintf(decompressorVCD, dvcdbuf1);
+  fprintf(decompressorVCD, "\n");
   fprintf(decompressorVCD, dvcdbuf2);
   fprintf(decompressorVCD, "\n");
   fprintf(decompressorVCD, dvcdbuf3);
   fprintf(decompressorVCD, "\n");
+  */
   fclose(decompressorVCD);
 
 }
@@ -1987,10 +1992,10 @@ if (bdi_size != 64) {
   strcat(dvcdbuf, cp->name);
   decompressorVCD = fopen(dvcdbuf, "a");
   char dvcdbuf1[32];
-  sprintf(dvcdbuf1, "#%d\n", cp->compressor_frequency*now);
+  sprintf(dvcdbuf1, "#%d", cp->compressor_frequency*now);
 
   //db[0-63].. is the cache line being read from memory / written into cache / compressed
-  fprintf(decompressorVCD, dvcdbuf1);
+
 
   char dvcdbuf2[516];
   dvcdbuf2[0] = 'b';
@@ -2016,11 +2021,14 @@ if (bdi_size != 64) {
   dvcdbuf3[6] = '$';
   dvcdbuf3[7] = '\0';
 
-
+  /* disable for now - large files
+  fprintf(decompressorVCD, dvcdbuf1);
+  fprintf(decompressorVCD, "\n");
   fprintf(decompressorVCD, dvcdbuf2);
   fprintf(decompressorVCD, "\n");
   fprintf(decompressorVCD, dvcdbuf3);
   fprintf(decompressorVCD, "\n");
+  */
   fclose(decompressorVCD);
 
 }
