@@ -124,7 +124,14 @@ static struct mem_t *mem = NULL;
 static unsigned int max_insts;
 
 /* number of insts skipped before timing starts */
-static int fastfwd_count;
+//sdrea-begin
+static unsigned long fastfwd_count;
+
+
+
+static int simpoint;
+static int simpoint_interval;
+//sdrea-end
 
 /* pipeline trace range and output filename */
 static int ptrace_nelt = 0;
@@ -727,16 +734,37 @@ sim_reg_options(struct opt_odb_t *odb)
 		 );
 
   /* instruction limit */
-
-  opt_reg_uint(odb, "-max:inst", "maximum number of inst's to execute",
-	       &max_insts, /* default */0,
-	       /* print */TRUE, /* format */NULL);
+//sdrea-begin
+//  opt_reg_uint(odb, "-max:inst", "maximum number of inst's to execute",
+//	       &max_insts, /* default */0,
+//	       /* print */TRUE, /* format */NULL);
 
   /* trace options */
 
-  opt_reg_int(odb, "-fastfwd", "number of insts skipped before timing starts",
-	      &fastfwd_count, /* default */0,
+
+//  opt_reg_int(odb, "-fastfwd", "number of insts skipped before timing starts",
+//	      &fastfwd_count, /* default */0,
+//	      /* print */TRUE, /* format */NULL);
+
+
+
+
+
+  opt_reg_int(odb, "-interval", "Simpoint interval size",
+	      &simpoint_interval, /* default */100000000,
 	      /* print */TRUE, /* format */NULL);
+
+  opt_reg_int(odb, "-simpoint", "Simpoint",
+	      &simpoint, /* default */0,
+	      /* print */TRUE, /* format */NULL);
+
+
+
+
+
+
+//sdrea-end
+
   opt_reg_string_list(odb, "-ptrace",
 	      "generate pipetrace, i.e., <fname|stdout|stderr> <range>",
 	      ptrace_opts, /* arr_sz */2, &ptrace_nelt, /* default */NULL,
@@ -1211,10 +1239,10 @@ sim_check_options(struct opt_odb_t *odb,        /* options database */
 {
   char name[128], c;
   int nsets, bsize, assoc;
-
-  if (fastfwd_count < 0 || fastfwd_count >= 2147483647)
-    fatal("bad fast forward count: %d", fastfwd_count);
-
+//sdrea-begin
+//  if (fastfwd_count < 0 || fastfwd_count >= 2147483647)
+//    fatal("bad fast forward count: %d", fastfwd_count);
+//sdrea-end
   if (ruu_ifq_size < 1 || (ruu_ifq_size & (ruu_ifq_size - 1)) != 0)
     fatal("inst fetch queue size must be positive > 0 and a power of two");
 
@@ -5136,9 +5164,21 @@ sim_main(void)
 
   /* fast forward simulator loop, performs functional simulation for
      FASTFWD_COUNT insts, then turns on performance (timing) simulation */
-  if (fastfwd_count > 0)
+//sdrea-begin
+fastfwd_count = (unsigned long) simpoint * simpoint_interval;
+max_insts = simpoint_interval;
+fprintf(stderr, "simpoint: %d\n", simpoint);
+fprintf(stderr, "simpoint_interval: %d\n", simpoint_interval);
+fprintf(stderr, "fastfwd_count: %lu\n", fastfwd_count);
+fprintf(stderr, "max_insts: %d\n", max_insts);
+
+
+  if (fastfwd_count != 0)
+//sdrea-end
     {
-      int icount;
+//sdrea-begin
+      unsigned long icount;
+//sdrea_end
       md_inst_t inst;			/* actual instruction bits */
       enum md_opcode op;		/* decoded opcode enum */
       md_addr_t target_PC;		/* actual next/target PC address */
@@ -5152,7 +5192,7 @@ sim_main(void)
 #endif /* HOST_HAS_QWORD */
       enum md_fault_type fault;
 
-      fprintf(stderr, "sim: ** fast forwarding %d insts **\n", fastfwd_count);
+      fprintf(stderr, "sim: ** fast forwarding %lu insts **\n", fastfwd_count);
 
       for (icount=0; icount < fastfwd_count; icount++)
 	{
@@ -5213,6 +5253,10 @@ sim_main(void)
 	  regs.regs_PC = regs.regs_NPC;
 	  regs.regs_NPC += sizeof(md_inst_t);
 	}
+
+//sdrea-begin
+ fprintf(stderr, "icount: %lu \n", icount);
+//sdrea-end
     }
 
   fprintf(stderr, "sim: ** starting performance simulation **\n");
