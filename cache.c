@@ -833,7 +833,7 @@ cache_access(struct cache_t *cp,	/* cache to access */
   signed long db4[64];
   signed short db2[64];
   char vcddb[64];
-  int i;
+  int i, j;
   int bdi_size = 64;
 
 
@@ -1205,8 +1205,8 @@ else
   vcdbuf2[514] = '!';
   vcdbuf2[515] = '\0';
 
-  for (int i = 0; i < 64; i++) {
-  for (int  j = 0; j < 8; j++) {
+  for (i = 0; i < 64; i++) {
+  for (j = 0; j < 8; j++) {
         vcdbuf2[504-(i*8)+8-j]  = (vcddb[i] & 1) + '0';
         vcddb[i] >>= 1;
     }
@@ -1618,7 +1618,7 @@ if (bdi_size != 64) {
   dvcdbuf2[514] = '!';
   dvcdbuf2[515] = '\0';
 
-  int i, j;
+
   for (i = 0; i < 64; i++) {
   for (j = 0; j < 8; j++) {
         dvcdbuf2[504-(i*8)+8-j]  = (vcddb[i] & 1) + '0';
@@ -2003,7 +2003,7 @@ if (bdi_size != 64) {
   dvcdbuf2[514] = '!';
   dvcdbuf2[515] = '\0';
 
-  int i, j;
+
   for (i = 0; i < 64; i++) {
   for (j = 0; j < 8; j++) {
         dvcdbuf2[504-(i*8)+8-j]  = (vcddb[i] & 1) + '0';
