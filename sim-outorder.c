@@ -481,6 +481,7 @@ static struct stat_stat_t *pcstat_sdists[MAX_PCSTAT_VARS];
 
 //sdrea-begin
 //-----------
+struct pf_t *last;
 
 static int il1_bdi_compress;
 static int il1_bdi_check;
@@ -1392,6 +1393,38 @@ sim_check_options(struct opt_odb_t *odb,        /* options database */
 
 	}
     }
+
+//sdrea-begin
+/////////////
+
+// Define prefetch table here
+
+int pf_nsets = 64;
+int i;
+
+struct pf_set_t
+{
+  md_addr_t tag;
+};
+
+struct pf_t
+{
+  int nsets;
+  struct pf_set_t sets[1]; 
+};
+
+last = (struct pf_t *) calloc(1, sizeof(struct pf_t) + (pf_nsets-1)*sizeof(struct pf_set_t));
+if (!last) fatal("out of virtual memory");
+
+last->nsets = pf_nsets;
+
+for (i=0; i<pf_nsets; i++)
+{
+last->sets[i].tag = 0;
+}
+
+///////////
+//sdrea-end
 
   /* use a level 1 I-cache? */
   if (!mystricmp(cache_il1_opt, "none"))
@@ -4932,6 +4965,35 @@ ruu_fetch(void)
 	{
 	  /* read instruction from memory */
 	  MD_FETCH_INST(inst, mem, fetch_regs_PC);
+
+
+//sdrea-begin
+/////////////
+
+// Prefetching based on instruction address.
+// TODO This function may not belong here other than to pull opcode.  Need 2 more functions: 1 to precede dl1 (the DVP table),
+// TODO If data is there, take it, if not move up to dl1.  This is prefetch... not DVP. come back to this.
+// TODO Check if last->sets[set].tag is this instruction... if it is, then prefetch the values in table (the values are data memory addresses).
+
+enum md_opcode dvp_op;
+MD_SET_OPCODE(dvp_op, inst);
+
+if (MD_OP_FLAGS(dvp_op) & F_LOAD) 
+{
+
+// Do something when we load from mem, for example check prefetch table and start decompressing.
+
+}
+
+if (MD_OP_FLAGS(dvp_op) & F_LOAD) 
+{
+
+// Do something when we store to mem, for example wipe out block in prefetch table
+
+}
+
+///////////
+//sdrea-end
 
 	  /* address is within program text, read instruction from memory */
 	  lat = cache_il1_lat;

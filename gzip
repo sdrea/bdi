@@ -1,12 +1,12 @@
 SIM_PATH=/home/sdrea/bdi/sim-outorder
 CFG_PATH=/home/sdrea/bdi/config/64k-l1_compressed.cfg
-MAX_INST=10000000
-FAST_FWD=100000000
+INT=10000000
+SP=55
 
 $SIM_PATH \
 -config $CFG_PATH \
--fastfwd $FAST_FWD \
--max:inst $MAX_INST \
+-interval $INT \
+-simpoint $SP \
 /home/sdrea/sp2k/164.gzip/gzip \
 /home/sdrea/sp2k/164.gzip/input.graphic \
 2 \
