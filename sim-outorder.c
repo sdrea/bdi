@@ -481,6 +481,18 @@ static struct stat_stat_t *pcstat_sdists[MAX_PCSTAT_VARS];
 
 //sdrea-begin
 //-----------
+
+struct pf_set_t
+{
+  md_addr_t tag;
+};
+
+struct pf_t
+{
+  int nsets;
+  struct pf_set_t sets[1]; 
+};
+
 struct pf_t *last;
 
 static int il1_bdi_compress;
@@ -1401,17 +1413,6 @@ sim_check_options(struct opt_odb_t *odb,        /* options database */
 
 int pf_nsets = 64;
 int i;
-
-struct pf_set_t
-{
-  md_addr_t tag;
-};
-
-struct pf_t
-{
-  int nsets;
-  struct pf_set_t sets[1]; 
-};
 
 last = (struct pf_t *) calloc(1, sizeof(struct pf_t) + (pf_nsets-1)*sizeof(struct pf_set_t));
 if (!last) fatal("out of virtual memory");
