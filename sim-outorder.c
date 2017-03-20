@@ -482,6 +482,9 @@ static struct stat_stat_t *pcstat_sdists[MAX_PCSTAT_VARS];
 //sdrea-begin
 //-----------
 
+counter_t tmp_misses_il1;
+counter_t tmp_misses_dl1;
+
 struct pf_set_t
 {
   md_addr_t tag;
@@ -2691,6 +2694,8 @@ ruu_commit(void)
 		  /* schedule functional unit release event */
 		  fu->master->busy = fu->issuelat;
 
+//sdrea
+
 		  /* go to the data cache */
 		  if (cache_dl1)
 		    {
@@ -2701,11 +2706,16 @@ ruu_commit(void)
 
 //sdrea-begin
 //-----------
+tmp_misses_dl1 = cache_dl1->misses;
 
 		      lat = cache_access(cache_dl1, Write, (LSQ[LSQ_head].addr&~3), NULL, 4, sim_cycle, NULL, NULL, mem);
+// This line breaks when latency depends on whether or not the line was compressed
 
+		     // if ( ( !(cache_dl1->bdi_compress) && (lat > cache_dl1_lat) ) || ( (cache_dl1->bdi_compress) && (lat > (cache_dl1_lat + cache_dl1->decompression_latency)) ) ) events |= PEV_CACHEMISS;
 
-		      if ( ( !(cache_dl1->bdi_compress) && (lat > cache_dl1_lat) ) || ( (cache_dl1->bdi_compress) && (lat > (cache_dl1_lat + cache_dl1->decompression_latency)) ) ) events |= PEV_CACHEMISS;
+//fix 
+ if (cache_dl1->misses > tmp_misses_dl1) events |= PEV_CACHEMISS;
+
 //---------
 //sdrea-end
 		    }
@@ -3314,12 +3324,16 @@ ruu_issue(void)
 
 //sdrea-begin
 //-----------
-
+				  tmp_misses_dl1 = cache_dl1->misses;
 				  load_lat = cache_access(cache_dl1, Read, (rs->addr & ~3), NULL, 4, sim_cycle, NULL, NULL, mem); 
 
+				  // These lines break when latency depends on whether or not the line was compressed
 
-				  if ( (load_lat > cache_dl1_lat) && !(cache_dl1->bdi_compress) ) events |= PEV_CACHEMISS;
-				  if ( (load_lat > (cache_dl1_lat + cache_dl1->decompression_latency) ) && (cache_dl1->bdi_compress) ) events |= PEV_CACHEMISS;
+				  //if ( (load_lat > cache_dl1_lat) && !(cache_dl1->bdi_compress) ) events |= PEV_CACHEMISS;
+				  // if ( (load_lat > (cache_dl1_lat + cache_dl1->decompression_latency) ) && (cache_dl1->bdi_compress) ) events |= PEV_CACHEMISS;
+				
+				  //Fix
+				  if (cache_dl1->misses > tmp_misses_dl1) events |= PEV_CACHEMISS;
 //---------
 //sdrea-end
 				}
@@ -4993,6 +5007,7 @@ if (MD_OP_FLAGS(dvp_op) & F_LOAD)
 
 }
 
+
 ///////////
 //sdrea-end
 
@@ -5004,11 +5019,19 @@ if (MD_OP_FLAGS(dvp_op) & F_LOAD)
 
 //sdrea-begin
 //-----------
+	      
+	      tmp_misses_il1 = cache_il1->misses;
 
 	      lat = cache_access(cache_il1, Read, IACOMPRESS(fetch_regs_PC), NULL, ISCOMPRESS(sizeof(md_inst_t)), sim_cycle, NULL, NULL, mem);
 
-	      if ( ( lat > (cache_il1_lat + cache_il1->decompression_latency) ) && cache_il1->bdi_compress ) last_inst_missed = TRUE;
-	      if ( ( lat > (cache_il1_lat) ) && !(cache_il1->bdi_compress) ) last_inst_missed = TRUE;
+	      // These lines break when latency depends on whether or not the line was compressed
+	      
+	      // if ( ( lat > (cache_il1_lat + cache_il1->decompression_latency) ) && cache_il1->bdi_compress ) last_inst_missed = TRUE;
+	      // if ( ( lat > (cache_il1_lat) ) && !(cache_il1->bdi_compress) ) last_inst_missed = TRUE;
+
+	      // Fix 
+
+	      if (cache_il1->misses > tmp_misses_il1) last_inst_missed = TRUE;
 
 //---------
 //sdrea-end
@@ -5041,7 +5064,10 @@ if (MD_OP_FLAGS(dvp_op) & F_LOAD)
 	  /* I-cache/I-TLB miss? assumes I-cache hit >= I-TLB hit */
 
 //sdrea-fixing the following IF statement.  Without consideration for the decompression latency, the program will run indefinitely waiting to fetch the next inst...
-	  if ( ( (lat != cache_il1_lat) && !(cache_il1->bdi_compress) ) || ( (lat != (cache_il1_lat + cache_il1->decompression_latency) ) && (cache_il1->bdi_compress) ) )
+// This line breaks when latency depends on whether or not the line was compressed
+// if ( ( (lat != cache_il1_lat) && !(cache_il1->bdi_compress) ) || ( (lat != (cache_il1_lat + cache_il1->decompression_latency) ) && (cache_il1->bdi_compress) ) )
+// fix like above
+ if (cache_il1->misses > tmp_misses_il1)
 	    {
 	      /* I-cache miss, block fetch until it is resolved */
 	      ruu_fetch_issue_delay += lat - 1;

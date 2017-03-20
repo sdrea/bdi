@@ -1,7 +1,7 @@
 SIM_PATH=/home/sdrea/bdi/sim-outorder
-CFG_PATH=/home/sdrea/bdi/config/64k-l1_compressed.cfg
-INT=10000000
-SP=55
+CFG_PATH=/home/sdrea/bdi/config/64k-l1_baseline.cfg
+INT=100000000
+SP=10
 
 $SIM_PATH \
 -config $CFG_PATH \

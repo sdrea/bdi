@@ -1714,7 +1714,9 @@ if (bdi_size != 64) {
 //sdrea-begin
 //-----------
 
-  if (cmd == Read && cp->bdi_compress) { 
+//TODO Decompression Latency is being considered on all hits... not just those on compressed lines.
+
+  if (cmd == Read && cp->bdi_compress && bdi_size != 64) { 
     return (int) MAX( (cp->hit_latency + cp->decompression_latency), (blk->ready - now) );
   }
   else {
