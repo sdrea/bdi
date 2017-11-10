@@ -1,5 +1,9 @@
 # bdi
 
+CPU simulator, based on Wattch (a branch of SimpleScalar), for modelling cache compression and prefetching.
+
+# SimpleScalar
+
 Modified build of SimpleScalar based on Sim-Wattch (Brooks).  See the SimpleScalar License Agreement below (http://www.simplescalar.com/).
 
 SimpleScalar Ô Tool Suite
